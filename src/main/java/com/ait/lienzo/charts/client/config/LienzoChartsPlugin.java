@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.6.1/distro-source/core/src/gwt-module.dtd">
-<!--
+/*
    Copyright (c) 2014 Ahome' Innovation Technologies. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +12,31 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
--->
-<module>
-	<inherits name='com.google.gwt.user.User' />
-	<inherits name='com.ait.lienzo.Lienzo' />
-	<entry-point class='com.ait.lienzo.charts.client.config.LienzoChartsEntryPoint' />
-	<source path="client"/>
-</module>
+ */
+
+package com.ait.lienzo.charts.client.config;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.ait.lienzo.client.core.config.ILienzoPlugin;
+import com.ait.lienzo.client.core.shape.json.IFactory;
+
+public class LienzoChartsPlugin implements ILienzoPlugin
+{
+    public LienzoChartsPlugin()
+    {
+    }
+
+    @Override
+    public String getNameSpace()
+    {
+        return "LienzoCharts";
+    }
+
+    @Override
+    public Collection<IFactory<?>> getFactories()
+    {
+        return new ArrayList<IFactory<?>>();
+    }
+}
