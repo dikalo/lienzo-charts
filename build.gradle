@@ -22,7 +22,7 @@ version = '1.0.0.SNAPSHOT'
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Lienzo-Core', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Lienzo-Charts', 'Implementation-Version': version
     }
     from sourceSets.main.allSource
 }
