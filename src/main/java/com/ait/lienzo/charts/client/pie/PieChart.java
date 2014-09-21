@@ -16,7 +16,9 @@
 
 package com.ait.lienzo.charts.client.pie;
 
-import com.ait.lienzo.charts.client.pie.PieChartData.PieChartEntry;
+import com.ait.lienzo.charts.client.ChartAttribute;
+import com.ait.lienzo.charts.client.ChartNodeType;
+import com.ait.lienzo.charts.client.pie.PieChartData.PieChartDataJSO;
 import com.ait.lienzo.client.core.animation.AnimationCallback;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
@@ -26,30 +28,51 @@ import com.ait.lienzo.client.core.animation.IAnimationHandle;
 import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
 import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.shape.Group;
+import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Line;
+import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Slice;
 import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.json.IFactory;
+import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
+import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
 public class PieChart extends Group
 {
-    private double       m_radius;
+    protected PieChart(JSONObject node, ValidationContext ctx) throws ValidationException
+    {
+        super(node, ctx);
 
-    private PieChartData m_data;
+        setNodeType(ChartNodeType.PIE_CHART);
+
+        initialize();
+    }
 
     public PieChart(double radius, PieChartData data)
     {
-        m_data = data;
+        setNodeType(ChartNodeType.PIE_CHART);
 
-        m_radius = radius;
+        setRadius(radius);
 
-        if (radius < 1)
+        setData(data);
+
+        getMetaData().put("creator", "Dean S. Jones").put("version", "1.0.1.SNAPSHOT");
+
+        initialize();
+    }
+
+    protected final void initialize()
+    {
+        double radius = getRadius();
+
+        PieChartData data = getData();
+
+        if (radius <= 0)
         {
             return;
         }
@@ -57,8 +80,6 @@ public class PieChart extends Group
         {
             return;
         }
-        getMetaData().put("creator", "Dean S. Jones").put("version", "1.0.1.SNAPSHOT");
-
         final PieChartEntry[] values = data.getEntries();
 
         double sofar = 0;
@@ -191,6 +212,34 @@ public class PieChart extends Group
         add(slices);
     }
 
+    public final PieChart setRadius(double radius)
+    {
+        getAttributes().setRadius(radius);
+
+        return this;
+    }
+
+    public final double getRadius()
+    {
+        return getAttributes().getRadius();
+    }
+
+    public final PieChart setData(PieChartData data)
+    {
+        if (null != data)
+        {
+            getAttributes().put(ChartAttribute.PIE_CHART_DATA.getProperty(), data.getJSO());
+        }
+        return this;
+    }
+
+    public final PieChartData getData()
+    {
+        PieChartDataJSO jso = getAttributes().getArrayOfJSO(ChartAttribute.PIE_CHART_DATA.getProperty()).cast();
+
+        return new PieChartData(jso);
+    }
+
     private final native String getLabel(double perc)
     /*-{
 		var numb = perc;
@@ -203,37 +252,45 @@ public class PieChart extends Group
     {
         JSONObject object = new JSONObject();
 
-        object.put("type", new JSONString("Lienzo.PieChart"));
+        object.put("type", new JSONString(getNodeType().getValue()));
 
         if (false == getMetaData().isEmpty())
         {
             object.put("meta", new JSONObject(getMetaData().getJSO()));
         }
-        JSONObject attributes = new JSONObject(getAttributes().getJSO());
-
-        attributes.put("radius", new JSONNumber(m_radius));
-
-        object.put("attributes", attributes);
-
-        JSONArray data = new JSONArray();
-
-        PieChartEntry[] entries = m_data.getEntries();
-
-        for (int i = 0; i < entries.length; i++)
-        {
-            JSONObject entry = new JSONObject();
-
-            entry.put("value", new JSONNumber(entries[i].getValue()));
-
-            entry.put("label", new JSONString(entries[i].getLabel()));
-
-            entry.put("color", new JSONString(entries[i].getColor()));
-
-            data.set(i, entry);
-        }
-        object.put("data", data);
+        object.put("attributes", new JSONObject(getAttributes().getJSO()));
 
         return object;
+    }
+
+    @Override
+    public IFactory<Group> getFactory()
+    {
+        return new PieChartFactory();
+    }
+
+    public static class PieChartFactory extends GroupFactory
+    {
+        public PieChartFactory()
+        {
+            setTypeName(ChartNodeType.PIE_CHART.getValue());
+
+            addAttribute(ChartAttribute.RADIUS, true);
+
+            addAttribute(ChartAttribute.PIE_CHART_DATA, true);
+        }
+
+        @Override
+        public boolean addNodeForContainer(IContainer<?, ?> container, Node<?> node, ValidationContext ctx)
+        {
+            return false;
+        }
+
+        @Override
+        public PieChart create(JSONObject node, ValidationContext ctx) throws ValidationException
+        {
+            return new PieChart(node, ctx);
+        }
     }
 
     private static class PieSlice extends Slice

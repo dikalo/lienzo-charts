@@ -17,88 +17,114 @@
 package com.ait.lienzo.charts.client.pie;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 import com.ait.lienzo.shared.core.types.Color;
 import com.ait.lienzo.shared.core.types.IColor;
+import com.google.gwt.core.client.JsArray;
 
-public final class PieChartData
+public final class PieChartData implements Iterable<PieChartEntry>
 {
-    private static final PieChartEntry[]   M_EMPTY   = new PieChartEntry[0];
+    private final PieChartDataJSO m_jso;
 
-    private final ArrayList<PieChartEntry> m_entries = new ArrayList<PieChartEntry>();
+    public PieChartData(PieChartDataJSO jso)
+    {
+        if (null != jso)
+        {
+            m_jso = jso;
+        }
+        else
+        {
+            m_jso = PieChartDataJSO.make();
+        }
+    }
 
     public PieChartData()
     {
+        this(PieChartDataJSO.make());
     }
 
     public final PieChartData add(double value)
     {
-        m_entries.add(new PieChartEntry(value, null, Color.getRandomHexColor()));
+        m_jso.push(PieChartEntry.make(null, value, Color.getRandomHexColor()));
 
         return this;
     }
 
     public final PieChartData add(double value, IColor color)
     {
-        m_entries.add(new PieChartEntry(value, null, color.getColorString()));
+        m_jso.push(PieChartEntry.make(null, value, color.getColorString()));
 
         return this;
     }
 
-    public final PieChartData add(double value, String label)
+    public final PieChartData add(String label, double value)
     {
-        m_entries.add(new PieChartEntry(value, label, Color.getRandomHexColor()));
+        m_jso.push(PieChartEntry.make(label, value, Color.getRandomHexColor()));
 
         return this;
     }
 
-    public final PieChartData add(double value, String label, IColor color)
+    public final PieChartData add(String label, double value, IColor color)
     {
-        m_entries.add(new PieChartEntry(value, label, color.getColorString()));
+        m_jso.push(PieChartEntry.make(label, value, color.getColorString()));
 
         return this;
     }
 
-    final PieChartEntry[] getEntries()
+    public final int size()
     {
-        return m_entries.toArray(M_EMPTY);
+        return m_jso.length();
     }
 
-    final int size()
+    public final PieChartDataJSO getJSO()
     {
-        return m_entries.size();
+        return m_jso;
     }
 
-    static final class PieChartEntry
+    public final Collection<PieChartEntry> toCollection()
     {
-        private final double m_value;
+        final int size = size();
 
-        private final String m_label;
+        ArrayList<PieChartEntry> list = new ArrayList<PieChartEntry>(size);
 
-        private final String m_color;
-
-        PieChartEntry(double value, String label, String color)
+        for (int i = 0; i < size; i++)
         {
-            m_value = value;
+            list.add(m_jso.get(i));
+        }
+        return Collections.unmodifiableList(list);
+    }
 
-            m_label = label;
+    @Override
+    public final Iterator<PieChartEntry> iterator()
+    {
+        return toCollection().iterator();
+    }
 
-            m_color = color;
+    public PieChartEntry[] getEntries()
+    {
+        final int size = size();
+
+        PieChartEntry[] list = new PieChartEntry[size];
+
+        for (int i = 0; i < size; i++)
+        {
+            list[i] = m_jso.get(i);
+        }
+        return list;
+    }
+
+    public static final class PieChartDataJSO extends JsArray<PieChartEntry>
+    {
+        protected PieChartDataJSO()
+        {
         }
 
-        final double getValue()
+        public static final PieChartDataJSO make()
         {
-            return m_value;
-        }
-
-        final String getLabel()
-        {
-            return m_label;
-        }
-
-        final String getColor()
-        {
-            return m_color;
+            return JsArray.createArray().cast();
         }
     }
 }
