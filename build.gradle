@@ -47,14 +47,6 @@ dependencies {
     compile 'com.ahome-it:lienzo-core:2.0.16-SNAPSHOT'
 }
 
-task documents(type: Javadoc) {
-    source = sourceSets.main.allJava
- }
-
-test {
-    systemProperties 'property': 'value'
-}
-
 uploadArchives {
     repositories {
         mavenDeployer {
