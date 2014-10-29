@@ -16,8 +16,8 @@
    limitations under the License.
 -->
 <module>
-	<inherits name='com.google.gwt.user.User' />
 	<inherits name='com.ait.lienzo.Lienzo' />
 	<entry-point class='com.ait.lienzo.charts.client.config.LienzoChartsEntryPoint' />
-	<source path="client"/>
+	<source path='client' />
+	<source path='shared' />
 </module>
