@@ -18,7 +18,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.2-SNAPSHOT'
+version = '1.0.3-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -44,7 +44,7 @@ sourceSets {
 
 dependencies {
     compile 'com.google.gwt:gwt-user:2.6.1'
-    compile 'com.ahome-it:lienzo-core:2.0.16-SNAPSHOT'
+    compile 'com.ahome-it:lienzo-core:2.0.18-SNAPSHOT'
 }
 
 uploadArchives {
