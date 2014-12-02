@@ -1,7 +1,7 @@
 Lienzo Charts
 ======
 
-Lienzo Charts is a chart package built on top ob the Lienzo Structured Graphics GWT Toolkit
+Lienzo Charts is a chart package built on top of the Lienzo Structured Graphics GWT Toolkit
 
 https://github.com/ahome-it/lienzo-core
 
