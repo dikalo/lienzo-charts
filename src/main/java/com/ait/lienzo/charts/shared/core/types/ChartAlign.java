@@ -21,15 +21,15 @@ import java.util.List;
 import com.ait.lienzo.client.core.types.NFastStringMap;
 import com.ait.lienzo.shared.core.types.EnumWithValue;
 
-public enum ChartType implements EnumWithValue
+public enum ChartAlign implements EnumWithValue
 {
-    COLUMN("column"), BAR("bar"), LINE("line"), PIE("pie"), DONUT("donut"), AREA("area"), RADAR("radar");
+    TOP("top"), BOTTOM("bottom"), LEFT("left"), RIGHT("right"), CENTER("center");
 
-    private final String                           m_value;
+    private final String                            m_value;
 
-    private static final NFastStringMap<ChartType> LOOKUP_MAP = Statics.build(ChartType.values());
+    private static final NFastStringMap<ChartAlign> LOOKUP_MAP = Statics.build(ChartAlign.values());
 
-    private ChartType(String value)
+    private ChartAlign(String value)
     {
         m_value = value;
     }
@@ -46,18 +46,18 @@ public enum ChartType implements EnumWithValue
         return m_value;
     }
 
-    public static final ChartType lookup(String key)
+    public static final ChartAlign lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, COLUMN);
+        return Statics.lookup(key, LOOKUP_MAP, TOP);
     }
 
     public static final List<String> getKeys()
     {
-        return Statics.getKeys(ChartType.values());
+        return Statics.getKeys(ChartAlign.values());
     }
 
-    public static final List<ChartType> getValues()
+    public static final List<ChartAlign> getValues()
     {
-        return Statics.getValues(ChartType.values());
+        return Statics.getValues(ChartAlign.values());
     }
 }

@@ -21,15 +21,15 @@ import java.util.List;
 import com.ait.lienzo.client.core.types.NFastStringMap;
 import com.ait.lienzo.shared.core.types.EnumWithValue;
 
-public enum ChartType implements EnumWithValue
+public enum ChartDirection implements EnumWithValue
 {
-    COLUMN("column"), BAR("bar"), LINE("line"), PIE("pie"), DONUT("donut"), AREA("area"), RADAR("radar");
+    POSITIVE("positive"), NEGATIVE("negative");
 
-    private final String                           m_value;
+    private final String                                m_value;
 
-    private static final NFastStringMap<ChartType> LOOKUP_MAP = Statics.build(ChartType.values());
+    private static final NFastStringMap<ChartDirection> LOOKUP_MAP = Statics.build(ChartDirection.values());
 
-    private ChartType(String value)
+    private ChartDirection(String value)
     {
         m_value = value;
     }
@@ -46,18 +46,18 @@ public enum ChartType implements EnumWithValue
         return m_value;
     }
 
-    public static final ChartType lookup(String key)
+    public static final ChartDirection lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, COLUMN);
+        return Statics.lookup(key, LOOKUP_MAP, POSITIVE);
     }
 
     public static final List<String> getKeys()
     {
-        return Statics.getKeys(ChartType.values());
+        return Statics.getKeys(ChartDirection.values());
     }
 
-    public static final List<ChartType> getValues()
+    public static final List<ChartDirection> getValues()
     {
-        return Statics.getValues(ChartType.values());
+        return Statics.getValues(ChartDirection.values());
     }
 }

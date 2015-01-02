@@ -20,10 +20,10 @@ import com.ait.lienzo.shared.core.types.NodeType;
 
 public class ChartNodeType extends NodeType
 {
-    public static final ChartNodeType PIE_CHART = new ChartNodeType("Lienzo.PieChart", true);
+    public static final ChartNodeType PIE_CHART = new ChartNodeType("Lienzo.PieChart");
 
-    public ChartNodeType(String valu, boolean prim)
+    public ChartNodeType(String valu)
     {
-        super(valu, prim);
+        super(valu);
     }
 }
