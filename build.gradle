@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014 Ahome' Innovation Technologies. All rights reserved.
+ Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.23-SNAPSHOT'
+version = '1.0.24-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -44,7 +44,7 @@ sourceSets {
 
 dependencies {
     compile(group: 'com.google.gwt', name: 'gwt-user', version: '2.6.1')
-    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.45-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.46-SNAPSHOT')
 }
 
 uploadArchives {
