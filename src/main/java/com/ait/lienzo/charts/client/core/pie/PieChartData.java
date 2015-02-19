@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.ait.lienzo.charts.client.pie;
+package com.ait.lienzo.charts.client.core.pie;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -14,17 +14,37 @@
    limitations under the License.
  */
 
-package com.ait.lienzo.charts.client;
+package com.ait.lienzo.charts.client.core.pie;
 
-import com.ait.lienzo.client.core.Attribute;
-import com.ait.lienzo.client.core.AttributeType;
+import com.google.gwt.core.client.JavaScriptObject;
 
-public class ChartAttribute extends Attribute
+public final class PieChartEntry extends JavaScriptObject
 {
-    public final static ChartAttribute PIE_CHART_DATA = new ChartAttribute("pieChartData", "", "", ChartAttributeType.PIE_CHART_DATA_TYPE);
+    public static final native PieChartEntry make(String label, double value, String color)
+    /*-{
+		return {
+			label : label,
+			value : value,
+			color : color
+		};
+    }-*/;
 
-    protected ChartAttribute(String property, String label, String description, AttributeType type)
+    protected PieChartEntry()
     {
-        super(property, label, description, type);
     }
+
+    public final native double getValue()
+    /*-{
+		return this.value;
+    }-*/;
+
+    public final native String getLabel()
+    /*-{
+		return this.label;
+    }-*/;
+
+    public final native String getColor()
+    /*-{
+		return this.color;
+    }-*/;
 }

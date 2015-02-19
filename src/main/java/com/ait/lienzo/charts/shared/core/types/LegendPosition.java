@@ -16,21 +16,43 @@
 
 package com.ait.lienzo.charts.shared.core.types;
 
-import java.util.List;
-
 import com.ait.lienzo.client.core.types.NFastStringMap;
 import com.ait.lienzo.shared.core.types.EnumWithValue;
 
-// TODO: Can be removed? Currently using ChartNodeType.
-public enum ChartType implements EnumWithValue
+import java.util.List;
+
+public enum LegendPosition implements EnumWithValue
 {
-    COLUMN("column"), BAR("bar"), LINE("line"), PIE("pie"), DONUT("donut"), AREA("area"), RADAR("radar");
+    /**
+     * To the right of the chart.
+     */
+    RIGHT("right"),
+    /**
+     * To the left of the chart.
+     */
+    LEFT("left"),
+    /**
+     * Above the chart.
+     */
+    TOP("top"),
+    /**
+     * Below the chart.
+     */
+    BOTTOM("bottom"),
+    /**
+     * Inside the chart.
+     */
+    INSIDE("inside"),
+    /**
+     * No legend is displayed.
+     */
+    NONE("none");
 
-    private final String                           m_value;
+    private final String                                m_value;
 
-    private static final NFastStringMap<ChartType> LOOKUP_MAP = Statics.build(ChartType.values());
+    private static final NFastStringMap<LegendPosition> LOOKUP_MAP = Statics.build(LegendPosition.values());
 
-    private ChartType(String value)
+    private LegendPosition(String value)
     {
         m_value = value;
     }
@@ -47,18 +69,18 @@ public enum ChartType implements EnumWithValue
         return m_value;
     }
 
-    public static final ChartType lookup(String key)
+    public static final LegendPosition lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, COLUMN);
+        return Statics.lookup(key, LOOKUP_MAP, TOP);
     }
 
     public static final List<String> getKeys()
     {
-        return Statics.getKeys(ChartType.values());
+        return Statics.getKeys(LegendPosition.values());
     }
 
-    public static final List<ChartType> getValues()
+    public static final List<LegendPosition> getValues()
     {
-        return Statics.getValues(ChartType.values());
+        return Statics.getValues(LegendPosition.values());
     }
 }

@@ -12,38 +12,38 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.config;
+package com.ait.lienzo.charts.client.core.xy.axis;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
-import com.ait.lienzo.charts.client.core.pie.PieChart;
-import com.ait.lienzo.client.core.config.ILienzoPlugin;
-import com.ait.lienzo.client.core.shape.json.IFactory;
+import com.ait.lienzo.charts.client.core.axis.Axis;
+import com.ait.lienzo.charts.client.core.axis.DateAxis;
+import com.ait.lienzo.charts.client.core.xy.XYChartData;
 
-public class LienzoChartsPlugin implements ILienzoPlugin
+// TODO
+public final class DateAxisBuilder extends AxisBuilder<Date>
 {
-    private final ArrayList<IFactory<?>> m_factories = new ArrayList<IFactory<?>>();
+    protected DateAxis axis;
 
-    public LienzoChartsPlugin()
+    public DateAxisBuilder(XYChartData data, double chartSizeAttribute, Axis.AxisJSO jso)
     {
+        super(data, chartSizeAttribute);
     }
 
     @Override
-    public String getNameSpace()
+    public List<AxisLabel> getLabels()
     {
-        return "LienzoCharts";
+        return null;
     }
 
     @Override
-    public Collection<IFactory<?>> getFactories()
+    public List<AxisValue<Date>> getValues(String modelProperty)
     {
-        if (m_factories.isEmpty())
-        {
-            m_factories.add(new PieChart.PieChartFactory());
-        }
-        return m_factories;
+        return null;
     }
 }

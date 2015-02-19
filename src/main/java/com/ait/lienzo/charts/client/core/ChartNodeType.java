@@ -12,39 +12,22 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.pie;
+package com.ait.lienzo.charts.client.core;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.ait.lienzo.shared.core.types.NodeType;
 
-public final class PieChartEntry extends JavaScriptObject
+public class ChartNodeType extends NodeType
 {
-    public static final native PieChartEntry make(String label, double value, String color)
-    /*-{
-		return {
-			label : label,
-			value : value,
-			color : color
-		};
-    }-*/;
+    public static final ChartNodeType PIE_CHART = new ChartNodeType("Lienzo.PieChart");
 
-    protected PieChartEntry()
+    public static final ChartNodeType BAR_CHART = new ChartNodeType("Lienzo.BarChart");
+
+    public ChartNodeType(String value)
     {
+        super(value);
     }
-
-    public final native double getValue()
-    /*-{
-		return this.value;
-    }-*/;
-
-    public final native String getLabel()
-    /*-{
-		return this.label;
-    }-*/;
-
-    public final native String getColor()
-    /*-{
-		return this.color;
-    }-*/;
 }

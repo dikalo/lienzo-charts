@@ -14,11 +14,11 @@
    limitations under the License.
  */
 
-package com.ait.lienzo.charts.client.pie;
+package com.ait.lienzo.charts.client.core.pie;
 
-import com.ait.lienzo.charts.client.ChartAttribute;
-import com.ait.lienzo.charts.client.ChartNodeType;
-import com.ait.lienzo.charts.client.pie.PieChartData.PieChartDataJSO;
+import com.ait.lienzo.charts.client.core.ChartAttribute;
+import com.ait.lienzo.charts.client.core.ChartNodeType;
+import com.ait.lienzo.charts.client.core.pie.PieChartData.PieChartDataJSO;
 import com.ait.lienzo.client.core.animation.AnimationCallback;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
@@ -60,8 +60,6 @@ public class PieChart extends Group
         setRadius(radius);
 
         setData(data);
-
-        getMetaData().put("creator", "Dean S. Jones").put("version", "1.0.1.SNAPSHOT");
 
         initialize();
     }

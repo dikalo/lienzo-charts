@@ -16,21 +16,31 @@
 
 package com.ait.lienzo.charts.shared.core.types;
 
-import java.util.List;
-
 import com.ait.lienzo.client.core.types.NFastStringMap;
 import com.ait.lienzo.shared.core.types.EnumWithValue;
 
-// TODO: Can be removed? Currently using ChartNodeType.
-public enum ChartType implements EnumWithValue
+import java.util.List;
+
+public enum LegendAlign implements EnumWithValue
 {
-    COLUMN("column"), BAR("bar"), LINE("line"), PIE("pie"), DONUT("donut"), AREA("area"), RADAR("radar");
+    /**
+     * Aligned to the start of the area allocated for the legend.
+     */
+    START("start"),
+    /**
+     * Centered in the area allocated for the legend.
+     */
+    CENTER("center"),
+    /**
+     * Aligned to the end of the area allocated for the legend.
+     */
+    END("end");
 
-    private final String                           m_value;
+    private final String                             m_value;
 
-    private static final NFastStringMap<ChartType> LOOKUP_MAP = Statics.build(ChartType.values());
+    private static final NFastStringMap<LegendAlign> LOOKUP_MAP = Statics.build(LegendAlign.values());
 
-    private ChartType(String value)
+    private LegendAlign(String value)
     {
         m_value = value;
     }
@@ -47,18 +57,18 @@ public enum ChartType implements EnumWithValue
         return m_value;
     }
 
-    public static final ChartType lookup(String key)
+    public static final LegendAlign lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, COLUMN);
+        return Statics.lookup(key, LOOKUP_MAP, CENTER);
     }
 
     public static final List<String> getKeys()
     {
-        return Statics.getKeys(ChartType.values());
+        return Statics.getKeys(LegendAlign.values());
     }
 
-    public static final List<ChartType> getValues()
+    public static final List<LegendAlign> getValues()
     {
-        return Statics.getValues(ChartType.values());
+        return Statics.getValues(LegendAlign.values());
     }
 }

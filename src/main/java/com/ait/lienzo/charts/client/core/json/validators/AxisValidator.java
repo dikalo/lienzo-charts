@@ -12,28 +12,32 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client;
+package com.ait.lienzo.charts.client.core.json.validators;
 
-import com.ait.lienzo.client.core.shape.json.validators.ColorValidator;
 import com.ait.lienzo.client.core.shape.json.validators.NumberValidator;
 import com.ait.lienzo.client.core.shape.json.validators.ObjectValidator;
 import com.ait.lienzo.client.core.shape.json.validators.StringValidator;
 
-public class PieChartEntryValidator extends ObjectValidator
+/**
+ * <p>Common validations for a generic chart axis.</p> 
+ */
+public class AxisValidator extends ObjectValidator
 {
-    public static final PieChartEntryValidator INSTANCE = new PieChartEntryValidator();
+    public static final AxisValidator INSTANCE = new AxisValidator();
 
-    public PieChartEntryValidator()
+    public AxisValidator()
     {
-        super("PieChartEntry");
+        super("chartAxis");
 
-        addAttribute("color", ColorValidator.INSTANCE, true);
+        addAttribute("title", StringValidator.INSTANCE, true);
 
-        addAttribute("value", NumberValidator.INSTANCE, true);
+        addAttribute("format", StringValidator.INSTANCE, false);
 
-        addAttribute("label", StringValidator.INSTANCE, false);
+        addAttribute("size", NumberValidator.INSTANCE, false);
+        // TODO
     }
-
 }
