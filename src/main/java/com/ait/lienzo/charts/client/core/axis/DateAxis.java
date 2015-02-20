@@ -20,63 +20,70 @@ package com.ait.lienzo.charts.client.core.axis;
 
 import java.util.Date;
 
+import com.ait.lienzo.charts.shared.core.types.AxisType;
+
 public class DateAxis extends Axis
 {
-    private static final AxisType AXIS_TYPE = AxisType.NUMBER;
-
     public DateAxis(String title)
     {
-        super(title, AXIS_TYPE);
+        super(title, AxisType.NUMBER);
     }
 
     public DateAxis(String title, String format)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.NUMBER);
     }
 
     public DateAxis(String title, Date minValue, Date maxValue)
     {
-        super(title, AXIS_TYPE);
+        super(title, AxisType.NUMBER);
+
         setMinValue(minValue);
+
         setMaxValue(maxValue);
     }
 
     public DateAxis(String title, String format, Date minValue, Date maxValue)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.NUMBER);
+
         setMinValue(minValue);
+
         setMaxValue(maxValue);
     }
 
-    public DateAxis(DateAxisJSO m_jso)
+    public DateAxis(DateAxisJSO jso)
     {
-        super(m_jso);
-        this.m_jso = m_jso;
+        super(jso);
     }
 
     public DateAxisJSO getJSO()
     {
-        return (DateAxisJSO) m_jso;
+        return super.getJSO().cast();
     }
 
-    public void setMaxValue(Date value)
+    public DateAxis setMaxValue(Date value)
     {
-        ((DateAxisJSO) this.m_jso).setMaxValue(value);
+        getJSO().setMaxValue(value);
+
+        return this;
     }
 
-    public void setMinValue(Date value)
+    public DateAxis setMinValue(Date value)
     {
-        ((DateAxisJSO) this.m_jso).setMinValue(value);
+        getJSO().setMinValue(value);
+
+        return this;
     }
 
     public Date getMaxValue()
     {
-        return ((DateAxisJSO) this.m_jso).getMaxValue();
+        return getJSO().getMaxValue();
     }
 
     public Date getMinValue()
     {
-        return ((DateAxisJSO) this.m_jso).getMinValue();
+        return getJSO().getMinValue();
     }
 
     public static class DateAxisJSO extends AxisJSO
@@ -85,12 +92,14 @@ public class DateAxis extends Axis
         {
         }
 
-        public final native void setMaxValue(Date maxValue) /*-{
+        public final native DateAxisJSO setMaxValue(Date maxValue) /*-{
 			this.maxValue = maxValue;
+			return this;
         }-*/;
 
-        public final native void setMinValue(Date minValue) /*-{
+        public final native DateAxisJSO setMinValue(Date minValue) /*-{
 			this.minValue = minValue;
+			return this;
         }-*/;
 
         public final native Date getMinValue() /*-{

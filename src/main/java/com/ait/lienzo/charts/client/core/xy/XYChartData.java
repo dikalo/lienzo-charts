@@ -17,7 +17,7 @@
 package com.ait.lienzo.charts.client.core.xy;
 
 import com.ait.lienzo.charts.client.core.model.DataTable;
-import com.ait.lienzo.charts.client.core.xy.XYChartSerie.XYChartSerieJSO;
+import com.ait.lienzo.charts.client.core.xy.XYChartSeries.XYChartSeriesJSO;
 import com.google.gwt.core.client.JsArray;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-public final class XYChartData implements Iterable<XYChartSerie>
+public final class XYChartData implements Iterable<XYChartSeries>
 {
     private final XYChartDataJSO m_jso;
 
@@ -64,28 +64,28 @@ public final class XYChartData implements Iterable<XYChartSerie>
         return this;
     }
 
-    public final XYChartData addSerie(XYChartSerie serie)
+    public final XYChartData addSeries(XYChartSeries series)
     {
-        if (serie == null)
+        if (series == null)
         {
             return null;
         }
-        if (getSerie(serie.getName()) != null)
+        if (getSeries(series.getName()) != null)
         {
-            throw new RuntimeException("A serie with name [" + serie.getName() + "] already exist.");
+            throw new RuntimeException("A series with name [" + series.getName() + "] already exist.");
         }
-        m_jso.push(serie.getJSO());
+        m_jso.push(series.getJSO());
 
         return this;
     }
 
-    public final XYChartData removeSerie(XYChartSerie serie)
+    public final XYChartData removeSeries(XYChartSeries series)
     {
-        int pos = getSeriePosition(serie.getName());
+        int pos = getSeriesPosition(series.getName());
 
         if (pos >= 0)
         {
-            m_jso.removeSerie(pos);
+            m_jso.removeSeries(pos);
         }
         return this;
     }
@@ -110,61 +110,61 @@ public final class XYChartData implements Iterable<XYChartSerie>
         return m_jso;
     }
 
-    public final Collection<XYChartSerie> toCollection()
+    public final Collection<XYChartSeries> toCollection()
     {
         final int size = size();
 
-        ArrayList<XYChartSerie> list = new ArrayList<XYChartSerie>(size);
+        ArrayList<XYChartSeries> list = new ArrayList<XYChartSeries>(size);
 
         for (int i = 0; i < size; i++)
         {
-            list.add(new XYChartSerie(m_jso.get(i)));
+            list.add(new XYChartSeries(m_jso.get(i)));
         }
         return Collections.unmodifiableList(list);
     }
 
     @Override
-    public final Iterator<XYChartSerie> iterator()
+    public final Iterator<XYChartSeries> iterator()
     {
         return toCollection().iterator();
     }
 
-    public XYChartSerie[] getSeries()
+    public XYChartSeries[] getSeries()
     {
         final int size = size();
 
-        XYChartSerie[] list = new XYChartSerie[size];
+        XYChartSeries[] list = new XYChartSeries[size];
 
         for (int i = 0; i < size; i++)
         {
-            list[i] = new XYChartSerie(m_jso.get(i));
+            list[i] = new XYChartSeries(m_jso.get(i));
         }
         return list;
     }
 
-    public XYChartSerie getSerie(String name)
+    public XYChartSeries getSeries(String name)
     {
         final int size = size();
 
         for (int i = 0; i < size; i++)
         {
-            XYChartSerieJSO jso = m_jso.get(i);
+            XYChartSeriesJSO jso = m_jso.get(i);
 
             if (name.equals(jso.getName()))
             {
-                return new XYChartSerie(jso);
+                return new XYChartSeries(jso);
             }
         }
         return null;
     }
 
-    public int getSeriePosition(String name)
+    public int getSeriesPosition(String name)
     {
         final int size = size();
 
         for (int i = 0; i < size; i++)
         {
-            XYChartSerieJSO jso = m_jso.get(i);
+            XYChartSeriesJSO jso = m_jso.get(i);
 
             if (name.equals(jso.getName()))
             {
@@ -174,7 +174,7 @@ public final class XYChartData implements Iterable<XYChartSerie>
         return -1;
     }
 
-    public static final class XYChartDataJSO extends JsArray<XYChartSerie.XYChartSerieJSO>
+    public static final class XYChartDataJSO extends JsArray<XYChartSeries.XYChartSeriesJSO>
     {
         protected XYChartDataJSO()
         {
@@ -201,7 +201,7 @@ public final class XYChartData implements Iterable<XYChartSerie>
 			return this.dataTable;
         }-*/;
 
-        public final native void removeSerie(int pos) /*-{
+        public final native void removeSeries(int pos) /*-{
 			this.splice(pos, 1);
         }-*/;
     }

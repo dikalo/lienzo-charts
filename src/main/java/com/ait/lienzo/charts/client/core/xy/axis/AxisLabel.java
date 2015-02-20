@@ -18,31 +18,26 @@
 
 package com.ait.lienzo.charts.client.core.xy.axis;
 
-import java.util.Date;
-import java.util.List;
-
-import com.ait.lienzo.charts.client.core.axis.Axis;
-import com.ait.lienzo.charts.client.core.axis.DateAxis;
-import com.ait.lienzo.charts.client.core.xy.XYChartData;
-
-public final class DateAxisBuilder extends AxisBuilder<Date>
+public class AxisLabel
 {
-    protected DateAxis axis;
+    private final String m_text;
 
-    public DateAxisBuilder(XYChartData data, double chartSizeAttribute, Axis.AxisJSO jso)
+    private final double m_position;
+
+    protected AxisLabel(final String text, final double position)
     {
-        super(data, chartSizeAttribute);
+        m_text = text;
+        
+        m_position = position;
     }
 
-    @Override
-    public List<AxisLabel> getLabels()
+    public String getText()
     {
-        return null;
+        return m_text;
     }
 
-    @Override
-    public List<AxisValue<Date>> getValues(String modelProperty)
+    public double getPosition()
     {
-        return null;
+        return m_position;
     }
 }

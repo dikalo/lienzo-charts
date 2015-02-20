@@ -16,24 +16,38 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.json.validators;
+package com.ait.lienzo.charts.client.core.xy.axis;
 
-import com.ait.lienzo.client.core.shape.json.validators.ColorValidator;
-import com.ait.lienzo.client.core.shape.json.validators.ObjectValidator;
-import com.ait.lienzo.client.core.shape.json.validators.StringValidator;
-
-public final class XYChartSerieValidator extends ObjectValidator
+public final class AxisValue<V>
 {
-    public static final XYChartSerieValidator INSTANCE = new XYChartSerieValidator();
+    private V      m_value;
 
-    public XYChartSerieValidator()
+    private double m_position;
+
+    public AxisValue(final V value, final double position)
     {
-        super("xyChartData");
+        m_value = value;
 
-        addAttribute("name", StringValidator.INSTANCE, false);
+        m_position = position;
+    }
 
-        addAttribute("color", ColorValidator.INSTANCE, true);
+    public final V getValue()
+    {
+        return m_value;
+    }
 
-        addAttribute("valuesAxisProperty", AxisValidator.INSTANCE, true);
+    public final void setValue(final V value)
+    {
+        m_value = value;
+    }
+
+    public final double getPosition()
+    {
+        return m_position;
+    }
+
+    public final void setPosition(final double position)
+    {
+        m_position = position;
     }
 }

@@ -14,13 +14,14 @@
    limitations under the License.
  */
 
-package com.ait.lienzo.charts.client.core.pie;
+package com.ait.lienzo.charts.client.core.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.ait.lienzo.charts.client.core.pie.PieChartEntry;
 import com.ait.lienzo.shared.core.types.Color;
 import com.ait.lienzo.shared.core.types.IColor;
 import com.google.gwt.core.client.JsArray;

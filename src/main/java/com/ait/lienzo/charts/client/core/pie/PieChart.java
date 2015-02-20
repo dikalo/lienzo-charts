@@ -18,7 +18,8 @@ package com.ait.lienzo.charts.client.core.pie;
 
 import com.ait.lienzo.charts.client.core.ChartAttribute;
 import com.ait.lienzo.charts.client.core.ChartNodeType;
-import com.ait.lienzo.charts.client.core.pie.PieChartData.PieChartDataJSO;
+import com.ait.lienzo.charts.client.core.model.PieChartData;
+import com.ait.lienzo.charts.client.core.model.PieChartData.PieChartDataJSO;
 import com.ait.lienzo.client.core.animation.AnimationCallback;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;

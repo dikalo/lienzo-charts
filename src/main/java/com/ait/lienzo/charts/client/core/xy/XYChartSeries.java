@@ -22,21 +22,21 @@ import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.IColor;
 import com.google.gwt.core.client.JavaScriptObject;
 
-public final class XYChartSerie
+public final class XYChartSeries
 {
-    private final XYChartSerieJSO m_jso;
+    private final XYChartSeriesJSO m_jso;
 
-    public XYChartSerie(String name, IColor color, String valuesAxisProperty)
+    public XYChartSeries(String name, IColor color, String valuesAxisProperty)
     {
-        this(XYChartSerieJSO.make(name, color.getColorString(), valuesAxisProperty));
+        this(XYChartSeriesJSO.make(name, color.getColorString(), valuesAxisProperty));
     }
 
-    public XYChartSerie(XYChartSerieJSO jso)
+    public XYChartSeries(XYChartSeriesJSO jso)
     {
         m_jso = jso;
     }
 
-    public XYChartSerieJSO getJSO()
+    public XYChartSeriesJSO getJSO()
     {
         return m_jso;
     }
@@ -58,13 +58,13 @@ public final class XYChartSerie
         return m_jso.getValuesAxisProperty();
     }
 
-    public static final class XYChartSerieJSO extends JavaScriptObject
+    public static final class XYChartSeriesJSO extends JavaScriptObject
     {
-        protected XYChartSerieJSO()
+        protected XYChartSeriesJSO()
         {
         }
 
-        public static final native XYChartSerieJSO make(String name, String color, String valuesAxisProperty)
+        public static final native XYChartSeriesJSO make(String name, String color, String valuesAxisProperty)
         /*-{
 			return {
 				name : name,
@@ -92,6 +92,6 @@ public final class XYChartSerie
     @Override
     public boolean equals(Object obj)
     {
-        return obj != null && obj instanceof XYChartSerie && getName().equals(((XYChartSerie) obj).getName());
+        return obj != null && obj instanceof XYChartSeries && getName().equals(((XYChartSeries) obj).getName());
     }
 }

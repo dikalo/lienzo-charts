@@ -18,25 +18,22 @@
 
 package com.ait.lienzo.charts.client.core.json.validators;
 
-import com.ait.lienzo.client.core.shape.json.validators.NumberValidator;
+import com.ait.lienzo.client.core.shape.json.validators.ColorValidator;
 import com.ait.lienzo.client.core.shape.json.validators.ObjectValidator;
 import com.ait.lienzo.client.core.shape.json.validators.StringValidator;
 
-/**
- * <p>Common validations for a generic chart axis.</p> 
- */
-public class AxisValidator extends ObjectValidator
+public final class XYChartSeriesValidator extends ObjectValidator
 {
-    public static final AxisValidator INSTANCE = new AxisValidator();
+    public static final XYChartSeriesValidator INSTANCE = new XYChartSeriesValidator();
 
-    public AxisValidator()
+    public XYChartSeriesValidator()
     {
-        super("chartAxis");
+        super("xyChartData");
 
-        addAttribute("title", StringValidator.INSTANCE, true);
+        addAttribute("name", StringValidator.INSTANCE, false);
 
-        addAttribute("format", StringValidator.INSTANCE, false);
+        addAttribute("color", ColorValidator.INSTANCE, true);
 
-        addAttribute("size", NumberValidator.INSTANCE, false);
+        addAttribute("valuesAxisProperty", AxisValidator.INSTANCE, true);
     }
 }

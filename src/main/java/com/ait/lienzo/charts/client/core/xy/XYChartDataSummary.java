@@ -59,9 +59,9 @@ public class XYChartDataSummary
         if (data != null && currentSerieNames != null)
         {
             // Chech added or removed series from last chart data.
-            XYChartSerie[] newSeries = data.getSeries();
+            XYChartSeries[] newSeries = data.getSeries();
 
-            for (XYChartSerie newSerie : newSeries)
+            for (XYChartSeries newSerie : newSeries)
             {
                 if (!currentSerieNames.contains(newSerie.getName())) addedSeries.add(newSerie.getName());
             }
@@ -72,11 +72,11 @@ public class XYChartDataSummary
         }
     }
 
-    private boolean isSerieRemoved(XYChartSerie[] series, String serieName)
+    private boolean isSerieRemoved(XYChartSeries[] series, String serieName)
     {
         if (serieName == null || series == null) return false;
 
-        for (XYChartSerie _serie : series)
+        for (XYChartSeries _serie : series)
         {
             if (_serie.getName().equals(serieName)) return false;
         }
@@ -87,11 +87,11 @@ public class XYChartDataSummary
     {
         if (data == null) return;
 
-        final XYChartSerie[] series = data.getSeries();
+        final XYChartSeries[] series = data.getSeries();
         this.numSeries = series.length;
         for (int i = 0; i < series.length; i++)
         {
-            XYChartSerie serie = series[i];
+            XYChartSeries serie = series[i];
             //String categoryAxisProperty = data.getCategoryAxisProperty();
             String valuesAxisProperty = serie.getValuesAxisProperty();
 

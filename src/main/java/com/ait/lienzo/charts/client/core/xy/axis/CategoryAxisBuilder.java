@@ -25,7 +25,8 @@ import com.ait.lienzo.charts.client.core.axis.Axis;
 import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.model.DataTableColumn;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
-import com.ait.lienzo.charts.client.core.xy.XYChartSerie;
+import com.ait.lienzo.charts.shared.core.types.AxisDirection;
+import com.ait.lienzo.charts.shared.core.types.AxisType;
 
 public final class CategoryAxisBuilder extends AxisBuilder<String>
 {
@@ -47,7 +48,7 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
 
     protected void buildAxis(Axis.AxisJSO jso)
     {
-        if (jso.getType().equals(Axis.AxisType.CATEGORY))
+        if (Axis.getAxisTypeOf(jso) == AxisType.CATEGORY)
         {
             this.axis = new CategoryAxis((CategoryAxis.CategoryAxisJSO) jso);
         }
@@ -61,17 +62,20 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
     public List<AxisLabel> getLabels()
     {
         List<AxisLabel> result = new LinkedList<AxisLabel>();
-        XYChartSerie[] series = dataSummary.getData().getSeries();
-        DataTableColumn dataTableLabelsColumn = dataSummary.getData().getDataTable().getColumn(dataSummary.getData().getCategoryAxisProperty());
+        //XYChartSeries[] series = getDataSummary().getData().getSeries();
+        DataTableColumn dataTableLabelsColumn = getDataSummary().getData().getDataTable().getColumn(getDataSummary().getData().getCategoryAxisProperty());
         String[] labelValues = dataTableLabelsColumn.getStringValues();
         int labelsCount = labelValues.length;
-        int seriesCount = dataSummary.getNumSeries();
-        double labelSize = chartSizeAttribute / (seriesCount * labelsCount);
+        int seriesCount = getDataSummary().getNumSeries();
+        final boolean desc = getAxisDirection() == AxisDirection.DESC;
+
+        double labelSize = getChartSizeAttribute() / (seriesCount * labelsCount);
+
         for (int i = 0, j = labelsCount; i < labelsCount; i++, j--)
         {
             String text = labelValues[i];
-            int axisDivisions = axis.getSegments();
-            double position = (axisDirection.equals(AxisDirection.DESC)) ? labelSize * i : labelSize * j;
+            //int axisDivisions = axis.getSegments();
+            double position = desc ? labelSize * i : labelSize * j;
             result.add(new AxisLabel(text, position * seriesCount));
         }
         return result;
@@ -80,20 +84,22 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
     @Override
     public List<AxisValue<String>> getValues(String modelProperty)
     {
-        String[] values = dataSummary.getData().getDataTable().getStringValues(modelProperty);
+        String[] values = getDataSummary().getData().getDataTable().getStringValues(modelProperty);
         int segments = axis.getSegments();
         int valuesCount = values.length;
-        int seriesCount = dataSummary.getNumSeries();
+        int seriesCount = getDataSummary().getNumSeries();
 
         List<AxisValue<String>> result = new LinkedList<AxisValue<String>>();
 
         if (values != null)
         {
+            final boolean desc = getAxisDirection() == AxisDirection.DESC;
+
             for (int i = 0, j = valuesCount - 1; i < valuesCount; i++, j--)
             {
-                String value = (axisDirection.equals(AxisDirection.DESC)) ? values[i] : values[j];
+                String value = desc ? values[i] : values[j];
                 int axisDivisions = axis.getSegments();
-                double barSize = (chartSizeAttribute - (axisDivisions * (valuesCount + 1))) / valuesCount / seriesCount;
+                double barSize = (getChartSizeAttribute() - (axisDivisions * (valuesCount + 1))) / valuesCount / seriesCount;
                 double position = (barSize * seriesCount * i) + (segments * (i + 1));
                 result.add(new AxisValue<String>(value, position));
             }

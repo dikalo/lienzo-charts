@@ -29,8 +29,12 @@ import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.axis.Axis;
 import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
+import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
+import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
+import com.ait.lienzo.charts.shared.core.types.AxisDirection;
+import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.client.core.animation.LayerRedrawManager;
@@ -343,11 +347,11 @@ public class BarChart extends AbstractChart<BarChart>
         {
             return valuesAxisJSO;
         }
-        
+
         @SuppressWarnings("unchecked")
         private final T cast()
         {
-            return (T)this;
+            return (T) this;
         }
 
         public abstract T buildCategoriesAxisTitle();
@@ -356,12 +360,12 @@ public class BarChart extends AbstractChart<BarChart>
 
         public T buildCategoriesAxisIntervals()
         {
-            List<AxisBuilder.AxisLabel> xAxisLabels = categoriesAxisBuilder[0].getLabels();
+            List<AxisLabel> xAxisLabels = categoriesAxisBuilder[0].getLabels();
             if (xAxisLabels != null)
             {
                 for (int i = 0; i < xAxisLabels.size(); i++)
                 {
-                    AxisBuilder.AxisLabel axisLabel = xAxisLabels.get(i);
+                    AxisLabel axisLabel = xAxisLabels.get(i);
                     Text serieLabel = new Text(axisLabel.getText(), AXIS_LABEL_DEFAULT_FONT_NAME, AXIS_LABEL_DEFAULT_FONT_STYLE, AXIS_LABEL_DEFAULT_FONT_SIZE).setFillColor(AXIS_LABEL_COLOR).setTextAlign(TextAlign.LEFT).setTextBaseLine(TextBaseLine.MIDDLE);
                     seriesLabels.add(serieLabel);
                     addCategoryAxisIntervalLabel(serieLabel);
@@ -394,25 +398,25 @@ public class BarChart extends AbstractChart<BarChart>
         public T buildValues()
         {
             // Build the chart values as rectangle shapes.
-            XYChartSerie[] series = getData().getSeries();
+            XYChartSeries[] series = getData().getSeries();
             for (int numSerie = 0; numSerie < series.length; numSerie++)
             {
-                XYChartSerie serie = series[numSerie];
-                buildSerieValues(serie);
+                XYChartSeries serie = series[numSerie];
+                buildSeriesValues(serie);
             }
             return cast();
         }
 
-        protected void buildSerieValues(XYChartSerie serie)
+        protected void buildSeriesValues(XYChartSeries serie)
         {
-            List<AxisBuilder.AxisValue> xAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
+            List<AxisValue> xAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
 
             if (xAxisValues != null)
             {
-                List<Rectangle> bars = new LinkedList();
+                List<Rectangle> bars = new LinkedList<Rectangle>();
                 for (int i = 0; i < xAxisValues.size(); i++)
                 {
-                    AxisBuilder.AxisValue axisValue = xAxisValues.get(i);
+                    AxisValue axisValue = xAxisValues.get(i);
                     final Rectangle bar = new Rectangle(0, 0);
 
                     // Mouse events for the bar shape.
@@ -434,7 +438,7 @@ public class BarChart extends AbstractChart<BarChart>
             }
         }
 
-        protected void removeSerieValues(final String serieName)
+        protected void removeSeriesValues(final String serieName)
         {
             if (serieName != null)
             {
@@ -460,18 +464,18 @@ public class BarChart extends AbstractChart<BarChart>
 
         public T setValuesAttributes(Double width, Double height, boolean animate)
         {
-            XYChartSerie[] series = getData().getSeries();
+            XYChartSeries[] series = getData().getSeries();
 
             // Find removed series in order to remove bar rectangle instances.
             for (String removedSerieName : categoriesAxisBuilder[0].getDataSummary().getRemovedSeries())
             {
-                removeSerieValues(removedSerieName);
+                removeSeriesValues(removedSerieName);
             }
 
             // Iterate over all series.
             for (int numSerie = 0; numSerie < series.length; numSerie++)
             {
-                final XYChartSerie serie = series[numSerie];
+                final XYChartSeries serie = series[numSerie];
                 if (serie != null)
                 {
 
@@ -479,7 +483,7 @@ public class BarChart extends AbstractChart<BarChart>
                     if (categoriesAxisBuilder[0].getDataSummary().getAddedSeries().contains(serie.getName()))
                     {
                         buildCategoriesAxisIntervals();
-                        buildSerieValues(serie);
+                        buildSeriesValues(serie);
                     }
 
                     setValuesAttributesForSerie(serie, numSerie, width, height, animate);
@@ -488,7 +492,7 @@ public class BarChart extends AbstractChart<BarChart>
             return cast();
         }
 
-        protected abstract T setValuesAttributesForSerie(final XYChartSerie serie, int numSerie, Double width, Double height, boolean animate);
+        protected abstract T setValuesAttributesForSerie(final XYChartSeries serie, int numSerie, Double width, Double height, boolean animate);
 
         public abstract T reloadBuilders();
     }
@@ -499,12 +503,14 @@ public class BarChart extends AbstractChart<BarChart>
         {
             // Build categories axis builder.
             categoriesAxisJSO = BarChart.this.getCategoriesAxis();
-            AxisBuilder.AxisDirection direction = isPositiveDirection(getDirection()) ? AxisBuilder.AxisDirection.DESC : AxisBuilder.AxisDirection.ASC;
-            if (categoriesAxisJSO.getType().equals(Axis.AxisType.CATEGORY))
+
+            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
+
+            if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder[0] = new CategoryAxisBuilder(getData(), getChartWidth(), direction, categoriesAxisJSO);
             }
-            else if (categoriesAxisJSO.getType().equals(Axis.AxisType.NUMBER))
+            else if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.NUMBER)
             {
                 categoriesAxisBuilder[0] = new NumericAxisBuilder(getData(), getChartWidth(), direction, categoriesAxisJSO);
             }
@@ -512,14 +518,14 @@ public class BarChart extends AbstractChart<BarChart>
             {
                 // TODO: categoriesAxisBuilder = new DateAxisBuilder(getData(), xAxisJSO);
             }
-
             // Build values axis builder.
             valuesAxisJSO = BarChart.this.getValuesAxis();
-            if (valuesAxisJSO.getType().equals(Axis.AxisType.CATEGORY))
+
+            if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
                 throw new RuntimeException("CategoryAxis type cannot be used in BarChart (vertical) for the values axis.");
             }
-            else if (valuesAxisJSO.getType().equals(Axis.AxisType.NUMBER))
+            else if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.NUMBER)
             {
                 valuesAxisBuilder[0] = new NumericAxisBuilder(getData(), getChartHeight(), direction, valuesAxisJSO);
             }
@@ -532,7 +538,7 @@ public class BarChart extends AbstractChart<BarChart>
         public VerticalBarChartBuilder buildCategoriesAxisTitle()
         {
             // Build the X axis line and title.
-            categoriesAxisTitle = new Text(getCategoriesAxis().getTitle(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.SILVER).setX(getChartWidth() / 2).setY(30).setTextAlign(TextAlign.CENTER).setTextBaseLine(TextBaseLine.MIDDLE);
+            categoriesAxisTitle = new Text(getCategoriesAxis().getTitle(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setX(getChartWidth() / 2).setY(30).setTextAlign(TextAlign.CENTER).setTextBaseLine(TextBaseLine.MIDDLE);
             bottomArea.add(categoriesAxisTitle);
             return this;
         }
@@ -540,7 +546,7 @@ public class BarChart extends AbstractChart<BarChart>
         public VerticalBarChartBuilder buildValuesAxisTitle()
         {
             // Build the Y axis line and title.
-            valuesAxisTitle = new Text(getValuesAxis().getTitle(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.SILVER).setX(10).setY(getChartHeight() / 2).setTextAlign(TextAlign.RIGHT).setTextBaseLine(TextBaseLine.MIDDLE).setRotationDegrees(270);
+            valuesAxisTitle = new Text(getValuesAxis().getTitle(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setX(10).setY(getChartHeight() / 2).setTextAlign(TextAlign.RIGHT).setTextBaseLine(TextBaseLine.MIDDLE).setRotationDegrees(270);
             leftArea.add(valuesAxisTitle);
             return this;
         }
@@ -572,11 +578,11 @@ public class BarChart extends AbstractChart<BarChart>
         @Override
         public VerticalBarChartBuilder setValuesAxisIntervalsAttributes(Double width, Double height, boolean animate)
         {
-            List<AxisBuilder.AxisLabel> labels = valuesAxisBuilder[0].getLabels();
+            List<AxisLabel> labels = valuesAxisBuilder[0].getLabels();
 
             for (int i = 0; i < labels.size(); i++)
             {
-                AxisBuilder.AxisLabel label = labels.get(i);
+                AxisLabel label = labels.get(i);
                 double position = label.getPosition();
                 String text = label.getText();
                 valuesAxisIntervals[i].setPoints(new Point2DArray(new Point2D(0, position), new Point2D(width, position)));
@@ -588,11 +594,11 @@ public class BarChart extends AbstractChart<BarChart>
 
         public VerticalBarChartBuilder setCategoriesAxisIntervalsAttributes(Double width, Double height, boolean animate)
         {
-            List<AxisBuilder.AxisLabel> labels = categoriesAxisBuilder[0].getLabels();
+            List<AxisLabel> labels = categoriesAxisBuilder[0].getLabels();
 
             for (int i = 0; i < labels.size(); i++)
             {
-                AxisBuilder.AxisLabel label = labels.get(i);
+                AxisLabel label = labels.get(i);
                 double position = label.getPosition();
                 String text = label.getText();
                 seriesLabels.get(i).setText(text);
@@ -601,21 +607,21 @@ public class BarChart extends AbstractChart<BarChart>
             return this;
         }
 
-        protected VerticalBarChartBuilder setValuesAttributesForSerie(final XYChartSerie serie, int numSerie, Double width, Double height, boolean animate)
+        protected VerticalBarChartBuilder setValuesAttributesForSerie(final XYChartSeries serie, int numSerie, Double width, Double height, boolean animate)
         {
-            XYChartSerie[] series = getData().getSeries();
+            XYChartSeries[] series = getData().getSeries();
 
             // Rebuild bars for serie values
-            List<AxisBuilder.AxisValue> valuesAxisValues = valuesAxisBuilder[0].getValues(serie.getValuesAxisProperty());
-            List<AxisBuilder.AxisValue> categoryAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
+            List<AxisValue> valuesAxisValues = valuesAxisBuilder[0].getValues(serie.getValuesAxisProperty());
+            List<AxisValue> categoryAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
             List<Rectangle> bars = seriesValues.get(serie.getName());
 
             if (categoryAxisValues != null && categoryAxisValues.size() > 0)
             {
                 for (int i = 0; i < categoryAxisValues.size(); i++)
                 {
-                    AxisBuilder.AxisValue categoryAxisvalue = categoryAxisValues.get(i);
-                    AxisBuilder.AxisValue valueAxisvalue = valuesAxisValues.get(i);
+                    AxisValue categoryAxisvalue = categoryAxisValues.get(i);
+                    AxisValue valueAxisvalue = valuesAxisValues.get(i);
                     double yAxisValuePosition = valueAxisvalue.getPosition();
                     Object yValue = valueAxisvalue.getValue();
                     String yValueFormatted = valuesAxisBuilder[0].format(yValue);
@@ -653,7 +659,7 @@ public class BarChart extends AbstractChart<BarChart>
                             {
                                 // Remove the series from data.
                                 XYChartData data = getData();
-                                data.removeSerie(serie);
+                                data.removeSeries(serie);
                                 // Force firing attributes changed event in order to capture it and redraw the chart.
                                 setData(data);
                             }
@@ -692,12 +698,14 @@ public class BarChart extends AbstractChart<BarChart>
         {
             // Build X axis builder.
             valuesAxisJSO = BarChart.this.getValuesAxis();
-            AxisBuilder.AxisDirection direction = isPositiveDirection(getDirection()) ? AxisBuilder.AxisDirection.ASC : AxisBuilder.AxisDirection.DESC;
-            if (valuesAxisJSO.getType().equals(Axis.AxisType.CATEGORY))
+            
+            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
+            
+            if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
                 throw new RuntimeException("CategoryAxis type cannot be used in BarChart (horizontal) for the values axis.");
             }
-            else if (valuesAxisJSO.getType().equals(Axis.AxisType.NUMBER))
+            else if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.NUMBER)
             {
                 valuesAxisBuilder[0] = new NumericAxisBuilder(getData(), getChartWidth(), direction, valuesAxisJSO);
             }
@@ -708,11 +716,12 @@ public class BarChart extends AbstractChart<BarChart>
 
             // Build Y axis builder.
             categoriesAxisJSO = BarChart.this.getCategoriesAxis();
-            if (categoriesAxisJSO.getType().equals(Axis.AxisType.CATEGORY))
+            
+            if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder[0] = new CategoryAxisBuilder(getData(), getChartHeight(), direction, categoriesAxisJSO);
             }
-            else if (categoriesAxisJSO.getType().equals(Axis.AxisType.NUMBER))
+            else if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.NUMBER)
             {
                 categoriesAxisBuilder[0] = new NumericAxisBuilder(getData(), getChartHeight(), direction, categoriesAxisJSO);
             }
@@ -765,11 +774,11 @@ public class BarChart extends AbstractChart<BarChart>
         @Override
         public HorizontalBarChartBuilder setValuesAxisIntervalsAttributes(Double width, Double height, boolean animate)
         {
-            List<AxisBuilder.AxisLabel> labels = valuesAxisBuilder[0].getLabels();
+            List<AxisLabel> labels = valuesAxisBuilder[0].getLabels();
 
             for (int i = 0; i < labels.size(); i++)
             {
-                AxisBuilder.AxisLabel label = labels.get(i);
+                AxisLabel label = labels.get(i);
                 double position = label.getPosition();
                 String text = label.getText();
                 valuesAxisIntervals[i].setPoints(new Point2DArray(new Point2D(position, 0), new Point2D(position, height)));
@@ -781,11 +790,11 @@ public class BarChart extends AbstractChart<BarChart>
 
         public HorizontalBarChartBuilder setCategoriesAxisIntervalsAttributes(Double width, Double height, boolean animate)
         {
-            List<AxisBuilder.AxisLabel> labels = categoriesAxisBuilder[0].getLabels();
+            List<AxisLabel> labels = categoriesAxisBuilder[0].getLabels();
 
             for (int i = 0; i < labels.size(); i++)
             {
-                AxisBuilder.AxisLabel label = labels.get(i);
+                AxisLabel label = labels.get(i);
                 double position = label.getPosition();
                 String text = label.getText();
                 seriesLabels.get(i).setText(text);
@@ -795,22 +804,22 @@ public class BarChart extends AbstractChart<BarChart>
             return this;
         }
 
-        protected HorizontalBarChartBuilder setValuesAttributesForSerie(final XYChartSerie serie, int numSerie, Double width, Double height, boolean animate)
+        protected HorizontalBarChartBuilder setValuesAttributesForSerie(final XYChartSeries serie, int numSerie, Double width, Double height, boolean animate)
         {
-            XYChartSerie[] series = getData().getSeries();
+            XYChartSeries[] series = getData().getSeries();
 
             // Rebuild bars for serie values
-            List<AxisBuilder.AxisValue> yAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
-            List<AxisBuilder.AxisValue> xAxisValues = valuesAxisBuilder[0].getValues(serie.getValuesAxisProperty());
-            List<AxisBuilder.AxisLabel> xAxisLabels = valuesAxisBuilder[0].getLabels();
+            List<AxisValue> yAxisValues = categoriesAxisBuilder[0].getValues(getData().getCategoryAxisProperty());
+            List<AxisValue> xAxisValues = valuesAxisBuilder[0].getValues(serie.getValuesAxisProperty());
+            List<AxisLabel> xAxisLabels = valuesAxisBuilder[0].getLabels();
             List<Rectangle> bars = seriesValues.get(serie.getName());
 
             if (yAxisValues != null && yAxisValues.size() > 0)
             {
                 for (int i = 0; i < yAxisValues.size(); i++)
                 {
-                    AxisBuilder.AxisValue xAxisvalue = xAxisValues.get(i);
-                    AxisBuilder.AxisValue yAxisvalue = yAxisValues.get(i);
+                    AxisValue xAxisvalue = xAxisValues.get(i);
+                    AxisValue yAxisvalue = yAxisValues.get(i);
 
                     double xAxisValuePosition = xAxisvalue.getPosition();
                     Object xValue = xAxisvalue.getValue();
@@ -848,7 +857,7 @@ public class BarChart extends AbstractChart<BarChart>
                             {
                                 // Remove the series from data.
                                 XYChartData data = getData();
-                                data.removeSerie(serie);
+                                data.removeSeries(serie);
                                 // Force firing attributes changed event in order to capture it and redraw the chart.
                                 setData(data);
                             }

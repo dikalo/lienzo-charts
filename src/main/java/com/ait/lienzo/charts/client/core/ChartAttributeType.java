@@ -20,7 +20,7 @@ package com.ait.lienzo.charts.client.core;
 
 import com.ait.lienzo.charts.client.core.json.validators.AxisValidator;
 import com.ait.lienzo.charts.client.core.json.validators.PieChartEntryValidator;
-import com.ait.lienzo.charts.client.core.json.validators.XYChartSerieValidator;
+import com.ait.lienzo.charts.client.core.json.validators.XYChartSeriesValidator;
 import com.ait.lienzo.charts.shared.core.types.ChartAlign;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
@@ -45,7 +45,7 @@ public class ChartAttributeType extends AttributeType
 
     public final static ChartAttributeType AXIS_TYPE           = new ChartAttributeType(AxisValidator.INSTANCE);
 
-    public final static ChartAttributeType XY_CHART_DATA_TYPE  = new ChartAttributeType(new ArrayValidator(XYChartSerieValidator.INSTANCE));
+    public final static ChartAttributeType XY_CHART_DATA_TYPE  = new ChartAttributeType(new ArrayValidator(XYChartSeriesValidator.INSTANCE));
 
     public final static ChartAttributeType PIE_CHART_DATA_TYPE = new ChartAttributeType(new ArrayValidator(PieChartEntryValidator.INSTANCE));
 

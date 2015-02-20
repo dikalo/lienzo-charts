@@ -80,7 +80,6 @@ import com.google.gwt.json.client.JSONObject;
  */
 public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
 {
-
     // Default animation duration (2sec).
     protected static final double ANIMATION_DURATION            = 2000;
 
@@ -90,7 +89,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
 
     protected static final String AXIS_LABEL_DEFAULT_FONT_STYLE = "bold";
 
-    protected static final IColor AXIS_LABEL_COLOR              = ColorName.SILVER;
+    protected static final IColor AXIS_LABEL_COLOR              = ColorName.BLACK;
 
     protected static final int    AXIS_LABEL_DEFAULT_FONT_SIZE  = 10;
 

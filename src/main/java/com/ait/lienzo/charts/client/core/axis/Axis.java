@@ -18,32 +18,43 @@
 
 package com.ait.lienzo.charts.client.core.axis;
 
+import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public abstract class Axis
 {
-    public static enum AxisType
+    public static final AxisType getAxisTypeOf(final JavaScriptObject jso)
     {
-        CATEGORY, NUMBER, DATE;
+        if (null == jso)
+        {
+            return null;
+        }
+        return AxisType.lookup(getAxisTypeString(jso));
     }
 
-    protected AxisJSO m_jso;
+    private static final native String getAxisTypeString(JavaScriptObject jso)
+    /*-{
+		if (jso.axisType !== undefined) {
+			return jso.axisType;
+		}
+		return null;
+    }-*/;
 
-    public Axis(String title, AxisType type)
+    private final AxisJSO m_jso;
+
+    public Axis(final String title, final AxisType type)
     {
         this(AxisJSO.make(title, type));
     }
 
-    public Axis(String title, String format, AxisType type)
+    public Axis(final String title, final String format, final AxisType type)
     {
         this(AxisJSO.make(title, format, type));
     }
 
-    public Axis(AxisJSO m_jso)
+    public Axis(final AxisJSO jso)
     {
-        this.m_jso = m_jso;
-
-        this.m_jso.setSegments(5);
+        m_jso = jso;
     }
 
     public AxisJSO getJSO()
@@ -51,39 +62,45 @@ public abstract class Axis
         return m_jso;
     }
 
-    public void setFormat(String format)
+    public Axis setFormat(String format)
     {
-        this.m_jso.setFormat(format);
+        m_jso.setFormat(format);
+
+        return this;
     }
 
-    public void setTitle(String title)
+    public Axis setTitle(String title)
     {
-        this.m_jso.setTitle(title);
+        m_jso.setTitle(title);
+
+        return this;
     }
 
-    public void setSegments(int segments)
+    public Axis setSegments(int segments)
     {
-        this.m_jso.setSegments(segments);
+        m_jso.setSegments(segments);
+
+        return this;
     }
 
     public String getTitle()
     {
-        return this.m_jso.getTitle();
+        return m_jso.getTitle();
     }
 
     public String getFormat()
     {
-        return this.m_jso.getFormat();
+        return m_jso.getFormat();
     }
 
     public int getSegments()
     {
-        return this.m_jso.getSegments();
+        return m_jso.getSegments();
     }
 
-    public AxisType getType()
+    public AxisType getAxisType()
     {
-        return this.m_jso.getType();
+        return AxisType.lookup(m_jso.getAxisType());
     }
 
     public static class AxisJSO extends JavaScriptObject
@@ -92,51 +109,51 @@ public abstract class Axis
         {
         }
 
-        public static AxisJSO make(AxisType type)
+        private static final native AxisJSO _make(String t)
+        /*-{
+			return {
+				axisType : t,
+				segments : 5
+			};
+        }-*/;
+
+        public static final AxisJSO make(final AxisType type)
         {
-            AxisJSO axisJSO = createObject().cast();
-
-            axisJSO.setType(type);
-
-            return axisJSO;
+            return _make(type.getValue());
         }
 
-        public static AxisJSO make(String title, AxisType type)
+        public static final AxisJSO make(final String title, final AxisType type)
         {
-            AxisJSO axisJSO = make(type);
-
-            axisJSO.setTitle(title);
-
-            return axisJSO;
+            return make(type).setTitle(title);
         }
 
-        public static AxisJSO make(String title, String format, AxisType type)
+        public static final AxisJSO make(final String title, final String format, final AxisType type)
         {
-            AxisJSO axisJSO = make(title, type);
-
-            axisJSO.setFormat(format);
-
-            return axisJSO;
+            return make(title, type).setFormat(format);
         }
 
-        public final native void setFormat(String format) /*-{
+        public final native AxisJSO setFormat(String format) /*-{
 			this.format = format;
+			return this;
         }-*/;
 
-        public final native void setTitle(String title) /*-{
+        public final native AxisJSO setTitle(String title) /*-{
 			this.title = title;
+			return this;
         }-*/;
 
-        public final native void setType(AxisType type) /*-{
-			this.type = type;
+        public final native AxisJSO setType(String type) /*-{
+			this.axisType = type;
+			return this;
         }-*/;
 
-        public final native void setSegments(int segments) /*-{
+        public final native AxisJSO setSegments(int segments) /*-{
 			this.segments = segments;
+			return this;
         }-*/;
 
-        public final native AxisType getType() /*-{
-			return this.type;
+        public final native String getAxisType() /*-{
+			return this.axisType;
         }-*/;
 
         public final native String getFormat() /*-{

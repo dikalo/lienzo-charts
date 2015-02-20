@@ -18,33 +18,33 @@
 
 package com.ait.lienzo.charts.client.core.axis;
 
+import com.ait.lienzo.charts.shared.core.types.AxisType;
+
 public class CategoryAxis extends Axis
 {
-    private static final AxisType AXIS_TYPE = AxisType.CATEGORY;
-
-    public CategoryAxis(String title)
+    public CategoryAxis(final String title)
     {
-        super(title, AXIS_TYPE);
+        super(title, AxisType.CATEGORY);
     }
 
-    public CategoryAxis(String title, String format)
+    public CategoryAxis(final String title, final String format)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.CATEGORY);
     }
 
-    public CategoryAxis(String title, String format, int size)
+    public CategoryAxis(final String title, final String format, final int size)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.CATEGORY);
     }
 
-    public CategoryAxis(CategoryAxisJSO m_jso)
+    public CategoryAxis(final CategoryAxisJSO jso)
     {
-        super(m_jso);
+        super(jso);
     }
 
     public CategoryAxisJSO getJSO()
     {
-        return (CategoryAxisJSO) m_jso;
+        return super.getJSO().cast();
     }
 
     public static class CategoryAxisJSO extends AxisJSO

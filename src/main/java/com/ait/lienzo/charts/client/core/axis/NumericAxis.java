@@ -18,53 +18,60 @@
 
 package com.ait.lienzo.charts.client.core.axis;
 
+import com.ait.lienzo.charts.shared.core.types.AxisType;
+
 public class NumericAxis extends Axis
 {
-    private static final AxisType AXIS_TYPE = AxisType.NUMBER;
-
     public NumericAxis(String title)
     {
-        super(title, AXIS_TYPE);
+        super(title, AxisType.NUMBER);
     }
 
     public NumericAxis(String title, String format)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.NUMBER);
     }
 
     public NumericAxis(String title, double minValue, double maxValue)
     {
-        super(title, AXIS_TYPE);
+        super(title, AxisType.NUMBER);
+
         setMinValue(minValue);
+
         setMaxValue(maxValue);
     }
 
     public NumericAxis(String title, String format, double minValue, double maxValue)
     {
-        super(title, format, AXIS_TYPE);
+        super(title, format, AxisType.NUMBER);
+
         setMinValue(minValue);
+
         setMaxValue(maxValue);
     }
 
-    public NumericAxis(NumericAxisJSO m_jso)
+    public NumericAxis(NumericAxisJSO jso)
     {
-        super(m_jso);
-        this.m_jso = m_jso;
+        super(jso);
     }
 
     public NumericAxisJSO getJSO()
     {
-        return (NumericAxisJSO) m_jso;
+        return super.getJSO().cast();
     }
 
-    public void setMaxValue(double value)
+    public NumericAxis setMaxValue(double value)
     {
         getJSO().setMaxValue(value);
+
+        return this;
     }
 
-    public void setMinValue(double value)
+    public NumericAxis setMinValue(double value)
     {
         getJSO().setMinValue(value);
+
+        return this;
     }
 
     public Double getMaxValue()
@@ -83,12 +90,14 @@ public class NumericAxis extends Axis
         {
         }
 
-        public final native void setMaxValue(Double maxValue) /*-{
+        public final native NumericAxisJSO setMaxValue(Double maxValue) /*-{
 			this.maxValue = maxValue;
+			return this;
         }-*/;
 
-        public final native void setMinValue(Double minValue) /*-{
+        public final native NumericAxisJSO setMinValue(Double minValue) /*-{
 			this.minValue = minValue;
+			return this;
         }-*/;
 
         public final native Double getMinValue() /*-{
