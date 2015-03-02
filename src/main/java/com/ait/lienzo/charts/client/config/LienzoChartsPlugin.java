@@ -16,34 +16,29 @@
 
 package com.ait.lienzo.charts.client.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.pie.PieChart;
-import com.ait.lienzo.client.core.config.ILienzoPlugin;
+import com.ait.lienzo.client.core.config.AbstractLienzoCorePlugin;
 import com.ait.lienzo.client.core.shape.json.IFactory;
+import com.ait.lienzo.shared.java.util.function.Supplier;
 
-public class LienzoChartsPlugin implements ILienzoPlugin
+public final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
 {
-    private final ArrayList<IFactory<?>> m_factories = new ArrayList<IFactory<?>>();
-
     public LienzoChartsPlugin()
     {
+        add(ChartNodeType.PIE_CHART, new Supplier<IFactory<?>>()
+        {
+            @Override
+            public IFactory<?> get()
+            {
+                return new PieChart.PieChartFactory();
+            }
+        });
     }
 
     @Override
     public String getNameSpace()
     {
         return "LienzoCharts";
-    }
-
-    @Override
-    public Collection<IFactory<?>> getFactories()
-    {
-        if (m_factories.isEmpty())
-        {
-            m_factories.add(new PieChart.PieChartFactory());
-        }
-        return m_factories;
     }
 }
