@@ -26,7 +26,7 @@ public final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
 {
     public LienzoChartsPlugin()
     {
-        add(ChartNodeType.PIE_CHART, new Supplier<IFactory<?>>()
+        addFactorySupplier(ChartNodeType.PIE_CHART, new Supplier<IFactory<?>>()
         {
             @Override
             public IFactory<?> get()
@@ -40,5 +40,11 @@ public final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
     public String getNameSpace()
     {
         return "LienzoCharts";
+    }
+
+    @Override
+    public String getVersion()
+    {
+        return "1.0";
     }
 }
