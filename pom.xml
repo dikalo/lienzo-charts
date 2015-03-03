@@ -19,14 +19,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ahome-it</groupId>
 	<artifactId>lienzo-charts</artifactId>
-	<version>1.0.68-SNAPSHOT</version>
+	<version>1.0.69-SNAPSHOT</version>
 	<name>Lienzo Charts</name>
 	<description>Lienzo Charts</description>
 	<dependencies>
 		<dependency>
 			<groupId>com.ahome-it</groupId>
 			<artifactId>lienzo-core</artifactId>
-			<version>2.0.68-SNAPSHOT</version>
+			<version>2.0.69-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
