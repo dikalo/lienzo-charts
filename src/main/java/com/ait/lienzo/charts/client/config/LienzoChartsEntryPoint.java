@@ -19,10 +19,10 @@ package com.ait.lienzo.charts.client.config;
 import com.ait.lienzo.client.core.config.LienzoCore;
 import com.google.gwt.core.client.EntryPoint;
 
-public class LienzoChartsEntryPoint implements EntryPoint
+public final class LienzoChartsEntryPoint implements EntryPoint
 {
     @Override
-    public void onModuleLoad()
+    public final void onModuleLoad()
     {
         LienzoCore.get().addPlugin(new LienzoChartsPlugin());
     }

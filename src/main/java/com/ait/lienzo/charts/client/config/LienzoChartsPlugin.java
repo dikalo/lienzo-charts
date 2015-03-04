@@ -22,9 +22,9 @@ import com.ait.lienzo.client.core.config.AbstractLienzoCorePlugin;
 import com.ait.lienzo.client.core.shape.json.IFactory;
 import com.ait.lienzo.shared.java.util.function.Supplier;
 
-public final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
+final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
 {
-    public LienzoChartsPlugin()
+    LienzoChartsPlugin()
     {
         addFactorySupplier(ChartNodeType.PIE_CHART, new Supplier<IFactory<?>>()
         {
@@ -37,13 +37,13 @@ public final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
     }
 
     @Override
-    public String getNameSpace()
+    public final String getNameSpace()
     {
         return "LienzoCharts";
     }
 
     @Override
-    public String getVersion()
+    public final String getVersion()
     {
         return "1.0";
     }
