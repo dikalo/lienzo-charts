@@ -205,7 +205,7 @@ public class BarChart extends AbstractChart<BarChart>
         }
 
         @Override
-        public boolean addNodeForContainer(IContainer<?, ?> container, Node<?> node, ValidationContext ctx)
+        public boolean addNodeForContainer(IContainer<?, ?, ?> container, Node<?> node, ValidationContext ctx)
         {
             return false;
         }

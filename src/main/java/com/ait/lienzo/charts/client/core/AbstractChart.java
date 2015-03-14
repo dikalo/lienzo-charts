@@ -141,7 +141,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
         }
 
         @Override
-        public boolean addNodeForContainer(IContainer<?, ?> container, Node<?> node, ValidationContext ctx)
+        public boolean addNodeForContainer(IContainer<?, ?, ?> container, Node<?> node, ValidationContext ctx)
         {
             return false;
         }
