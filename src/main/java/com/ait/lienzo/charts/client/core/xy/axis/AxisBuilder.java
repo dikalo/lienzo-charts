@@ -85,6 +85,11 @@ public abstract class AxisBuilder<T>
         m_chartSizeAttribute = chartSizeAttribute;
     }
 
+    public void reload(double chartSizeAttribute)
+    {
+        m_chartSizeAttribute = chartSizeAttribute;
+    }
+
     public String format(T value)
     {
         // TODO: Override by subclasses. Format each type using datatable column -> pattern attribute.

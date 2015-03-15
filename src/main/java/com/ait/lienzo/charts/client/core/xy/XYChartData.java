@@ -114,6 +114,7 @@ public final class XYChartData implements Iterable<XYChartSeries>
     {
         final int size = size();
 
+        // TODO: Refactor list impl to NFastArrayList?
         ArrayList<XYChartSeries> list = new ArrayList<XYChartSeries>(size);
 
         for (int i = 0; i < size; i++)

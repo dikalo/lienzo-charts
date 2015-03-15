@@ -62,8 +62,11 @@ public final class DataTableColumn
         public static final DataTableColumnJSO make(String id, DataTableColumnType type)
         {
             DataTableColumnJSO dataTableColumn = make();
+            
             dataTableColumn.setId(id);
+            
             dataTableColumn.setType(type);
+            
             return dataTableColumn;
         }
 
@@ -244,6 +247,7 @@ public final class DataTableColumn
             }
             return null;
         }
+
         private final String m_name;
 
         private DataTableColumnType(String name)

@@ -20,14 +20,18 @@ package com.ait.lienzo.charts.client.core.xy.axis;
 
 public class AxisLabel
 {
+    private final int    m_index;
+
     private final String m_text;
 
     private final double m_position;
 
-    protected AxisLabel(final String text, final double position)
+    protected AxisLabel(final int index, final String text, final double position)
     {
+        m_index = index;
+
         m_text = text;
-        
+
         m_position = position;
     }
 
@@ -39,5 +43,10 @@ public class AxisLabel
     public double getPosition()
     {
         return m_position;
+    }
+
+    public int getIndex()
+    {
+        return m_index;
     }
 }

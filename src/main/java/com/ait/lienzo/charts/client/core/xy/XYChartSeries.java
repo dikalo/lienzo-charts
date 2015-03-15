@@ -49,7 +49,7 @@ public final class XYChartSeries
     public IColor getColor()
     {
         String colorStr = m_jso.getColor();
-        
+
         return ColorName.lookup(colorStr);
     }
 

@@ -26,10 +26,15 @@ import com.ait.lienzo.charts.client.core.axis.NumericAxis;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
+import com.google.gwt.i18n.client.NumberFormat;
 
 public final class NumericAxisBuilder extends AxisBuilder<Double>
 {
-    protected NumericAxis axis;
+    private static final String       NULL_VALUE   = "0";
+
+    private static final NumberFormat numberFormat = NumberFormat.getDecimalFormat();
+
+    protected NumericAxis             axis;
 
     public NumericAxisBuilder(XYChartData data, double chartSizeAttribute, Axis.AxisJSO jso)
     {
@@ -53,34 +58,29 @@ public final class NumericAxisBuilder extends AxisBuilder<Double>
         }
         else
         {
-            throw new RuntimeException("You cannot build a NumericAxisBuilder using a non NumericAxis");
+            throw new RuntimeException("You cannot draw a NumericAxisBuilder using a non NumericAxis");
         }
     }
 
     @Override
     public List<AxisLabel> getLabels()
     {
-        //String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
-        //Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
+        String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
+        Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
         int segments = axis.getSegments();
-        Double maxValue = getMaxValue();
-        Double minValue = getMinValue();
+        Double maxValue = roundUp(getMaxValue());
+        Double minValue = roundDown(getMinValue());
 
-        final double chartSiz = getChartSizeAttribute();
-
-        double sizeAttributeIncrement = chartSiz / segments;
+        double sizeAttributeIncrement = getChartSizeAttribute() / segments;
         double valueIncrement = (maxValue - minValue) / segments;
 
-        final boolean desc = getAxisDirection() == AxisDirection.DESC;
-
         List<AxisLabel> result = new LinkedList<AxisLabel>();
-
         for (int x = 0; x <= segments; x++)
         {
-            double currentchartSizeAttribute = desc ? chartSiz - (sizeAttributeIncrement * x) : sizeAttributeIncrement * x;
+            double currentchartSizeAttribute = (getAxisDirection().equals(AxisDirection.DESC)) ? getChartSizeAttribute() - (sizeAttributeIncrement * x) : sizeAttributeIncrement * x;
             double currentValue = valueIncrement * x;
             String formattedValue = format(currentValue);
-            result.add(new AxisLabel(formattedValue, currentchartSizeAttribute));
+            result.add(new AxisLabel(x, formattedValue, currentchartSizeAttribute));
         }
         return result;
     }
@@ -89,23 +89,18 @@ public final class NumericAxisBuilder extends AxisBuilder<Double>
     public List<AxisValue<Double>> getValues(String modelProperty)
     {
         Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
-        //int segments = axis.getSegments();
+        int segments = axis.getSegments();
         Double maxValue = getMaxValue();
-        //Double minValue = getMinValue();
+        Double minValue = getMinValue();
 
         List<AxisValue<Double>> result = new LinkedList<AxisValue<Double>>();
-
         if (values != null && values.length > 0)
         {
-            final boolean desc = getAxisDirection() == AxisDirection.DESC;
-
-            final double chartSiz = getChartSizeAttribute();
-
             for (int i = 0, j = values.length - 1; i < values.length; i++, j--)
             {
-                Double value = desc ? values[i] : values[j];
+                Double value = (getAxisDirection().equals(AxisDirection.DESC)) ? values[i] : values[j];
                 // Obtain width and height values for the shape.
-                double shapeSize = getSizeForShape(chartSiz, value, maxValue);
+                double shapeSize = getSizeForShape(getChartSizeAttribute(), value, maxValue);
                 result.add(new AxisValue<Double>(value, shapeSize));
             }
         }
@@ -129,5 +124,28 @@ public final class NumericAxisBuilder extends AxisBuilder<Double>
     protected double getSizeForShape(double chartSizeAttribute, double value, double maxValue)
     {
         return (chartSizeAttribute * value) / maxValue;
+    }
+
+    @Override
+    public String format(Double value)
+    {
+        if (value != null) return getNumberFormat().format(value);
+        return NULL_VALUE;
+    }
+
+    private NumberFormat getNumberFormat()
+    {
+        if (axis.getFormat() != null && axis.getFormat().trim().length() > 0) return NumberFormat.getFormat(axis.getFormat());
+        else return numberFormat;
+    }
+
+    private Double roundUp(Double value)
+    {
+        return Math.ceil(value);
+    }
+
+    private Double roundDown(Double value)
+    {
+        return Math.floor(value);
     }
 }

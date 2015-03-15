@@ -16,17 +16,9 @@
 
 package com.ait.lienzo.charts.client.core.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
+import com.google.gwt.core.client.JavaScriptObject;
 
-import com.ait.lienzo.charts.client.core.pie.PieChartEntry;
-import com.ait.lienzo.shared.core.types.Color;
-import com.ait.lienzo.shared.core.types.IColor;
-import com.google.gwt.core.client.JsArray;
-
-public final class PieChartData implements Iterable<PieChartEntry>
+public final class PieChartData
 {
     private final PieChartDataJSO m_jso;
 
@@ -42,42 +34,16 @@ public final class PieChartData implements Iterable<PieChartEntry>
         }
     }
 
-    public PieChartData()
+    public PieChartData(DataTable dataTable, String categoriesProperty, String valuesProperty)
     {
         this(PieChartDataJSO.make());
-    }
-
-    public final PieChartData add(double value)
-    {
-        m_jso.push(PieChartEntry.make(null, value, Color.getRandomHexColor()));
-
-        return this;
-    }
-
-    public final PieChartData add(double value, IColor color)
-    {
-        m_jso.push(PieChartEntry.make(null, value, color.getColorString()));
-
-        return this;
-    }
-
-    public final PieChartData add(String label, double value)
-    {
-        m_jso.push(PieChartEntry.make(label, value, Color.getRandomHexColor()));
-
-        return this;
-    }
-
-    public final PieChartData add(String label, double value, IColor color)
-    {
-        m_jso.push(PieChartEntry.make(label, value, color.getColorString()));
-
-        return this;
-    }
-
-    public final int size()
-    {
-        return m_jso.length();
+        this.m_jso.setDataTable(dataTable);
+        DataTableColumn categoriesCol = getDataTable().getColumn(categoriesProperty);
+        DataTableColumn valuesCol = getDataTable().getColumn(valuesProperty);
+        if (categoriesCol == null || !categoriesCol.getType().equals(DataTableColumn.DataTableColumnType.STRING)) throw new RuntimeException("PieChart only support STRING data types for categories property");
+        if (valuesCol == null || !valuesCol.getType().equals(DataTableColumn.DataTableColumnType.NUMBER)) throw new RuntimeException("PieChart only support NUMERIC data types for values property");
+        this.m_jso.setCategoriesProperty(categoriesProperty);
+        this.m_jso.setValuesProperty(valuesProperty);
     }
 
     public final PieChartDataJSO getJSO()
@@ -85,39 +51,27 @@ public final class PieChartData implements Iterable<PieChartEntry>
         return m_jso;
     }
 
-    public final Collection<PieChartEntry> toCollection()
+    public final DataTable getDataTable()
     {
-        final int size = size();
-
-        ArrayList<PieChartEntry> list = new ArrayList<PieChartEntry>(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            list.add(m_jso.get(i));
-        }
-        return Collections.unmodifiableList(list);
+        return this.m_jso.getDataTable();
     }
 
-    @Override
-    public final Iterator<PieChartEntry> iterator()
+    public final String getCategoriesProperty()
     {
-        return toCollection().iterator();
+        return m_jso.getCategoriesProperty();
     }
 
-    public PieChartEntry[] getEntries()
+    public final String getValuesProperty()
     {
-        final int size = size();
-
-        PieChartEntry[] list = new PieChartEntry[size];
-
-        for (int i = 0; i < size; i++)
-        {
-            list[i] = m_jso.get(i);
-        }
-        return list;
+        return m_jso.getValuesProperty();
     }
 
-    public static final class PieChartDataJSO extends JsArray<PieChartEntry>
+    public final int size()
+    {
+        return this.m_jso.getDataTable().size();
+    }
+
+    public static final class PieChartDataJSO extends JavaScriptObject
     {
         protected PieChartDataJSO()
         {
@@ -125,7 +79,31 @@ public final class PieChartData implements Iterable<PieChartEntry>
 
         public static final PieChartDataJSO make()
         {
-            return JsArray.createArray().cast();
+            return createObject().cast();
         }
+
+        public final native void setCategoriesProperty(String property) /*-{
+			this.categoriesProperty = property;
+        }-*/;
+
+        public final native String getCategoriesProperty() /*-{
+			return this.categoriesProperty;
+        }-*/;
+
+        public final native String getValuesProperty() /*-{
+			return this.valuesProperty;
+        }-*/;
+
+        public final native void setValuesProperty(String property) /*-{
+			this.valuesProperty = property;
+        }-*/;
+
+        public final native void setDataTable(DataTable dataTable) /*-{
+			this.dataTable = dataTable;
+        }-*/;
+
+        public final native DataTable getDataTable() /*-{
+			return this.dataTable;
+        }-*/;
     }
 }

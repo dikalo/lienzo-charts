@@ -18,45 +18,31 @@
 
 package com.ait.lienzo.charts.client.core;
 
+import com.ait.lienzo.charts.client.core.legend.ChartLegend;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeEventHandler;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizer;
 import com.ait.lienzo.charts.shared.core.types.ChartAlign;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LegendAlign;
 import com.ait.lienzo.charts.shared.core.types.LegendPosition;
 import com.ait.lienzo.client.core.Attribute;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
-import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.LayerRedrawManager;
+import com.ait.lienzo.client.core.event.AnimationFrameAttributesChangedBatcher;
 import com.ait.lienzo.client.core.event.AttributesChangedEvent;
 import com.ait.lienzo.client.core.event.AttributesChangedHandler;
-import com.ait.lienzo.client.core.event.NodeDragEndEvent;
-import com.ait.lienzo.client.core.event.NodeDragEndHandler;
-import com.ait.lienzo.client.core.event.NodeDragMoveEvent;
-import com.ait.lienzo.client.core.event.NodeDragMoveHandler;
-import com.ait.lienzo.client.core.event.NodeDragStartEvent;
-import com.ait.lienzo.client.core.event.NodeDragStartHandler;
-import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
-import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
-import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
-import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
-import com.ait.lienzo.client.core.shape.Arrow;
+import com.ait.lienzo.client.core.event.IAttributesChangedBatcher;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Node;
-import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.client.core.shape.json.IFactory;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
-import com.ait.lienzo.client.core.types.Point2D;
-import com.ait.lienzo.shared.core.types.ArrowType;
 import com.ait.lienzo.shared.core.types.ColorName;
-import com.ait.lienzo.shared.core.types.IColor;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 /**
@@ -81,28 +67,30 @@ import com.google.gwt.json.client.JSONObject;
 public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
 {
     // Default animation duration (2sec).
-    protected static final double ANIMATION_DURATION            = 2000;
+    protected static final double       ANIMATION_DURATION       = 2000;
 
-    protected static final int    AREA_PADDING                  = 50;
+    // Default animation duration when clearing chart.
+    public static final double          CLEAR_ANIMATION_DURATION = 500;
 
-    protected static final String AXIS_LABEL_DEFAULT_FONT_NAME  = "Verdana";
+    public static final double          DEFAULT_MARGIN           = 50;
 
-    protected static final String AXIS_LABEL_DEFAULT_FONT_STYLE = "bold";
+    protected IAttributesChangedBatcher attributesChangedBatcher = new AnimationFrameAttributesChangedBatcher();
 
-    protected static final IColor AXIS_LABEL_COLOR              = ColorName.BLACK;
+    protected final Group               chartArea                = new Group();
 
-    protected static final int    AXIS_LABEL_DEFAULT_FONT_SIZE  = 10;
+    protected final Group               topArea                  = new Group();
 
-    // The available areas: chart, top, bottom, left and right. 
-    protected final Group         chartArea                     = new Group();
+    protected final Group               bottomArea               = new Group();
 
-    protected final Group         topArea                       = new Group();
+    protected final Group               rightArea                = new Group();
 
-    protected final Group         bottomArea                    = new Group();
+    protected final Group               leftArea                 = new Group();
 
-    protected final Group         rightArea                     = new Group();
+    protected ChartResizer              resizer                  = null;
 
-    protected final Group         leftArea                      = new Group();
+    protected Text                      chartTitle               = null;
+
+    protected ChartLegend               legend                   = null;
 
     protected AbstractChart()
     {
@@ -128,6 +116,10 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
             addAttribute(ChartAttribute.WIDTH, true);
             addAttribute(ChartAttribute.HEIGHT, true);
             addAttribute(ChartAttribute.NAME, true);
+            addAttribute(ChartAttribute.MARGIN_LEFT, false);
+            addAttribute(ChartAttribute.MARGIN_RIGHT, false);
+            addAttribute(ChartAttribute.MARGIN_BOTTOM, false);
+            addAttribute(ChartAttribute.MARGIN_TOP, false);
             addAttribute(ChartAttribute.ALIGN, false);
             addAttribute(ChartAttribute.DIRECTION, false);
             addAttribute(ChartAttribute.ORIENTATION, false);
@@ -141,15 +133,14 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
         }
 
         @Override
-        public boolean addNodeForContainer(IContainer<?, ?, ?> container, Node<?> node, ValidationContext ctx)
+        public boolean addNodeForContainer(IContainer<?, ?> container, Node<?> node, ValidationContext ctx)
         {
             return false;
         }
     }
 
-    public T build()
+    public T draw()
     {
-
         // Add the area node containers.
         add(chartArea); // Area for drawing the chart.
         add(topArea); // Area for top padding.
@@ -158,359 +149,274 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
         add(rightArea); // Area for right padding.
 
         // Position the areas.
-        double currentx = chartArea.getX();
-        double currenty = chartArea.getY();
-        moveAreas(currentx, currenty);
+        moveAreas(0d, 0d);
 
         // Chart title.
-        final Text chartTitle = new Text(getName(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setTextAlign(TextAlign.CENTER).setTextBaseLine(TextBaseLine.MIDDLE);
-        setShapeAttributes(chartTitle, getChartWidth() / 2, 10d, null, null, true);
-        topArea.add(chartTitle);
+        buildTitle();
 
-        // Call parent build implementation.
-        doBuild();
+        // Chart Legend.
+        buildLegend();
+
+        // Call parent draw implementation.
+        doDraw();
 
         // Add the resizer.
-        final ChartResizer resizer = new ChartResizer();
-        if (isResizable())
-        {
-            resizer.build();
-            moveResizerToTop(resizer);
-        }
+        buildResizer();
 
+        setAttributesChangedBatcher(attributesChangedBatcher);
+
+        AttributesChangedHandler handler = new AttributesChangedHandler()
+        {
+            @Override
+            public void onAttributesChanged(AttributesChangedEvent event)
+            {
+                if (event.has(Attribute.X) || event.has(Attribute.Y) || event.has(Attribute.WIDTH) || event.has(Attribute.HEIGHT))
+                {
+                    final double x = getX();
+                    final double y = getY();
+                    moveAreas(x, y);
+                }
+            }
+        };
         // Attribute change handlers.
-        this.addAttributesChangedHandler(Attribute.X, new AttributesChangedHandler()
-        {
-            @Override
-            public void onAttributesChanged(AttributesChangedEvent event)
-            {
-                GWT.log("AbstractChart - X attribute changed.");
-                moveAreas(getX(), null);
-            }
-        });
-
-        this.addAttributesChangedHandler(Attribute.Y, new AttributesChangedHandler()
-        {
-            @Override
-            public void onAttributesChanged(AttributesChangedEvent event)
-            {
-                GWT.log("AbstractChart - Y attribute changed.");
-                moveAreas(null, getY());
-                moveResizerToTop(resizer);
-            }
-        });
-
-        this.addAttributesChangedHandler(Attribute.WIDTH, new AttributesChangedHandler()
-        {
-            @Override
-            public void onAttributesChanged(AttributesChangedEvent event)
-            {
-                GWT.log("AbstractChart - WIDTH attribute changed -> " + getOriginalWidth());
-                setGroupAttributes(bottomArea, null, topArea.getY() + getChartHeight() + AREA_PADDING, false);
-                setGroupAttributes(rightArea, topArea.getX() + getChartWidth() + AREA_PADDING, null, false);
-                setShapeAttributes(chartTitle, getOriginalWidth() / 2, null, null, null, false);
-                moveResizerToTop(resizer);
-            }
-        });
-
-        this.addAttributesChangedHandler(Attribute.HEIGHT, new AttributesChangedHandler()
-        {
-            @Override
-            public void onAttributesChanged(AttributesChangedEvent event)
-            {
-                GWT.log("AbstractChart - HEIGHT attribute changed -> " + getOriginalHeight());
-                setGroupAttributes(bottomArea, null, topArea.getY() + getChartHeight() + AREA_PADDING, false);
-                setGroupAttributes(rightArea, topArea.getX() + getChartWidth() + AREA_PADDING, null, false);
-                setShapeAttributes(chartTitle, getOriginalWidth() / 2, null, null, null, false);
-                moveResizerToTop(resizer);
-            }
-        });
+        this.addAttributesChangedHandler(Attribute.X, handler);
+        this.addAttributesChangedHandler(Attribute.Y, handler);
+        this.addAttributesChangedHandler(Attribute.WIDTH, handler);
+        this.addAttributesChangedHandler(Attribute.HEIGHT, handler);
 
         return cast();
     }
 
-    protected void moveAreas(Double x, Double y)
+    protected void moveAreas(final double x, final double y)
     {
-        if (x != null)
+        Double[] leftAreaPos = getLeftAreaPosition(x, y);
+        Double[] rightAreaPos = getRightAreaPosition(x, y);
+        Double[] topAreaPos = getTopAreaPosition(x, y);
+        Double[] bottomAreaPos = getBottomAreaPosition(x, y);
+        Double[] chartAreaPos = getChartAreaPosition(x, y);
+        leftArea.setX(leftAreaPos[0]).setY(leftAreaPos[1]);
+        rightArea.setX(rightAreaPos[0]).setY(rightAreaPos[1]);
+        topArea.setX(topAreaPos[0]).setY(topAreaPos[1]);
+        bottomArea.setX(bottomAreaPos[0]).setY(bottomAreaPos[1]);
+        chartArea.setX(chartAreaPos[0]).setY(chartAreaPos[1]);
+        chartArea.moveToTop();
+    }
+
+    protected void buildLegend()
+    {
+        LegendPosition legendPosition = getLegendPosition();
+        //LegendAlign legendAlign = getLegendAlignment();
+        if (!LegendPosition.NONE.equals(legendPosition))
         {
-            topArea.setX(x);
-            chartArea.setX(x + AREA_PADDING);
-            bottomArea.setX(x + AREA_PADDING);
-            leftArea.setX(x);
-            rightArea.setX(x + getChartWidth() + AREA_PADDING);
-        }
-        if (y != null)
-        {
-            topArea.setY(y);
-            chartArea.setY(y + AREA_PADDING);
-            bottomArea.setY(y + getChartHeight() + AREA_PADDING);
-            leftArea.setY(y);
-            rightArea.setY(y + AREA_PADDING);
+            legend = new ChartLegend();
+            Double[] legendPositions = getLegendPositions(getChartWidth(), getChartHeight());
+            double xLegend = legendPositions[0];
+            double yLegend = legendPositions[1];
+            switch (legendPosition)
+            {
+                case TOP:
+                    topArea.add(legend.setX(xLegend).setY(yLegend));
+                    break;
+                case LEFT:
+                    leftArea.add(legend.setX(xLegend).setY(yLegend));
+                    break;
+                case RIGHT:
+                    rightArea.add(legend.setX(xLegend).setY(yLegend));
+                    break;
+                case INSIDE:
+                    chartArea.add(legend.setX(xLegend).setY(yLegend));
+                    break;
+                default:
+                    bottomArea.add(legend.setX(xLegend).setY(yLegend));
+                    break;
+            }
+            // Set horizontal orientation.
+            legend.setOrientation(getLegendOrientation());
+
+            legend.moveToTop();
         }
     }
 
-    protected void moveResizerToTop(ChartResizer resizer)
+    public Double[] getLegendPositions(final double w, final double h)
+    {
+        LegendPosition legendPosition = getLegendPosition();
+        //LegendAlign legendAlign = getLegendAlignment();
+        if (!LegendPosition.NONE.equals(legendPosition))
+        {
+            legend = new ChartLegend();
+            double xLegend = 0;
+            double yLegend = 0;
+            // TODO: legendAlign
+            switch (legendPosition)
+            {
+                case TOP:
+                    xLegend = w / 2;
+                    yLegend = 5;
+                    break;
+                case LEFT:
+                    xLegend = 5;
+                    yLegend = h / 2;
+                    break;
+                case RIGHT:
+                    xLegend = 5;
+                    yLegend = h / 2;
+                    break;
+                case INSIDE:
+                    xLegend = w / 2;
+                    yLegend = 2;
+                    break;
+                default:
+                    xLegend = w / 2;
+                    yLegend = 5;
+                    break;
+            }
+            return new Double[] { xLegend, yLegend };
+        }
+        return null;
+    }
+
+    protected void buildTitle()
+    {
+        if (isShowTitle())
+        {
+            chartTitle = new Text(getName(), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setTextAlign(TextAlign.CENTER).setTextBaseLine(TextBaseLine.MIDDLE);
+        }
+    }
+
+    protected void buildResizer()
     {
         if (isResizable())
         {
-            resizer.moveToTop();
-        }
-    }
-
-    protected abstract void doBuild();
-
-    protected T setGroupAttributes(Group group, Double x, Double y, boolean animate)
-    {
-        return setGroupAttributes(group, x, y, null, animate);
-    }
-
-    protected T setGroupAttributes(Group group, Double x, Double y, Double alpha, boolean animate)
-    {
-        if (x != null) group.setX(x);
-        if (y != null) group.setY(y);
-        if (alpha != null) group.setAlpha(alpha);
-        return cast();
-    }
-
-    protected T setShapeAttributes(Shape<?> shape, Double x, Double y, Double width, Double height, boolean animate)
-    {
-        return setShapeAttributes(shape, x, y, width, height, null, null, animate);
-    }
-
-    protected T setShapeAttributes(Shape<?> shape, Double x, Double y, Double width, Double height, IColor color, boolean animate)
-    {
-        return setShapeAttributes(shape, x, y, width, height, color, null, animate);
-    }
-
-    protected T setShapeAttributes(Shape<?> shape, Double x, Double y, Double width, Double height, IColor color, Double alpha, boolean animate)
-    {
-        if (animate)
-        {
-            AnimationProperties animationProperties = new AnimationProperties();
-            if (width != null) animationProperties.push(AnimationProperty.Properties.WIDTH(width));
-            if (height != null) animationProperties.push(AnimationProperty.Properties.HEIGHT(height));
-            if (x != null) animationProperties.push(AnimationProperty.Properties.X(x));
-            if (y != null) animationProperties.push(AnimationProperty.Properties.Y(y));
-            if (color != null) animationProperties.push(AnimationProperty.Properties.FILL_COLOR(color));
-            if (alpha != null) animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-            shape.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
-        }
-        else
-        {
-            if (x != null) shape.setX(x);
-            if (y != null) shape.setY(y);
-            if (width != null) shape.getAttributes().setWidth(width);
-            if (height != null) shape.getAttributes().setHeight(height);
-            if (color != null) shape.setFillColor(color);
-            if (alpha != null) shape.setAlpha(alpha);
-        }
-        return cast();
-    }
-
-    /**
-     * Build the shapes & mouse handlers for resizing the chart.
-     */
-    protected class ChartResizer
-    {
-        private static final int    RECTANGLE_SIZE               = 30;
-
-        private static final double RECTANGLE_INITIA_ALPHA       = 0.2d;
-
-        private static final double RECTANGLE_ANIMATION_DURATION = 500;
-
-        private int                 initialXPosition;
-
-        private int                 initialYPosition;
-
-        protected Rectangle         resizeRectangleButton;
-
-        protected Rectangle         resizeRectangle;
-
-        protected Arrow             resizeArrow1;
-
-        protected Arrow             resizeArrow2;
-
-        protected Arrow             resizeArrow3;
-
-        protected Arrow             resizeArrow4;
-
-        public ChartResizer()
-        {
-        }
-
-        public void build()
-        {
-            if (resizeRectangleButton == null)
+            resizer = new ChartResizer(getWidth(), getHeight());
+            resizer.setX(getX()).setY(getY()).moveToTop();
+            resizer.addChartResizeEventHandler(new ChartResizeEventHandler()
             {
-                double rectangleXPos = getChartWidth() - RECTANGLE_SIZE;
-                double rectangleYPos = getChartHeight() - RECTANGLE_SIZE;
-                resizeRectangleButton = new Rectangle(RECTANGLE_SIZE, RECTANGLE_SIZE).setX(rectangleXPos).setY(rectangleYPos).setFillColor(ColorName.GREY).setDraggable(true).setAlpha(RECTANGLE_INITIA_ALPHA);
-                resizeRectangle = new Rectangle(getChartWidth(), getChartHeight()).setX(0).setY(0).setFillColor(ColorName.GREY).setAlpha(0);
-                resizeArrow1 = new Arrow(new Point2D(getChartWidth() / 2, getChartHeight() / 2), new Point2D(getChartWidth(), getChartHeight() / 2), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
-                resizeArrow2 = new Arrow(new Point2D(getChartWidth() / 2, getChartHeight() / 2), new Point2D(getChartWidth() / 2, getChartHeight()), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
-                resizeArrow3 = new Arrow(new Point2D(getChartWidth() / 2, getChartHeight() / 2), new Point2D(0, getChartHeight() / 2), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
-                resizeArrow4 = new Arrow(new Point2D(getChartWidth() / 2, getChartHeight() / 2), new Point2D(getChartWidth() / 2, 0), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
-
-                resizeRectangleButton.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
+                @Override
+                public void onChartResize(ChartResizeEvent event)
                 {
-                    @Override
-                    public void onNodeMouseEnter(NodeMouseEnterEvent event)
-                    {
-                        // Apply alphas.
-                        AnimationProperties animationProperties = new AnimationProperties();
-                        animationProperties.push(AnimationProperty.Properties.ALPHA(0.5));
-                        resizeRectangleButton.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        resizeRectangle.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow1.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow2.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow3.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow4.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-                        AnimationProperties animationProperties2 = new AnimationProperties();
-                        animationProperties2.push(AnimationProperty.Properties.ALPHA(0));
-                        rightArea.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        leftArea.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        bottomArea.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        topArea.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-
-                    }
-                });
-
-                resizeRectangleButton.addNodeMouseExitHandler(new NodeMouseExitHandler()
-                {
-                    @Override
-                    public void onNodeMouseExit(NodeMouseExitEvent event)
-                    {
-                        // Apply alphas.
-                        AnimationProperties animationProperties = new AnimationProperties();
-                        animationProperties.push(AnimationProperty.Properties.ALPHA(RECTANGLE_INITIA_ALPHA));
-                        resizeRectangleButton.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
-
-                        // Apply alphas.
-                        AnimationProperties animationProperties2 = new AnimationProperties();
-                        animationProperties2.push(AnimationProperty.Properties.ALPHA(0));
-                        resizeRectangle.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow1.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow2.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow3.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-                        resizeArrow4.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
-
-                        AnimationProperties animationProperties3 = new AnimationProperties();
-                        animationProperties3.push(AnimationProperty.Properties.ALPHA(1));
-                        rightArea.animate(AnimationTweener.LINEAR, animationProperties3, RECTANGLE_ANIMATION_DURATION);
-                        leftArea.animate(AnimationTweener.LINEAR, animationProperties3, RECTANGLE_ANIMATION_DURATION);
-                        bottomArea.animate(AnimationTweener.LINEAR, animationProperties3, RECTANGLE_ANIMATION_DURATION);
-                        topArea.animate(AnimationTweener.LINEAR, animationProperties3, RECTANGLE_ANIMATION_DURATION);
-                    }
-                });
-
-                resizeRectangleButton.addNodeDragStartHandler(new NodeDragStartHandler()
-                {
-                    @Override
-                    public void onNodeDragStart(NodeDragStartEvent event)
-                    {
-                        initialXPosition = event.getX();
-                        initialYPosition = event.getY();
-                    }
-                });
-
-                resizeRectangleButton.addNodeDragEndHandler(new NodeDragEndHandler()
-                {
-                    @Override
-                    public void onNodeDragEnd(NodeDragEndEvent event)
-                    {
-                        int currentX = event.getX();
-                        int currentY = event.getY();
-                        int incrementX = currentX - initialXPosition;
-                        int incrementY = currentY - initialYPosition;
-                        initialXPosition = currentX;
-                        initialYPosition = currentY;
-                        double finalWidth = getOriginalWidth() + incrementX;
-                        double finalHeight = getOriginalHeight() + incrementY;
-                        Double chartWidth = getChartWidth(finalWidth);
-                        Double chartHeight = getChartHeight(finalHeight);
-
-                        // Apply scale to chart area.
-                        AnimationProperties animationProperties = new AnimationProperties();
-                        animationProperties.push(AnimationProperty.Properties.WIDTH(finalWidth));
-                        animationProperties.push(AnimationProperty.Properties.HEIGHT(finalHeight));
-                        AbstractChart.this.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
-
-                        // Animate the resize rectangle to its final position.
-                        AnimationProperties rectangleAnimationProperties = new AnimationProperties();
-                        rectangleAnimationProperties.push(AnimationProperty.Properties.X(chartWidth - RECTANGLE_SIZE));
-                        rectangleAnimationProperties.push(AnimationProperty.Properties.Y(chartHeight - RECTANGLE_SIZE));
-                        resizeRectangleButton.animate(AnimationTweener.LINEAR, rectangleAnimationProperties, ANIMATION_DURATION);
-                    }
-                });
-
-                resizeRectangleButton.addNodeDragMoveHandler(new NodeDragMoveHandler()
-                {
-                    @Override
-                    public void onNodeDragMove(NodeDragMoveEvent event)
-                    {
-                        int currentX = event.getX();
-                        int currentY = event.getY();
-                        int incrementX = currentX - initialXPosition;
-                        int incrementY = currentY - initialYPosition;
-                        double finalWidth = getOriginalWidth() + incrementX;
-                        double finalHeight = getOriginalHeight() + incrementY;
-                        Double chartWidth = getChartWidth(finalWidth);
-                        Double chartHeight = getChartHeight(finalHeight);
-                        resizeRectangle.setWidth(chartWidth).setHeight(chartHeight);
-                        Point2D start = new Point2D(chartWidth / 2, chartHeight / 2);
-                        resizeArrow1.setStart(start).setEnd(new Point2D(chartWidth, chartHeight / 2));
-                        resizeArrow2.setStart(start).setEnd(new Point2D(chartWidth / 2, chartHeight));
-                        resizeArrow3.setStart(start).setEnd(new Point2D(0, chartHeight / 2));
-                        resizeArrow4.setStart(start).setEnd(new Point2D(chartWidth / 2, 0));
-                        LayerRedrawManager.get().schedule(getLayer());
-                    }
-                });
-
-            }
-
-            chartArea.add(resizeRectangle);
-            chartArea.add(resizeArrow1);
-            chartArea.add(resizeArrow2);
-            chartArea.add(resizeArrow3);
-            chartArea.add(resizeArrow4);
-            chartArea.add(resizeRectangleButton);
+                    AbstractChart.this.onChartResize(event);
+                }
+            });
+            add(resizer);
         }
+    }
 
-        public void moveToTop()
+    protected void onChartResize(ChartResizeEvent event)
+    {
+        // Fire event for chart resize.
+        fireEvent(event);
+    }
+
+    public HandlerRegistration addChartResizeEventHandler(ChartResizeEventHandler handler)
+    {
+        return addEnsureHandler(ChartResizeEvent.TYPE, handler);
+    }
+
+    protected ChartLegend.ChartLegendOrientation getLegendOrientation()
+    {
+        switch (getLegendPosition())
         {
-            resizeRectangle.moveToTop();
-            resizeRectangleButton.moveToTop();
+            case LEFT:
+            case RIGHT:
+                return ChartLegend.ChartLegendOrientation.VERTICAL;
+            default:
+                return ChartLegend.ChartLegendOrientation.HORIZONTAL;
         }
     }
 
-    public double getChartHeight(double originalHeight)
+    protected Double[] getLeftAreaPosition(Double x, Double y)
     {
-        return originalHeight - (AREA_PADDING * 2);
+        double marginTop = getMarginTop();
+        Double _x = x != null ? x : null;
+        Double _y = y != null ? y + marginTop : null;
+        return new Double[] { _x, _y };
     }
 
-    public double getChartWidth(double originalWidth)
+    protected Double[] getRightAreaPosition(Double x, Double y)
     {
-        return originalWidth - (AREA_PADDING * 2);
+        double marginLeft = getMarginLeft();
+        double marginTop = getMarginTop();
+        Double _x = x != null ? x + getChartWidth() + marginLeft : null;
+        Double _y = y != null ? y + marginTop : null;
+        return new Double[] { _x, _y };
+    }
+
+    protected Double[] getTopAreaPosition(Double x, Double y)
+    {
+        double marginLeft = getMarginLeft();
+        Double _x = x != null ? x + marginLeft : null;
+        Double _y = y != null ? y : null;
+        return new Double[] { _x, _y };
+    }
+
+    protected Double[] getBottomAreaPosition(Double x, Double y)
+    {
+        double marginLeft = getMarginLeft();
+        double marginTop = getMarginTop();
+        Double _x = x != null ? x + marginLeft : null;
+        Double _y = y != null ? y + marginTop + getChartHeight() : null;
+        return new Double[] { _x, _y };
+    }
+
+    protected Double[] getChartAreaPosition(Double x, Double y)
+    {
+        double marginLeft = getMarginLeft();
+        double marginTop = getMarginTop();
+        Double _x = x != null ? x + marginLeft : null;
+        Double _y = y != null ? y + marginTop : null;
+        return new Double[] { _x, _y };
+    }
+
+    protected void clear()
+    {
+        if (chartTitle != null) chartTitle.removeFromParent();
+        if (legend != null) legend.clear();
+        if (resizer != null) resizer.clear();
+
+        // Ensure that all shapes are removed. 
+        this.removeAll();
+    }
+
+    protected abstract void doDraw();
+
+    public Text getChartTitle()
+    {
+        return chartTitle;
+    }
+
+    public ChartLegend getChartLegend()
+    {
+        return legend;
+    }
+
+    protected double getChartHeight(double originalHeight)
+    {
+        return originalHeight - (getMarginTop() + getMarginBottom());
+    }
+
+    protected double getChartWidth(double originalWidth)
+    {
+        return originalWidth - (getMarginLeft() + getMarginRight());
     }
 
     public double getChartHeight()
     {
-        return getChartHeight(getOriginalHeight());
+        return getAttributes().getHeight();
     }
 
     public double getChartWidth()
     {
-        return getChartWidth(getOriginalWidth());
-    }
-
-    protected double getOriginalHeight()
-    {
-        return getAttributes().getHeight();
-    }
-
-    protected double getOriginalWidth()
-    {
         return getAttributes().getWidth();
+    }
+
+    public double getHeight()
+    {
+        return getAttributes().getHeight() + getMarginTop() + getMarginBottom();
+    }
+
+    public double getWidth()
+    {
+        return getAttributes().getWidth() + getMarginLeft() + getMarginRight();
     }
 
     public String getFontFamily()
@@ -672,7 +578,6 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
     public final T setResizable(boolean resizable)
     {
         getAttributes().put(ChartAttribute.RESIZABLE.getProperty(), resizable);
-
         return cast();
     }
 
@@ -683,5 +588,67 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
             return getAttributes().getBoolean(ChartAttribute.RESIZABLE.getProperty());
         }
         return true;
+    }
+
+    public final double getMarginLeft()
+    {
+        if (getAttributes().isDefined(ChartAttribute.MARGIN_LEFT))
+        {
+            return getAttributes().getDouble(ChartAttribute.MARGIN_LEFT.getProperty());
+        }
+        return DEFAULT_MARGIN;
+    }
+
+    public final T setMarginLeft(final double margin)
+    {
+        getAttributes().put(ChartAttribute.MARGIN_LEFT.getProperty(), margin);
+        return cast();
+    }
+
+    public final double getMarginTop()
+    {
+        if (getAttributes().isDefined(ChartAttribute.MARGIN_TOP))
+        {
+            return getAttributes().getDouble(ChartAttribute.MARGIN_TOP.getProperty());
+        }
+        return DEFAULT_MARGIN;
+    }
+
+    public final T setMarginTop(final double margin)
+    {
+        getAttributes().put(ChartAttribute.MARGIN_TOP.getProperty(), margin);
+        return cast();
+    }
+
+    public final double getMarginRight()
+    {
+        if (getAttributes().isDefined(ChartAttribute.MARGIN_RIGHT))
+        {
+            return getAttributes().getDouble(ChartAttribute.MARGIN_RIGHT.getProperty());
+        }
+        return DEFAULT_MARGIN;
+    }
+
+    public final T setMarginRight(final double margin)
+    {
+        getAttributes().put(ChartAttribute.MARGIN_RIGHT.getProperty(), margin);
+
+        return cast();
+    }
+
+    public final double getMarginBottom()
+    {
+        if (getAttributes().isDefined(ChartAttribute.MARGIN_BOTTOM))
+        {
+            return getAttributes().getDouble(ChartAttribute.MARGIN_BOTTOM.getProperty());
+        }
+        return DEFAULT_MARGIN;
+    }
+
+    public final T setMarginBottom(final double margin)
+    {
+        getAttributes().put(ChartAttribute.MARGIN_BOTTOM.getProperty(), margin);
+
+        return cast();
     }
 }

@@ -40,8 +40,10 @@ public class XYChartDataSummary
 
     private int          numSeries;
 
+    // TODO: Refactor list impl to NFastArrayList?
     private List<String> addedSeries   = new ArrayList<String>();
 
+    // TODO: Refactor list impl to NFastArrayList?
     private List<String> removedSeries = new ArrayList<String>();
 
     public XYChartDataSummary(XYChartData data)

@@ -71,7 +71,7 @@ public enum LegendPosition implements EnumWithValue
 
     public static final LegendPosition lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, TOP);
+        return Statics.lookup(key, LOOKUP_MAP, BOTTOM);
     }
 
     public static final List<String> getKeys()
