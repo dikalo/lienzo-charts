@@ -49,7 +49,6 @@ import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Slice;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.json.IFactory;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.Color;
@@ -58,7 +57,6 @@ import com.ait.lienzo.shared.core.types.IColor;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
 
 public class PieChart extends AbstractChart<PieChart>
 {
@@ -76,14 +74,12 @@ public class PieChart extends AbstractChart<PieChart>
 
     protected PieChart(JSONObject node, ValidationContext ctx) throws ValidationException
     {
-        super(node, ctx);
-
-        setNodeType(ChartNodeType.PIE_CHART);
+        super(ChartNodeType.PIE_CHART, node, ctx);
     }
 
     public PieChart()
     {
-        setNodeType(ChartNodeType.PIE_CHART);
+        super(ChartNodeType.PIE_CHART);
     }
 
     public HandlerRegistration addDataReloadedHandler(DataReloadedEventHandler handler)
@@ -422,33 +418,11 @@ public class PieChart extends AbstractChart<PieChart>
 		return numb.toFixed(2) + "%";
     }-*/;
 
-    @Override
-    public JSONObject toJSONObject()
-    {
-        JSONObject object = new JSONObject();
-
-        object.put("type", new JSONString(getNodeType().getValue()));
-
-        if (false == getMetaData().isEmpty())
-        {
-            object.put("meta", new JSONObject(getMetaData().getJSO()));
-        }
-        object.put("attributes", new JSONObject(getAttributes().getJSO()));
-
-        return object;
-    }
-
-    @Override
-    public IFactory<Group> getFactory()
-    {
-        return new PieChartFactory();
-    }
-
-    public static class PieChartFactory extends ChartFactory
+    public static class PieChartFactory extends ChartFactory<PieChart>
     {
         public PieChartFactory()
         {
-            setTypeName(ChartNodeType.PIE_CHART.getValue());
+            super(ChartNodeType.PIE_CHART);
 
             addAttribute(ChartAttribute.RADIUS, true);
 
@@ -462,7 +436,7 @@ public class PieChart extends AbstractChart<PieChart>
         }
 
         @Override
-        public PieChart create(JSONObject node, ValidationContext ctx) throws ValidationException
+        protected PieChart container(JSONObject node, ValidationContext ctx) throws ValidationException
         {
             return new PieChart(node, ctx);
         }

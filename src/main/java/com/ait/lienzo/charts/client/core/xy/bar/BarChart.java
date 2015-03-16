@@ -16,6 +16,12 @@
 
 package com.ait.lienzo.charts.client.core.xy.bar;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import com.ait.lienzo.charts.client.core.AbstractChart;
 import com.ait.lienzo.charts.client.core.ChartAttribute;
 import com.ait.lienzo.charts.client.core.ChartNodeType;
@@ -25,7 +31,11 @@ import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
 import com.ait.lienzo.charts.client.core.xy.XYChartSeries;
-import com.ait.lienzo.charts.client.core.xy.axis.*;
+import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
+import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
+import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
+import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
+import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartClearAnimation;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartCreateAnimation;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartReloadAnimation;
@@ -34,24 +44,37 @@ import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedHandler;
-import com.ait.lienzo.charts.shared.core.types.*;
-import com.ait.lienzo.client.core.animation.*;
-import com.ait.lienzo.client.core.event.*;
-import com.ait.lienzo.client.core.shape.*;
-import com.ait.lienzo.client.core.shape.json.IFactory;
+import com.ait.lienzo.charts.shared.core.types.AxisDirection;
+import com.ait.lienzo.charts.shared.core.types.AxisType;
+import com.ait.lienzo.charts.shared.core.types.ChartDirection;
+import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
+import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
+import com.ait.lienzo.client.core.animation.AnimationCallback;
+import com.ait.lienzo.client.core.animation.AnimationProperties;
+import com.ait.lienzo.client.core.animation.AnimationProperty;
+import com.ait.lienzo.client.core.animation.AnimationTweener;
+import com.ait.lienzo.client.core.animation.IAnimation;
+import com.ait.lienzo.client.core.animation.IAnimationCallback;
+import com.ait.lienzo.client.core.animation.IAnimationHandle;
+import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
+import com.ait.lienzo.client.core.event.NodeMouseClickHandler;
+import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
+import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
+import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
+import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
+import com.ait.lienzo.client.core.shape.IContainer;
+import com.ait.lienzo.client.core.shape.Line;
+import com.ait.lienzo.client.core.shape.Node;
+import com.ait.lienzo.client.core.shape.Rectangle;
+import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
-import com.ait.lienzo.client.core.types.Point2D;
-import com.ait.lienzo.client.core.types.Point2DArray;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-
-import java.util.*;
 
 /**
  * <p>XY chart implementation using rectangles as shapes for values.</p>
@@ -120,14 +143,12 @@ public class BarChart extends AbstractChart<BarChart>
 
     protected BarChart(JSONObject node, ValidationContext ctx) throws ValidationException
     {
-        super(node, ctx);
-
-        setNodeType(ChartNodeType.BAR_CHART);
+        super(ChartNodeType.BAR_CHART, node, ctx);
     }
 
     public BarChart()
     {
-        setNodeType(ChartNodeType.BAR_CHART);
+        super(ChartNodeType.BAR_CHART);
 
         getMetaData().put("creator", "Roger Martinez");
     }
@@ -302,34 +323,11 @@ public class BarChart extends AbstractChart<BarChart>
         return LabelsPosition.lookup(getAttributes().getString(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty()));
     }
 
-    @Override
-    public JSONObject toJSONObject()
-    {
-        JSONObject object = new JSONObject();
-
-        object.put("type", new JSONString(getNodeType().getValue()));
-
-        if (!getMetaData().isEmpty())
-        {
-            object.put("meta", new JSONObject(getMetaData().getJSO()));
-        }
-        object.put("attributes", new JSONObject(getAttributes().getJSO()));
-
-        return object;
-    }
-
-    @Override
-    public IFactory<Group> getFactory()
-    {
-        return new BarChartFactory();
-    }
-
-    public static class BarChartFactory extends ChartFactory
+    public static class BarChartFactory extends ChartFactory<BarChart>
     {
         public BarChartFactory()
         {
-            super();
-            setTypeName(ChartNodeType.BAR_CHART.getValue());
+            super(ChartNodeType.BAR_CHART);
             addAttribute(ChartAttribute.XY_CHART_DATA, true);
             addAttribute(ChartAttribute.CATEGORIES_AXIS, true);
             addAttribute(ChartAttribute.VALUES_AXIS, true);
@@ -346,7 +344,7 @@ public class BarChart extends AbstractChart<BarChart>
         }
 
         @Override
-        public BarChart create(JSONObject node, ValidationContext ctx) throws ValidationException
+        protected BarChart container(JSONObject node, ValidationContext ctx) throws ValidationException
         {
             return new BarChart(node, ctx);
         }

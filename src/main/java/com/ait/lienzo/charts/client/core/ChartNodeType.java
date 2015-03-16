@@ -18,9 +18,9 @@
 
 package com.ait.lienzo.charts.client.core;
 
-import com.ait.lienzo.shared.core.types.NodeType;
+import com.ait.lienzo.shared.core.types.GroupType;
 
-public class ChartNodeType extends NodeType
+public class ChartNodeType extends GroupType
 {
     public static final ChartNodeType PIE_CHART = new ChartNodeType("Lienzo.PieChart");
 

@@ -33,17 +33,23 @@ import com.ait.lienzo.client.core.event.AttributesChangedEvent;
 import com.ait.lienzo.client.core.event.AttributesChangedHandler;
 import com.ait.lienzo.client.core.event.IAttributesChangedBatcher;
 import com.ait.lienzo.client.core.shape.Group;
+import com.ait.lienzo.client.core.shape.GroupOf;
 import com.ait.lienzo.client.core.shape.IContainer;
+import com.ait.lienzo.client.core.shape.IPrimitive;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.json.IFactory;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
+import com.ait.lienzo.client.core.shape.storage.IStorageEngine;
+import com.ait.lienzo.client.core.shape.storage.PrimitiveFastArrayStorageEngine;
+import com.ait.lienzo.client.core.types.NFastArrayList;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 
 /**
  *  <p>Base chart implementation class.</p>
@@ -64,7 +70,7 @@ import com.google.gwt.json.client.JSONObject;
  *  <p>It listens the <code>AttributesChangedEvent</code> for attributes <code>X</code>, <code>Y</code>, <code>WIDTH</code> and <code>HEIGHT</code>.</p>  
  *  
  */
-public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
+public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<IPrimitive<?>, T>
 {
     // Default animation duration (2sec).
     protected static final double       ANIMATION_DURATION       = 2000;
@@ -92,25 +98,50 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends Group
 
     protected ChartLegend               legend                   = null;
 
-    protected AbstractChart()
+    protected AbstractChart(ChartNodeType type)
     {
+        super(type, new PrimitiveFastArrayStorageEngine());
     }
 
-    public AbstractChart(JSONObject node, ValidationContext ctx) throws ValidationException
+    protected AbstractChart(ChartNodeType type, IStorageEngine<IPrimitive<?>> storage)
     {
-        super(node, ctx);
+        super(type, storage);
+    }
+
+    public AbstractChart(ChartNodeType type, JSONObject node, ValidationContext ctx) throws ValidationException
+    {
+        super(type, node, ctx);
+    }
+    
+    @Override
+    public JSONObject toJSONObject()
+    {
+        final JSONObject object = new JSONObject();
+
+        object.put("type", new JSONString(getGroupType().getValue()));
+
+        if (false == getMetaData().isEmpty())
+        {
+            object.put("meta", new JSONObject(getMetaData().getJSO()));
+        }
+        object.put("attributes", new JSONObject(getAttributes().getJSO()));
+
+        object.put("storage", getStorageEngine().toJSONObject());
+
+        return object;
     }
 
     @Override
-    public IFactory<Group> getFactory()
+    public IStorageEngine<IPrimitive<?>> getDefaultStorageEngine()
     {
-        return new ChartFactory();
+        return new PrimitiveFastArrayStorageEngine();
     }
 
-    public static class ChartFactory extends GroupFactory
+    public abstract static class ChartFactory<T extends AbstractChart<T>> extends GroupOfFactory<IPrimitive<?>, T>
     {
-        public ChartFactory()
+        public ChartFactory(ChartNodeType type)
         {
+            super(type);
             addAttribute(ChartAttribute.X, true);
             addAttribute(ChartAttribute.Y, true);
             addAttribute(ChartAttribute.WIDTH, true);

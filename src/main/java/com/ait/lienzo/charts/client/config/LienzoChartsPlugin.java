@@ -18,6 +18,7 @@ package com.ait.lienzo.charts.client.config;
 
 import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.pie.PieChart;
+import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
 import com.ait.lienzo.client.core.config.AbstractLienzoCorePlugin;
 import com.ait.lienzo.client.core.shape.json.IFactory;
 import com.ait.lienzo.shared.java.util.function.Supplier;
@@ -32,6 +33,14 @@ final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
             public IFactory<?> get()
             {
                 return new PieChart.PieChartFactory();
+            }
+        });
+        addFactorySupplier(ChartNodeType.BAR_CHART, new Supplier<IFactory<?>>()
+        {
+            @Override
+            public IFactory<?> get()
+            {
+                return new BarChart.BarChartFactory();
             }
         });
     }
