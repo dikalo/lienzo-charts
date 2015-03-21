@@ -19,15 +19,16 @@
 package com.ait.lienzo.charts.client.core;
 
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
-import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
-import com.ait.lienzo.charts.client.core.resizer.ChartResizeEventHandler;
-import com.ait.lienzo.charts.client.core.resizer.ChartResizer;
+import com.ait.lienzo.charts.client.core.resizer.*;
 import com.ait.lienzo.charts.shared.core.types.ChartAlign;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LegendAlign;
 import com.ait.lienzo.charts.shared.core.types.LegendPosition;
 import com.ait.lienzo.client.core.Attribute;
+import com.ait.lienzo.client.core.animation.AnimationProperties;
+import com.ait.lienzo.client.core.animation.AnimationProperty;
+import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.event.AnimationFrameAttributesChangedBatcher;
 import com.ait.lienzo.client.core.event.AttributesChangedEvent;
 import com.ait.lienzo.client.core.event.AttributesChangedHandler;
@@ -77,6 +78,9 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
 
     // Default animation duration when clearing chart.
     public static final double          CLEAR_ANIMATION_DURATION = 500;
+
+    // Default animation duration when applying alpha to chart areas.
+    public static final double          ALPHA_ANIMATION_DURATION  = 500;
 
     public static final double          DEFAULT_MARGIN           = 50;
 
@@ -231,6 +235,17 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         bottomArea.setX(bottomAreaPos[0]).setY(bottomAreaPos[1]);
         chartArea.setX(chartAreaPos[0]).setY(chartAreaPos[1]);
         chartArea.moveToTop();
+        if (getChartResizer() != null) getChartResizer().moveToTop();
+    }
+
+    protected void applyAlphaToAreas(final double alpha) {
+        AnimationProperties animationProperties = new AnimationProperties();
+        animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
+        leftArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
+        rightArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
+        topArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
+        bottomArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
+        chartArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
     }
 
     protected void buildLegend()
@@ -320,14 +335,28 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         {
             resizer = new ChartResizer(getWidth(), getHeight());
             resizer.setX(getX()).setY(getY()).moveToTop();
-            resizer.addChartResizeEventHandler(new ChartResizeEventHandler()
-            {
+            
+            resizer.addChartResizeEventHandler(new ChartResizeEventHandler() {
                 @Override
-                public void onChartResize(ChartResizeEvent event)
-                {
+                public void onChartResize(ChartResizeEvent event) {
                     AbstractChart.this.onChartResize(event);
                 }
             });
+            
+            resizer.addChartResizeAreaEventHandler(new ChartResizeAreaEventHandler() {
+                @Override
+                public void onChartResizeArea(ChartResizeAreaEvent event) {
+                    if (event.isEnteringResizeArea()) 
+                    {
+                        applyAlphaToAreas(0.2);
+                    }
+                    else
+                    {
+                        applyAlphaToAreas(1);
+                    }
+                }
+            });
+            
             add(resizer);
         }
     }
@@ -418,6 +447,10 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     public ChartLegend getChartLegend()
     {
         return legend;
+    }
+
+    public ChartResizer getChartResizer() {
+        return resizer;
     }
 
     protected double getChartHeight(double originalHeight)

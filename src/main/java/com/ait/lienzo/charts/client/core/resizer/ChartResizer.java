@@ -18,28 +18,35 @@ import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
 import com.ait.lienzo.client.core.shape.Arrow;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Rectangle;
+import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.client.core.types.Point2D;
 import com.ait.lienzo.shared.core.types.ArrowType;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.NumberFormat;
 
 public class ChartResizer extends Group
 {
-    private static final int      RECTANGLE_SIZE               = 30;
+    private static final int             RECTANGLE_SIZE               = 30;
 
-    private static final double   RECTANGLE_INITIA_ALPHA       = 0.2d;
+    private static final double          RECTANGLE_INITIA_ALPHA       = 0.2d;
 
-    private static final double   RECTANGLE_ANIMATION_DURATION = 500;
+    private static final double          RECTANGLE_ANIMATION_DURATION = 500;
+    
+    private static final double          SIZE_TEXT_FONT_SIZE          = 15;
+    
+    private static final String          SIZE_TEXT_FONT_FAMILY        = "Verdana";
 
-    protected static final double ANIMATION_DURATION           = 1000;
+    private static final String          SIZE_TEXT_FONT_STYLE         = "Bold";
+    
+    private double                       width;
 
-    private double                width;
+    private double                       height;
 
-    private double                height;
+    private int                          initialXPosition;
 
-    private int                   initialXPosition;
-
-    private int                   initialYPosition;
+    private int                          initialYPosition;
+    private static final NumberFormat    NUMBER_FORMAT                 = NumberFormat.getFormat("####");
 
     public ChartResizer(final double width, final double height)
     {
@@ -58,6 +65,7 @@ public class ChartResizer extends Group
         final Arrow resizeArrow2 = new Arrow(new Point2D(width / 2, height / 2), new Point2D(width / 2, height), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
         final Arrow resizeArrow3 = new Arrow(new Point2D(width / 2, height / 2), new Point2D(0, height / 2), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
         final Arrow resizeArrow4 = new Arrow(new Point2D(width / 2, height / 2), new Point2D(width / 2, 0), 0, 10, 10, 10, ArrowType.AT_END_TAPERED).setFillColor(ColorName.BLACK).setAlpha(0);
+        final Text sizeText = new Text(buildSizeText(width, height)).setFontSize(SIZE_TEXT_FONT_SIZE).setFontFamily(SIZE_TEXT_FONT_FAMILY).setFontStyle(SIZE_TEXT_FONT_STYLE).setFillColor(ColorName.BLACK);
 
         resizeRectangleButton.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
         {
@@ -73,6 +81,11 @@ public class ChartResizer extends Group
                 resizeArrow2.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
                 resizeArrow3.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
                 resizeArrow4.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
+                showSizeText(sizeText, ChartResizer.this.width, ChartResizer.this.height);
+                sizeText.animate(AnimationTweener.LINEAR, animationProperties, RECTANGLE_ANIMATION_DURATION);
+
+                // Fire the event for entering resize area.
+                ChartResizer.this.fireEvent(new ChartResizeAreaEvent(true));
             }
         });
 
@@ -94,6 +107,10 @@ public class ChartResizer extends Group
                 resizeArrow2.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
                 resizeArrow3.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
                 resizeArrow4.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
+                sizeText.animate(AnimationTweener.LINEAR, animationProperties2, RECTANGLE_ANIMATION_DURATION);
+
+                // Fire the event for entering resize area.
+                ChartResizer.this.fireEvent(new ChartResizeAreaEvent(false));
             }
         });
 
@@ -120,7 +137,8 @@ public class ChartResizer extends Group
                 initialYPosition = currentY;
                 double finalWidth = ChartResizer.this.width + incrementX;
                 double finalHeight = ChartResizer.this.height + incrementY;
-
+                showSizeText(sizeText, finalWidth, finalHeight);
+                
                 // Animate the resize rectangle to its final position.
                 AnimationProperties rectangleAnimationProperties = new AnimationProperties();
                 rectangleAnimationProperties.push(AnimationProperty.Properties.X(finalWidth - RECTANGLE_SIZE));
@@ -135,11 +153,9 @@ public class ChartResizer extends Group
             }
         });
 
-        resizeRectangleButton.addNodeDragMoveHandler(new NodeDragMoveHandler()
-        {
+        resizeRectangleButton.addNodeDragMoveHandler(new NodeDragMoveHandler() {
             @Override
-            public void onNodeDragMove(NodeDragMoveEvent event)
-            {
+            public void onNodeDragMove(NodeDragMoveEvent event) {
                 int currentX = event.getX();
                 int currentY = event.getY();
                 int incrementX = currentX - initialXPosition;
@@ -152,7 +168,8 @@ public class ChartResizer extends Group
                 resizeArrow2.setStart(start).setEnd(new Point2D(finalWidth / 2, finalHeight));
                 resizeArrow3.setStart(start).setEnd(new Point2D(0, finalHeight / 2));
                 resizeArrow4.setStart(start).setEnd(new Point2D(finalWidth / 2, 0));
-
+                showSizeText(sizeText, finalWidth, finalHeight);
+                
                 // Fire the resize event with apply flag not set (not final size yet).
                 ChartResizer.this.fireEvent(new ChartResizeEvent(finalWidth, finalHeight, false));
 
@@ -160,13 +177,28 @@ public class ChartResizer extends Group
             }
         });
         this.add(resizeRectangle);
+        this.add(resizeRectangleButton);
         this.add(resizeArrow1);
         this.add(resizeArrow2);
         this.add(resizeArrow3);
         this.add(resizeArrow4);
-        this.add(resizeRectangleButton);
-
+        this.add(sizeText);
+        
         return this;
+    }
+    
+    private static void showSizeText(final Text text, final double w, final double h) {
+        final String _t = buildSizeText(w, h);
+        text.setText(_t);
+        final double tw = text.getBoundingBox().getWidth();
+        final double th = text.getBoundingBox().getHeight();
+        final double tx = w/2 - tw/2;
+        final double ty = h/2 - th/2;
+        text.setX(tx).setY(ty).moveToTop();
+    }
+
+    private static String buildSizeText(final double w, final double h) {
+        return NUMBER_FORMAT.format(w) + "/" + NUMBER_FORMAT.format(h);
     }
 
     public HandlerRegistration addChartResizeEventHandler(ChartResizeEventHandler handler)
@@ -174,6 +206,11 @@ public class ChartResizer extends Group
         return addEnsureHandler(ChartResizeEvent.TYPE, handler);
     }
 
+    public HandlerRegistration addChartResizeAreaEventHandler(ChartResizeAreaEventHandler handler)
+    {
+        return addEnsureHandler(ChartResizeAreaEvent.TYPE, handler);
+    }
+    
     public void clear()
     {
         removeFromParent();

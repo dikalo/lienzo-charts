@@ -3,11 +3,9 @@ package com.ait.lienzo.charts.client.core.animation;
 
 import com.ait.lienzo.charts.client.core.AbstractChart;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizer;
 import com.ait.lienzo.client.core.Attribute;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
-import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.IAnimationCallback;
+import com.ait.lienzo.client.core.animation.*;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.shared.core.types.IColor;
@@ -57,6 +55,13 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
     protected void doAnimateChartTitle(final Text chartTitle, final Double x, final Double y)
     {
         chartTitle.setX(x).setY(y);
+    }
+
+    @Override
+    public IAnimation doClose() {
+        ChartResizer resizer = getChart().getChartResizer();
+        if (resizer != null) resizer.moveToTop();
+        return super.doClose();
     }
 
     protected static AnimationProperties buildAnimationProperties(Double x, Double y, Double w, Double h)
