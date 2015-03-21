@@ -18,6 +18,7 @@
 
 package com.ait.lienzo.charts.client.core.xy.axis;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import com.ait.lienzo.charts.client.core.axis.Axis;
 import com.ait.lienzo.charts.client.core.axis.DateAxis;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
 
-public final class DateAxisBuilder extends AxisBuilder<Date>
+public final class DateAxisBuilder extends CachedAxisBuilder<Date>
 {
     protected DateAxis axis;
 
@@ -35,14 +36,14 @@ public final class DateAxisBuilder extends AxisBuilder<Date>
     }
 
     @Override
-    public List<AxisLabel> getLabels()
+    protected List<AxisLabel> buildLabels()
     {
-        return null;
+        return new ArrayList();
     }
 
     @Override
-    public List<AxisValue<Date>> getValues(String modelProperty)
+    protected List<AxisValue<Date>> buildValues(String modelProperty)
     {
-        return null;
+        return new ArrayList();
     }
 }

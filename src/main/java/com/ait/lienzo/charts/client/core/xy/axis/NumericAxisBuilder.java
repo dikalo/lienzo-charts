@@ -18,9 +18,6 @@
 
 package com.ait.lienzo.charts.client.core.xy.axis;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.ait.lienzo.charts.client.core.axis.Axis;
 import com.ait.lienzo.charts.client.core.axis.NumericAxis;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
@@ -28,7 +25,10 @@ import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.google.gwt.i18n.client.NumberFormat;
 
-public final class NumericAxisBuilder extends AxisBuilder<Double>
+import java.util.LinkedList;
+import java.util.List;
+
+public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
 {
     private static final String       NULL_VALUE   = "0";
 
@@ -63,7 +63,7 @@ public final class NumericAxisBuilder extends AxisBuilder<Double>
     }
 
     @Override
-    public List<AxisLabel> getLabels()
+    protected List<AxisLabel> buildLabels()
     {
         String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
         Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
@@ -86,7 +86,7 @@ public final class NumericAxisBuilder extends AxisBuilder<Double>
     }
 
     @Override
-    public List<AxisValue<Double>> getValues(String modelProperty)
+    protected List<AxisValue<Double>> buildValues(String modelProperty)
     {
         Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
         int segments = axis.getSegments();

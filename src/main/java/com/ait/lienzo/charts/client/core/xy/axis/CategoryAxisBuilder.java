@@ -18,9 +18,6 @@
 
 package com.ait.lienzo.charts.client.core.xy.axis;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.ait.lienzo.charts.client.core.axis.Axis;
 import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.model.DataTableColumn;
@@ -28,7 +25,10 @@ import com.ait.lienzo.charts.client.core.xy.XYChartData;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
 
-public final class CategoryAxisBuilder extends AxisBuilder<String>
+import java.util.LinkedList;
+import java.util.List;
+
+public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
 {
     protected CategoryAxis axis;
 
@@ -59,8 +59,7 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
     }
 
     @Override
-    public List<AxisLabel> getLabels()
-    {
+    protected List<AxisLabel> buildLabels() {
         List<AxisLabel> result = new LinkedList<AxisLabel>();
         DataTableColumn dataTableLabelsColumn = getDataSummary().getData().getDataTable().getColumn(getDataSummary().getData().getCategoryAxisProperty());
         String[] labelValues = dataTableLabelsColumn.getStringValues();
@@ -78,9 +77,7 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
     }
 
     @Override
-    public List<AxisValue<String>> getValues(String modelProperty)
-    {
-
+    protected List<AxisValue<String>> buildValues(String modelProperty) {
         String[] values = getDataSummary().getData().getDataTable().getStringValues(modelProperty);
         int valuesCount = values.length;
         int seriesCount = getDataSummary().getNumSeries();
@@ -99,4 +96,5 @@ public final class CategoryAxisBuilder extends AxisBuilder<String>
         }
         return result;
     }
+    
 }
