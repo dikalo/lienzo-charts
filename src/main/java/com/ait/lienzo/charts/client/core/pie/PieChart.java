@@ -25,19 +25,15 @@ import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.model.DataTable;
 import com.ait.lienzo.charts.client.core.model.PieChartData;
-import com.ait.lienzo.charts.client.core.pie.animation.PieChartClearAnimation;
 import com.ait.lienzo.charts.client.core.pie.animation.PieChartResizeAnimation;
 import com.ait.lienzo.charts.client.core.pie.event.DataReloadedEvent;
 import com.ait.lienzo.charts.client.core.pie.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.pie.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.pie.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
-import com.ait.lienzo.client.core.animation.AnimationCallback;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.IAnimation;
-import com.ait.lienzo.client.core.animation.IAnimationHandle;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
 import com.ait.lienzo.client.core.event.NodeMouseClickHandler;
 import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
@@ -80,6 +76,51 @@ public class PieChart extends AbstractChart<PieChart>
     public PieChart()
     {
         super(ChartNodeType.PIE_CHART);
+    }
+
+    @Override
+    public PieChart init()
+    {
+        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, 1, null);
+
+        return this;
+    }
+
+    @Override
+    public PieChart init(double duration)
+    {
+        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+
+        return this;
+    }
+
+    @Override
+    public PieChart init(AnimationTweener tweener, double duration)
+    {
+        PieChartAnimationHelper.create(this, tweener, duration, null);
+
+        return this;
+    }
+
+    public PieChart reload(PieChartData data)
+    {
+        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, 1, null);
+
+        return this;
+    }
+
+    public PieChart reload(PieChartData data, double duration)
+    {
+        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, duration, null);
+
+        return this;
+    }
+
+    public PieChart reload(PieChartData data, AnimationTweener tweener, double duration)
+    {
+        PieChartAnimationHelper.reload(this, data, tweener, duration, null);
+
+        return this;
     }
 
     public HandlerRegistration addDataReloadedHandler(DataReloadedEventHandler handler)
@@ -352,8 +393,6 @@ public class PieChart extends AbstractChart<PieChart>
         return null;
     }
 
-    
-
     public final double getRadius(double chartWidth, double chartHeight)
     {
         double forSize = chartHeight;
@@ -423,4 +462,5 @@ public class PieChart extends AbstractChart<PieChart>
             return m_animating;
         }
     }
+
 }

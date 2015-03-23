@@ -41,12 +41,14 @@ import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedHandler;
-import com.ait.lienzo.charts.shared.core.types.*;
+import com.ait.lienzo.charts.shared.core.types.AxisDirection;
+import com.ait.lienzo.charts.shared.core.types.AxisType;
+import com.ait.lienzo.charts.shared.core.types.ChartDirection;
+import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
+import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.IAnimationCallback;
-import com.ait.lienzo.client.core.animation.IAnimationHandle;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
 import com.ait.lienzo.client.core.event.NodeMouseClickHandler;
 import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
@@ -141,6 +143,51 @@ public class BarChart extends AbstractChart<BarChart>
         super(ChartNodeType.BAR_CHART);
 
         getMetaData().put("creator", "Roger Martinez");
+    }
+
+    @Override
+    public BarChart init()
+    {
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, 1, null);
+
+        return this;
+    }
+
+    @Override
+    public BarChart init(double duration)
+    {
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+
+        return this;
+    }
+
+    @Override
+    public BarChart init(AnimationTweener tweener, double duration)
+    {
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+
+        return this;
+    }
+
+    public BarChart reload(XYChartData data)
+    {
+        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, 1, null);
+
+        return this;
+    }
+
+    public BarChart reload(XYChartData data, double duration)
+    {
+        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, duration, null);
+
+        return this;
+    }
+
+    public BarChart reload(XYChartData data, AnimationTweener tweener, double duration)
+    {
+        BarChartAnimationHelper.reload(this, data, tweener, duration, null);
+
+        return this;
     }
 
     public final BarChart setCategoriesAxis(CategoryAxis xAxis)
@@ -254,10 +301,11 @@ public class BarChart extends AbstractChart<BarChart>
         // Check valid values, if not, return default one.
         if (!LabelsPosition.NONE.equals(position) && isVertical())
         {
-            if (LabelsPosition.LEFT.equals(position) || LabelsPosition.RIGHT.equals(position)) position =  LabelsPosition.BOTTOM;
-        } else
+            if (LabelsPosition.LEFT.equals(position) || LabelsPosition.RIGHT.equals(position)) position = LabelsPosition.BOTTOM;
+        }
+        else
         {
-            if (LabelsPosition.TOP.equals(position) || LabelsPosition.BOTTOM.equals(position)) position  = LabelsPosition.LEFT;
+            if (LabelsPosition.TOP.equals(position) || LabelsPosition.BOTTOM.equals(position)) position = LabelsPosition.LEFT;
         }
 
         return position;
@@ -279,18 +327,19 @@ public class BarChart extends AbstractChart<BarChart>
     public final LabelsPosition getValuesAxisLabelsPosition()
     {
         LabelsPosition position = LabelsPosition.lookup(getAttributes().getString(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty()));
-        
+
         // Check valid values, if not, return default one.
-        if (!LabelsPosition.NONE.equals(position) && isVertical()) 
+        if (!LabelsPosition.NONE.equals(position) && isVertical())
         {
-            if (LabelsPosition.BOTTOM.equals(position) || LabelsPosition.TOP.equals(position)) position =  LabelsPosition.RIGHT;
-        } else
-        {
-            if (LabelsPosition.RIGHT.equals(position) || LabelsPosition.LEFT.equals(position)) position  = LabelsPosition.BOTTOM;
+            if (LabelsPosition.BOTTOM.equals(position) || LabelsPosition.TOP.equals(position)) position = LabelsPosition.RIGHT;
         }
-        
+        else
+        {
+            if (LabelsPosition.RIGHT.equals(position) || LabelsPosition.LEFT.equals(position)) position = LabelsPosition.BOTTOM;
+        }
+
         return position;
-        
+
     }
 
     public static class BarChartFactory extends ChartFactory<BarChart>

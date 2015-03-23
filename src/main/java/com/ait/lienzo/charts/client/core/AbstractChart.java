@@ -72,30 +72,30 @@ import com.google.gwt.json.client.JSONString;
 public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<IPrimitive<?>, T>
 {
     // Default animation duration (3sec).
-    protected static final double       ANIMATION_DURATION       = 3000;
+    protected static final double       ANIMATION_DURATION             = 3000;
 
     // Default animation duration when applying alpha to chart areas.
     public static final double          AREAS_ALPHA_ANIMATION_DURATION = 200;
 
-    public static final double          DEFAULT_MARGIN           = 50;
+    public static final double          DEFAULT_MARGIN                 = 50;
 
-    protected IAttributesChangedBatcher attributesChangedBatcher = new AnimationFrameAttributesChangedBatcher();
+    protected IAttributesChangedBatcher attributesChangedBatcher       = new AnimationFrameAttributesChangedBatcher();
 
-    protected final Group               chartArea                = new Group();
+    protected final Group               chartArea                      = new Group();
 
-    protected final Group               topArea                  = new Group();
+    protected final Group               topArea                        = new Group();
 
-    protected final Group               bottomArea               = new Group();
+    protected final Group               bottomArea                     = new Group();
 
-    protected final Group               rightArea                = new Group();
+    protected final Group               rightArea                      = new Group();
 
-    protected final Group               leftArea                 = new Group();
+    protected final Group               leftArea                       = new Group();
 
-    protected ChartResizer              resizer                  = null;
+    protected ChartResizer              resizer                        = null;
 
-    protected Text                      chartTitle               = null;
+    protected Text                      chartTitle                     = null;
 
-    protected ChartLegend               legend                   = null;
+    protected ChartLegend               legend                         = null;
 
     protected AbstractChart(ChartNodeType type)
     {
@@ -111,7 +111,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     {
         super(type, node, ctx);
     }
-    
+
     @Override
     public JSONObject toJSONObject()
     {
@@ -168,6 +168,12 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
             return false;
         }
     }
+
+    public abstract T init();
+    
+    public abstract T init(double duration);
+    
+    public abstract T init(AnimationTweener tweener, double duration);
 
     public T draw()
     {
@@ -233,7 +239,8 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         if (getChartResizer() != null) getChartResizer().moveToTop();
     }
 
-    protected void applyAlphaToAreas(final double alpha) {
+    protected void applyAlphaToAreas(final double alpha)
+    {
         AnimationProperties animationProperties = new AnimationProperties();
         animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
         leftArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
@@ -330,18 +337,22 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         {
             resizer = new ChartResizer(getWidth(), getHeight());
             resizer.setX(getX()).setY(getY()).moveToTop();
-            
-            resizer.addChartResizeEventHandler(new ChartResizeEventHandler() {
+
+            resizer.addChartResizeEventHandler(new ChartResizeEventHandler()
+            {
                 @Override
-                public void onChartResize(ChartResizeEvent event) {
+                public void onChartResize(ChartResizeEvent event)
+                {
                     AbstractChart.this.onChartResize(event);
                 }
             });
-            
-            resizer.addChartResizeAreaEventHandler(new ChartResizeAreaEventHandler() {
+
+            resizer.addChartResizeAreaEventHandler(new ChartResizeAreaEventHandler()
+            {
                 @Override
-                public void onChartResizeArea(ChartResizeAreaEvent event) {
-                    if (event.isEnteringResizeArea()) 
+                public void onChartResizeArea(ChartResizeAreaEvent event)
+                {
+                    if (event.isEnteringResizeArea())
                     {
                         applyAlphaToAreas(0.2);
                     }
@@ -351,7 +362,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
                     }
                 }
             });
-            
+
             add(resizer);
         }
     }
@@ -444,7 +455,8 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         return legend;
     }
 
-    public ChartResizer getChartResizer() {
+    public ChartResizer getChartResizer()
+    {
         return resizer;
     }
 
