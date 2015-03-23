@@ -55,7 +55,8 @@ public class BarChartResizeAnimation extends AbstractBarChartAnimation
     @Override
     protected void doAnimateCategoriesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
-        chartLabel.setAttributes(axisLabel, x, y, null, null, false);
+        chartLabel.set(axisLabel);
+        chartLabel.setX(x).setY(y);
     }
 
     @Override
@@ -67,7 +68,8 @@ public class BarChartResizeAnimation extends AbstractBarChartAnimation
     @Override
     protected void doAnimateValuesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
-        chartLabel.setAttributes(axisLabel, x, y, null, null, false);
+        chartLabel.set(axisLabel);
+        chartLabel.setX(x).setY(y);
     }
 
     @Override

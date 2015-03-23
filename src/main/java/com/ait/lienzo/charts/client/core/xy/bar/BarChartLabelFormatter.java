@@ -117,7 +117,6 @@ public class BarChartLabelFormatter
             @Override
             public void onNodeMouseEnter(NodeMouseEnterEvent event)
             {
-                GWT.log("label mouse enter at " + label.getLabel().getText());
                 highlight(label, text, cutText, originalRotation);
             }
         });
@@ -127,7 +126,6 @@ public class BarChartLabelFormatter
             @Override
             public void onNodeMouseExit(NodeMouseExitEvent event)
             {
-                GWT.log("label mouse exit at " + label.getLabel().getText());
                 unhighlight(label, text, cutText, originalRotation);
             }
         });

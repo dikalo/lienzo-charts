@@ -16,18 +16,24 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
 
     protected double m_height;
 
-    public AbstractChartAnimation(AbstractChart<?> node, final double chartWidth, final double chartHeight, AnimationTweener tweener, double duration, IAnimationCallback callback)
+    public AbstractChartAnimation(final AbstractChart<?> node, final double chartWidth, final double chartHeight, AnimationTweener tweener, double duration, IAnimationCallback callback)
     {
         super(node, tweener, duration, callback);
         this.m_width = chartWidth;
         this.m_height = chartHeight;
 
         setNode(node);
+        
+        init(node);
     }
 
     protected AbstractChart<?> getChart()
     {
         return (AbstractChart<?>) getNode();
+    }
+    
+    protected void init(final AbstractChart<?> node) {
+        // Initialize.        
     }
 
     protected void calculate(final double w, final double h)
@@ -64,7 +70,16 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
         return super.doClose();
     }
 
-    protected static AnimationProperties buildAnimationProperties(Double x, Double y, Double w, Double h)
+    protected static AnimationProperties buildAnimationProperties(final Double x, final Double y)
+    {
+        if (x == null && y == null) return null;
+        AnimationProperties animationProperties = new AnimationProperties();
+        if (x != null) animationProperties.push(AnimationProperty.Properties.X(x));
+        if (y != null) animationProperties.push(AnimationProperty.Properties.Y(y));
+        return animationProperties;
+    }
+
+    protected static AnimationProperties buildAnimationProperties(final Double x, final Double y, final Double w, final Double h)
     {
         if (x == null && y == null && w == null && h == null) return null;
         AnimationProperties animationProperties = new AnimationProperties();
@@ -75,7 +90,7 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
         return animationProperties;
     }
 
-    public static AnimationProperties buildAnimationProperties(Double alpha)
+    public static AnimationProperties buildAnimationProperties(final Double alpha)
     {
         if (alpha == null) return null;
         AnimationProperties animationProperties = new AnimationProperties();

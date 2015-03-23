@@ -211,8 +211,4 @@ public class ChartResizer extends Group
         return addEnsureHandler(ChartResizeAreaEvent.TYPE, handler);
     }
     
-    public void clear()
-    {
-        removeFromParent();
-    }
 }

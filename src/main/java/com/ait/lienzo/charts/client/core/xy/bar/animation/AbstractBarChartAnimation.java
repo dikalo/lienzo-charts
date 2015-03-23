@@ -93,8 +93,8 @@ public abstract class AbstractBarChartAnimation extends AbstractChartAnimation
             if (labels != null && !labels.isEmpty())
             {
                 // Check max labels size.
-                final double maxLabelWidth = isVertical() ? w / lsize : (!clp.equals(LabelsPosition.RIGHT) ? ml : mr);
-                final double maxLabelHeight = isVertical() ? (!clp.equals(LabelsPosition.TOP) ? mb : mt) : h / lsize;
+                final double maxLabelWidth = isVertical() ? w / lsize : (clp.equals(LabelsPosition.RIGHT) ? mr : ml);
+                final double maxLabelHeight = isVertical() ? (clp.equals(LabelsPosition.BOTTOM) ? mb : mt) : h / lsize;
                 final BarChartLabelFormatter categoriesLabelFormatter = new BarChartLabelFormatter(seriesLabels);
 
                 // Apply format to the labels.

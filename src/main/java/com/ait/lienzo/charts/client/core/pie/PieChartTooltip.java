@@ -108,8 +108,4 @@ public class PieChartTooltip extends Group
         LayerRedrawManager.get().schedule(getLayer());
     }
 
-    public void clear()
-    {
-        removeFromParent();
-    }
 }

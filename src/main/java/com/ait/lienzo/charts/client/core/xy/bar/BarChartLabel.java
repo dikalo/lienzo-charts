@@ -2,12 +2,8 @@
 package com.ait.lienzo.charts.client.core.xy.bar;
 
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
-import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.IColor;
@@ -16,8 +12,6 @@ import com.ait.lienzo.shared.core.types.TextBaseLine;
 
 public class BarChartLabel extends Group
 {
-    private static final double ANIMATION_DURATION = 500;
-
     private static final String FONT_FAMILY        = "Verdana";
 
     private static final String FONT_STYLE         = "";
@@ -48,32 +42,11 @@ public class BarChartLabel extends Group
         labelContainer.setAlpha(0.01);
         labelContainer.moveToTop();
     }
-
-    public void setAttributes(final AxisLabel axisLabel, final Double x, final Double y, final Double width, final Double height, final boolean animate)
-    {
+    
+    public void set(final AxisLabel axisLabel) {
         this.axisLabel = axisLabel;
         String text = axisLabel.getText();
         label.setText(text);
-        if (x != null) this.setX(x);
-        if (y != null) this.setY(y);
-        setShapeAttributes(label, null, null, width, height, animate);
-        setShapeAttributes(labelContainer, null, null, width, height, animate);
-    }
-
-    public void clear()
-    {
-        label.removeFromParent();
-        labelContainer.removeFromParent();
-    }
-
-    public Text getLabel()
-    {
-        return label;
-    }
-
-    public Rectangle getLabelContainer()
-    {
-        return labelContainer;
     }
 
     public AxisLabel getAxisLabel()
@@ -97,27 +70,18 @@ public class BarChartLabel extends Group
 
     }
 
-    private void setShapeAttributes(Shape<?> shape, Double x, Double y, Double width, Double height, boolean animate)
+    /* **************************************************************************** */
+    /* Package protected access modifier for methods that expose child group nodes. */
+    /* **************************************************************************** */
+    
+    Text getLabel()
     {
-        if (animate)
-        {
-            AnimationProperties animationProperties = new AnimationProperties();
-            if (width != null) animationProperties.push(AnimationProperty.Properties.WIDTH(width));
-            if (height != null) animationProperties.push(AnimationProperty.Properties.HEIGHT(height));
-            if (x != null) animationProperties.push(AnimationProperty.Properties.X(x));
-            if (y != null) animationProperties.push(AnimationProperty.Properties.Y(y));
-            shape.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
-
-        }
-        else
-        {
-            if (shape != null)
-            {
-                if (x != null) shape.setX(x);
-                if (y != null) shape.setY(y);
-                if (width != null) shape.getAttributes().setWidth(width);
-                if (height != null) shape.getAttributes().setHeight(height);
-            }
-        }
+        return label;
     }
+
+    Rectangle getLabelContainer()
+    {
+        return labelContainer;
+    }
+
 }

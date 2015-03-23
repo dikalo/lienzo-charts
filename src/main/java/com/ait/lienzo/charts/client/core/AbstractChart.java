@@ -43,12 +43,10 @@ import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.client.core.shape.storage.IStorageEngine;
 import com.ait.lienzo.client.core.shape.storage.PrimitiveFastArrayStorageEngine;
-import com.ait.lienzo.client.core.types.NFastArrayList;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
@@ -73,14 +71,11 @@ import com.google.gwt.json.client.JSONString;
  */
 public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<IPrimitive<?>, T>
 {
-    // Default animation duration (2sec).
-    protected static final double       ANIMATION_DURATION       = 2000;
-
-    // Default animation duration when clearing chart.
-    public static final double          CLEAR_ANIMATION_DURATION = 500;
+    // Default animation duration (3sec).
+    protected static final double       ANIMATION_DURATION       = 3000;
 
     // Default animation duration when applying alpha to chart areas.
-    public static final double          ALPHA_ANIMATION_DURATION  = 500;
+    public static final double          AREAS_ALPHA_ANIMATION_DURATION = 200;
 
     public static final double          DEFAULT_MARGIN           = 50;
 
@@ -241,11 +236,11 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     protected void applyAlphaToAreas(final double alpha) {
         AnimationProperties animationProperties = new AnimationProperties();
         animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-        leftArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
-        rightArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
-        topArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
-        bottomArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
-        chartArea.animate(AnimationTweener.LINEAR, animationProperties, ALPHA_ANIMATION_DURATION);
+        leftArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
+        rightArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
+        topArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
+        bottomArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
+        chartArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
     }
 
     protected void buildLegend()
@@ -430,8 +425,8 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     protected void clear()
     {
         if (chartTitle != null) chartTitle.removeFromParent();
-        if (legend != null) legend.clear();
-        if (resizer != null) resizer.clear();
+        if (legend != null) legend.removeFromParent();
+        if (resizer != null) resizer.removeFromParent();
 
         // Ensure that all shapes are removed. 
         this.removeAll();

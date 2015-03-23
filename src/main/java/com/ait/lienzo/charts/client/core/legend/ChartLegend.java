@@ -211,8 +211,4 @@ public class ChartLegend extends Group
         return 0;
     }
 
-    public void clear()
-    {
-        removeFromParent();
-    }
 }

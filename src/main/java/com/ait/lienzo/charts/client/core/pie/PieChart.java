@@ -108,10 +108,7 @@ public class PieChart extends AbstractChart<PieChart>
         _build(data);
 
         // Tooltip.
-        buildToolip();
-
-        // Resize the chart.
-        new PieChartResizeAnimation(this, getChartWidth(), getChartHeight(), AnimationTweener.LINEAR, ANIMATION_DURATION, null).run();
+        buildTooltip();
     }
 
     @Override
@@ -175,7 +172,7 @@ public class PieChart extends AbstractChart<PieChart>
                     AnimationProperties animationProperties = new AnimationProperties();
                     animationProperties.push(AnimationProperty.Properties.ALPHA(0));
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, CLEAR_ANIMATION_DURATION);
+                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
                 }
             });
             slice.addNodeMouseExitHandler(new NodeMouseExitHandler()
@@ -193,7 +190,7 @@ public class PieChart extends AbstractChart<PieChart>
                     AnimationProperties animationProperties = new AnimationProperties();
                     animationProperties.push(AnimationProperty.Properties.ALPHA(1));
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, CLEAR_ANIMATION_DURATION);
+                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
                 }
             });
             slice.setFillColor(getColor(i)).setStrokeColor(ColorName.BLACK).setStrokeWidth(1);
@@ -243,7 +240,7 @@ public class PieChart extends AbstractChart<PieChart>
         labels.removeFromParent();
         pieSlices.clear();
         slices.removeFromParent();
-        if (tooltip != null) tooltip.clear();
+        if (tooltip != null) tooltip.removeFromParent();
         super.clear();
     }
 
@@ -270,7 +267,7 @@ public class PieChart extends AbstractChart<PieChart>
             {
                 AnimationProperties animationProperties = new AnimationProperties();
                 animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-                slice.animate(AnimationTweener.LINEAR, animationProperties, CLEAR_ANIMATION_DURATION);
+                slice.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
             }
         }
     }
@@ -306,7 +303,7 @@ public class PieChart extends AbstractChart<PieChart>
         }
     }
 
-    private void buildToolip()
+    private void buildTooltip()
     {
         tooltip = new PieChartTooltip();
 
@@ -333,32 +330,7 @@ public class PieChart extends AbstractChart<PieChart>
         return new Color(position * 20, 128, 0);
     }
 
-    public final PieChart setData(final PieChartData data)
-    {
-        // If new data contains different properties on axis, clear current shapes.
-        if (isCleanRequired(getData(), data))
-        {
-
-            new PieChartClearAnimation(this, getChartWidth(), getChartHeight(), AnimationTweener.LINEAR, CLEAR_ANIMATION_DURATION, new AnimationCallback()
-            {
-                @Override
-                public void onClose(IAnimation animation, IAnimationHandle handle)
-                {
-                    super.onClose(animation, handle);
-                    _setData(data);
-                    draw();
-                }
-
-            }).run();
-        }
-        else
-        {
-            _setData(data);
-        }
-        return this;
-    }
-
-    private final PieChart _setData(PieChartData data)
+    public final PieChart setData(PieChartData data)
     {
         if (null != data)
         {
@@ -380,27 +352,7 @@ public class PieChart extends AbstractChart<PieChart>
         return null;
     }
 
-    private boolean isCleanRequired(PieChartData currentData, PieChartData newData)
-    {
-        if (currentData == null && newData == null) return false;
-        if (currentData == null && newData != null) return false;
-        if (newData == null && currentData != null) return true;
-        String categoriesColumn = currentData.getCategoriesProperty();
-        String newCategoriesColumn = newData.getCategoriesProperty();
-        if (hasDataColumnChanged(categoriesColumn, newCategoriesColumn)) return true;
-        String valuesColumn = currentData.getValuesProperty();
-        String newValuesColumn = newData.getValuesProperty();
-        return hasDataColumnChanged(valuesColumn, newValuesColumn);
-    }
-
-    private boolean hasDataColumnChanged(String oldColumn, String newColumn)
-    {
-        if (oldColumn == null && newColumn != null) return true;
-        if (oldColumn == null && newColumn == null) return false;
-        if (oldColumn != null && newColumn == null) return true;
-        if (oldColumn != null && !oldColumn.equals(newColumn)) return true;
-        return false;
-    }
+    
 
     public final double getRadius(double chartWidth, double chartHeight)
     {

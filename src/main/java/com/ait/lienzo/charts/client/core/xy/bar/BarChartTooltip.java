@@ -103,8 +103,4 @@ public class BarChartTooltip extends Group
         LayerRedrawManager.get().schedule(getLayer());
     }
 
-    public void clear()
-    {
-        removeFromParent();
-    }
 }

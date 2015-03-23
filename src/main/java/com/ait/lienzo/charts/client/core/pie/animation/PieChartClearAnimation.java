@@ -13,11 +13,11 @@ import static com.ait.lienzo.charts.client.core.pie.animation.AbstractPieChartAn
 public class PieChartClearAnimation extends StackedTweeningAnimation
 {
 
-    public PieChartClearAnimation(PieChart pieChart, double width, double height, AnimationTweener tweener, double duration, IAnimationCallback callback)
+    public PieChartClearAnimation(final PieChart pieChart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
         super(pieChart, tweener, duration, callback);
         
-        init(width, height);
+        init(pieChart.getChartWidth(), pieChart.getChartHeight());
     }
 
     protected PieChart getPieChart()

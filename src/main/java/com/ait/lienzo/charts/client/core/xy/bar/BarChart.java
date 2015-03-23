@@ -36,24 +36,15 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
-import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartClearAnimation;
-import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartCreateAnimation;
-import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartReloadAnimation;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartResizeAnimation;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedHandler;
-import com.ait.lienzo.charts.shared.core.types.AxisDirection;
-import com.ait.lienzo.charts.shared.core.types.AxisType;
-import com.ait.lienzo.charts.shared.core.types.ChartDirection;
-import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
-import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
-import com.ait.lienzo.client.core.animation.AnimationCallback;
+import com.ait.lienzo.charts.shared.core.types.*;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.IAnimation;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.animation.IAnimationHandle;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
@@ -96,7 +87,6 @@ import com.google.gwt.json.client.JSONObject;
  *     <li><code>FONT_STYLE</code>: The chart font style.</li>
  *     <li><code>FONT_SIZE</code>: The chart font size.</li>
  *     <li><code>RESIZABLE</code>: Add or avoid the use of the chart resizer.</li>
- *     <li><code>ANIMATED</code>: Enable animations.</li>
  *     <li><code>LEGEND_POSITION</code>: The chart legend position.</li>
  *     <li><code>LEGEND_ALIGN</code>: The chart legend alignment.</li>
  *     <li><code>XY_CHART_DATA</code>: The chart data.</li>
@@ -191,34 +181,6 @@ public class BarChart extends AbstractChart<BarChart>
 
     public final BarChart setData(final XYChartData data)
     {
-        // If new data contains different properties on axis, clear current shapes.
-        if (isCleanRequired(getData(), data))
-        {
-            new BarChartClearAnimation(this, getChartWidth(), getChartHeight(), AnimationTweener.LINEAR, CLEAR_ANIMATION_DURATION, new AnimationCallback()
-            {
-                @Override
-                public void onClose(IAnimation animation, IAnimationHandle handle)
-                {
-                    super.onClose(animation, handle);
-                    _setData(data);
-                    draw();
-                }
-            }).run();
-        }
-        else if (getData() != null && data != null)
-        {
-            // Reload data as may have been updated.
-            new BarChartReloadAnimation(this, data, AnimationTweener.LINEAR, CLEAR_ANIMATION_DURATION, null).run();
-        }
-        else
-        {
-            _setData(data);
-        }
-        return this;
-    }
-
-    private final BarChart _setData(final XYChartData data)
-    {
         if (null != data)
         {
             getAttributes().put(ChartAttribute.XY_CHART_DATA.getProperty(), data.getJSO());
@@ -228,21 +190,6 @@ public class BarChart extends AbstractChart<BarChart>
             getAttributes().delete(ChartAttribute.XY_CHART_DATA.getProperty());
         }
         return this;
-    }
-
-    private boolean isCleanRequired(final XYChartData currentData, final XYChartData newData)
-    {
-        if (currentData == null && newData == null) return false;
-        if (currentData == null && newData != null) return false;
-        if (newData == null && currentData != null) return true;
-        String currentCategoryAxisProperty = currentData.getCategoryAxisProperty();
-        String newCategoryAxisProperty = newData.getCategoryAxisProperty();
-        if (currentCategoryAxisProperty == null && newCategoryAxisProperty != null) return true;
-        if (currentCategoryAxisProperty == null && newCategoryAxisProperty == null) return false;
-        if (currentCategoryAxisProperty != null && newCategoryAxisProperty == null) return true;
-        if (currentCategoryAxisProperty != null && !currentCategoryAxisProperty.equals(newCategoryAxisProperty)) return true;
-        if (currentData.getDataTable() != null && newData.getDataTable() != null && currentData.getDataTable().size() != newData.getDataTable().size()) return true;
-        return false;
     }
 
     public final XYChartData getData()
@@ -302,7 +249,18 @@ public class BarChart extends AbstractChart<BarChart>
 
     public final LabelsPosition getCategoriesAxisLabelsPosition()
     {
-        return LabelsPosition.lookup(getAttributes().getString(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty()));
+        LabelsPosition position = LabelsPosition.lookup(getAttributes().getString(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty()));
+
+        // Check valid values, if not, return default one.
+        if (!LabelsPosition.NONE.equals(position) && isVertical())
+        {
+            if (LabelsPosition.LEFT.equals(position) || LabelsPosition.RIGHT.equals(position)) position =  LabelsPosition.BOTTOM;
+        } else
+        {
+            if (LabelsPosition.TOP.equals(position) || LabelsPosition.BOTTOM.equals(position)) position  = LabelsPosition.LEFT;
+        }
+
+        return position;
     }
 
     public final BarChart setValuesAxisLabelsPosition(LabelsPosition labelsPosition)
@@ -320,7 +278,19 @@ public class BarChart extends AbstractChart<BarChart>
 
     public final LabelsPosition getValuesAxisLabelsPosition()
     {
-        return LabelsPosition.lookup(getAttributes().getString(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty()));
+        LabelsPosition position = LabelsPosition.lookup(getAttributes().getString(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty()));
+        
+        // Check valid values, if not, return default one.
+        if (!LabelsPosition.NONE.equals(position) && isVertical()) 
+        {
+            if (LabelsPosition.BOTTOM.equals(position) || LabelsPosition.TOP.equals(position)) position =  LabelsPosition.RIGHT;
+        } else
+        {
+            if (LabelsPosition.RIGHT.equals(position) || LabelsPosition.LEFT.equals(position)) position  = LabelsPosition.BOTTOM;
+        }
+        
+        return position;
+        
     }
 
     public static class BarChartFactory extends ChartFactory<BarChart>
@@ -387,7 +357,7 @@ public class BarChart extends AbstractChart<BarChart>
             GWT.log("No data");
             return;
         }
-        // Orientiation.
+        // Orientation.
         final boolean isVertical = isVertical();
         categoriesAxisBuilder = buildCategoryAxisBuilder(isVertical);
         valuesAxisBuilder = buildValuesAxisBuilder(isVertical);
@@ -429,12 +399,12 @@ public class BarChart extends AbstractChart<BarChart>
                     seriesLabels.add(label);
                     if (isVertical)
                     {
-                        if (!getCategoriesAxisLabelsPosition().equals(LabelsPosition.TOP)) bottomArea.add(label);
+                        if (getCategoriesAxisLabelsPosition().equals(LabelsPosition.BOTTOM)) bottomArea.add(label);
                         else topArea.add(label);
                     }
                     else
                     {
-                        if (!getCategoriesAxisLabelsPosition().equals(LabelsPosition.RIGHT)) leftArea.add(label);
+                        if (getCategoriesAxisLabelsPosition().equals(LabelsPosition.LEFT)) leftArea.add(label);
                         else rightArea.add(label);
                     }
                 }
@@ -471,16 +441,14 @@ public class BarChart extends AbstractChart<BarChart>
         }
         // Build the chart values as rectangle shapes.
         XYChartSeries[] series = getData().getSeries();
-        for (int numSerie = 0; numSerie < series.length; numSerie++)
+        for (int numSeries = 0; numSeries < series.length; numSeries++)
         {
-            final XYChartSeries serie = series[numSerie];
-            buildSeriesValues(serie, numSerie);
+            final XYChartSeries _series = series[numSeries];
+            buildSeriesValues(_series, numSeries);
         }
         // Tooltip.
-        buildToolip();
+        buildTooltip();
 
-        // Set positions and sizes for shapes.
-        new BarChartCreateAnimation(this, getChartWidth(), getChartHeight(), AnimationTweener.LINEAR, ANIMATION_DURATION, null).run();
     }
 
     @Override
@@ -506,7 +474,7 @@ public class BarChart extends AbstractChart<BarChart>
         topArea.add(chartTitle);
     }
 
-    private void buildToolip()
+    private void buildTooltip()
     {
         tooltip = new BarChartTooltip();
 
@@ -522,32 +490,18 @@ public class BarChart extends AbstractChart<BarChart>
         XYChartSeries[] series = getData().getSeries();
         if (legend != null && series != null && series.length > 0)
         {
-            for (XYChartSeries serie : series)
+            for (XYChartSeries _series : series)
             {
-                legend.add(new ChartLegend.ChartLegendEntry(serie.getName(), serie.getColor()));
+                legend.add(new ChartLegend.ChartLegendEntry(_series.getName(), _series.getColor()));
             }
             legend.build();
         }
     }
 
-    @Override
-    public IAnimationHandle animate(AnimationTweener tweener, AnimationProperties properties, double duration)
-    {
-        // TODO
-        return super.animate(tweener, properties, duration);
-    }
-
-    @Override
-    public IAnimationHandle animate(AnimationTweener tweener, AnimationProperties properties, double duration, IAnimationCallback callback)
-    {
-        // TODO
-        return super.animate(tweener, properties, duration, callback);
-    }
-
-    public BarChart buildSeriesValues(final XYChartSeries serie, final int numSerie)
+    public BarChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
         List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
-        List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
+        List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
@@ -562,7 +516,7 @@ public class BarChart extends AbstractChart<BarChart>
                 final String yValueFormatted = valuesAxisBuilder.format(yValue);
 
                 final Rectangle bar = new Rectangle(0, 0);
-                bar.setID(buildId("value", numSerie, i));
+                bar.setID(buildId("value", numSeries, i));
                 bars.add(bar);
 
                 // Click handler (filtering).
@@ -572,7 +526,7 @@ public class BarChart extends AbstractChart<BarChart>
                     @Override
                     public void onNodeMouseClick(NodeMouseClickEvent event)
                     {
-                        BarChart.this.fireEvent(new ValueSelectedEvent(serie.getName(), getData().getCategoryAxisProperty(), row));
+                        BarChart.this.fireEvent(new ValueSelectedEvent(series.getName(), getData().getCategoryAxisProperty(), row));
                     }
                 });
 
@@ -589,7 +543,7 @@ public class BarChart extends AbstractChart<BarChart>
                         double height = bar.getHeight();
                         double xTooltip = isVertical() ? x + width / 2 : x + width;
                         double yTooltip = isVertical() ? y - BarChartTooltip.TRIANGLE_SIZE : y + height / 2;
-                        seriesValuesAlpha(numSerie, numValue, 0.5d);
+                        seriesValuesAlpha(numSeries, numValue, 0.5d);
                         tooltip.setX(xTooltip).setY(yTooltip);
                         tooltip.show(xValueFormatted, yValueFormatted);
                     }
@@ -600,21 +554,21 @@ public class BarChart extends AbstractChart<BarChart>
                     @Override
                     public void onNodeMouseExit(NodeMouseExitEvent event)
                     {
-                        seriesValuesAlpha(numSerie, numValue, 1d);
+                        seriesValuesAlpha(numSeries, numValue, 1d);
                         tooltip.hide();
                     }
                 });
                 chartArea.add(bar);
             }
-            seriesValues.put(serie.getName(), bars);
+            seriesValues.put(series.getName(), bars);
 
         }
         return this;
     }
 
-    protected void seriesValuesAlpha(int numSerie, int numValue, double alpha)
+    protected void seriesValuesAlpha(int numSeries, int numValue, double alpha)
     {
-        String barId = BarChart.buildId("value", numSerie, numValue);
+        String barId = BarChart.buildId("value", numSeries, numValue);
         for (Map.Entry<String, List<Rectangle>> entry : seriesValues.entrySet())
         {
             List<Rectangle> values = entry.getValue();
@@ -634,11 +588,11 @@ public class BarChart extends AbstractChart<BarChart>
         }
     }
 
-    public BarChart removeSeriesValues(final String serieName)
+    public BarChart removeSeriesValues(final String seriesName)
     {
-        if (serieName != null)
+        if (seriesName != null)
         {
-            seriesValues.remove(serieName);
+            seriesValues.remove(seriesName);
         }
         return this;
     }
@@ -748,7 +702,7 @@ public class BarChart extends AbstractChart<BarChart>
         {
             for (BarChartLabel label : valuesLabels)
             {
-                label.clear();
+                label.removeFromParent();
             }
             valuesLabels.clear();
         }
@@ -756,7 +710,7 @@ public class BarChart extends AbstractChart<BarChart>
         {
             for (BarChartLabel label : seriesLabels)
             {
-                label.clear();
+                label.removeFromParent();
             }
             seriesLabels.clear();
         }
@@ -773,13 +727,13 @@ public class BarChart extends AbstractChart<BarChart>
         }
         categoriesAxisBuilder = null;
         valuesAxisBuilder = null;
-        if (tooltip != null) tooltip.clear();
+        if (tooltip != null) tooltip.removeFromParent();
         super.clear();
     }
 
-    public static String buildId(String preffix, int numSerie, int numValue)
+    public static String buildId(String prefix, int numSeries, int numValue)
     {
-        return preffix + numSerie + "" + numValue;
+        return prefix + numSeries + "" + numValue;
     }
 
     public List<Text> getCategoriesAxisTitle()
