@@ -59,6 +59,7 @@ public class PieChartTooltip extends Group
         categoriesText.moveToTop();
         valuesText.moveToTop();
         setVisible(false);
+        setListening(false);
         return this;
     }
 
@@ -107,5 +108,4 @@ public class PieChartTooltip extends Group
     {
         LayerRedrawManager.get().schedule(getLayer());
     }
-
 }

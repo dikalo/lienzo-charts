@@ -59,6 +59,7 @@ public class BarChartTooltip extends Group
         categoriesText.moveToTop();
         valuesText.moveToTop();
         setVisible(false);
+        setListening(false);
         return this;
 
     }
