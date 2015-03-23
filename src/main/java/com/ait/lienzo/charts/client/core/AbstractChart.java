@@ -71,9 +71,6 @@ import com.google.gwt.json.client.JSONString;
  */
 public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<IPrimitive<?>, T>
 {
-    // Default animation duration (3sec).
-    protected static final double       ANIMATION_DURATION             = 3000;
-
     // Default animation duration when applying alpha to chart areas.
     public static final double          AREAS_ALPHA_ANIMATION_DURATION = 200;
 
@@ -96,6 +93,8 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     protected Text                      chartTitle                     = null;
 
     protected ChartLegend               legend                         = null;
+
+    private double                      m_defaultAnimationDuration     = 500;
 
     protected AbstractChart(ChartNodeType type)
     {
@@ -136,6 +135,18 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         return new PrimitiveFastArrayStorageEngine();
     }
 
+    public final T setDefaultAnimationDuration(final double duration)
+    {
+        m_defaultAnimationDuration = Math.max(duration, 1);
+
+        return cast();
+    }
+
+    public final double getDefaultAnimationDuration()
+    {
+        return m_defaultAnimationDuration;
+    }
+
     public abstract static class ChartFactory<T extends AbstractChart<T>> extends GroupOfFactory<IPrimitive<?>, T>
     {
         public ChartFactory(ChartNodeType type)
@@ -170,9 +181,9 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     }
 
     public abstract T init();
-    
+
     public abstract T init(double duration);
-    
+
     public abstract T init(AnimationTweener tweener, double duration);
 
     public T draw()

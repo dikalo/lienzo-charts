@@ -148,7 +148,7 @@ public class BarChart extends AbstractChart<BarChart>
     @Override
     public BarChart init()
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, 1, null);
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
 
         return this;
     }
@@ -156,7 +156,7 @@ public class BarChart extends AbstractChart<BarChart>
     @Override
     public BarChart init(double duration)
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
 
         return this;
     }
@@ -164,28 +164,28 @@ public class BarChart extends AbstractChart<BarChart>
     @Override
     public BarChart init(AnimationTweener tweener, double duration)
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
 
         return this;
     }
 
     public BarChart reload(XYChartData data)
     {
-        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, 1, null);
+        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
 
         return this;
     }
 
     public BarChart reload(XYChartData data, double duration)
     {
-        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, duration, null);
+        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, Math.max(duration, 1), null);
 
         return this;
     }
 
     public BarChart reload(XYChartData data, AnimationTweener tweener, double duration)
     {
-        BarChartAnimationHelper.reload(this, data, tweener, duration, null);
+        BarChartAnimationHelper.reload(this, data, tweener, Math.max(duration, 1), null);
 
         return this;
     }
@@ -510,7 +510,7 @@ public class BarChart extends AbstractChart<BarChart>
             final double w = event.getWidth() - getMarginLeft() - getMarginRight();
             final double h = event.getHeight() - getMarginTop() - getMarginBottom();
             // Apply resize to bar chart.
-            new BarChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, ANIMATION_DURATION, null).run();
+            new BarChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null).run();
         }
         super.onChartResize(event);
     }
@@ -630,7 +630,7 @@ public class BarChart extends AbstractChart<BarChart>
                     {
                         AnimationProperties animationProperties = new AnimationProperties();
                         animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-                        value.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
+                        value.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
                     }
                 }
             }

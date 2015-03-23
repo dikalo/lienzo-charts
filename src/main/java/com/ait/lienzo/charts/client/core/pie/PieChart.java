@@ -81,7 +81,7 @@ public class PieChart extends AbstractChart<PieChart>
     @Override
     public PieChart init()
     {
-        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, 1, null);
+        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
 
         return this;
     }
@@ -89,7 +89,7 @@ public class PieChart extends AbstractChart<PieChart>
     @Override
     public PieChart init(double duration)
     {
-        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, duration, null);
+        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
 
         return this;
     }
@@ -97,28 +97,28 @@ public class PieChart extends AbstractChart<PieChart>
     @Override
     public PieChart init(AnimationTweener tweener, double duration)
     {
-        PieChartAnimationHelper.create(this, tweener, duration, null);
+        PieChartAnimationHelper.create(this, tweener, Math.max(duration, 1), null);
 
         return this;
     }
 
     public PieChart reload(PieChartData data)
     {
-        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, 1, null);
+        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
 
         return this;
     }
 
     public PieChart reload(PieChartData data, double duration)
     {
-        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, duration, null);
+        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, Math.max(duration, 1), null);
 
         return this;
     }
 
     public PieChart reload(PieChartData data, AnimationTweener tweener, double duration)
     {
-        PieChartAnimationHelper.reload(this, data, tweener, duration, null);
+        PieChartAnimationHelper.reload(this, data, tweener, Math.max(duration, 1), null);
 
         return this;
     }
@@ -213,7 +213,7 @@ public class PieChart extends AbstractChart<PieChart>
                     AnimationProperties animationProperties = new AnimationProperties();
                     animationProperties.push(AnimationProperty.Properties.ALPHA(0));
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
+                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
                 }
             });
             slice.addNodeMouseExitHandler(new NodeMouseExitHandler()
@@ -231,7 +231,7 @@ public class PieChart extends AbstractChart<PieChart>
                     AnimationProperties animationProperties = new AnimationProperties();
                     animationProperties.push(AnimationProperty.Properties.ALPHA(1));
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
+                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
                 }
             });
             slice.setFillColor(getColor(i)).setStrokeColor(ColorName.BLACK).setStrokeWidth(1);
@@ -295,7 +295,7 @@ public class PieChart extends AbstractChart<PieChart>
             final double w = event.getWidth() - getMarginLeft() - getMarginRight();
             final double h = event.getHeight() - getMarginTop() - getMarginBottom();
             // Apply resize to bar chart.
-            new PieChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, ANIMATION_DURATION, null).run();
+            new PieChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null).run();
         }
         super.onChartResize(event);
     }
@@ -308,7 +308,7 @@ public class PieChart extends AbstractChart<PieChart>
             {
                 AnimationProperties animationProperties = new AnimationProperties();
                 animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-                slice.animate(AnimationTweener.LINEAR, animationProperties, ANIMATION_DURATION);
+                slice.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
             }
         }
     }
