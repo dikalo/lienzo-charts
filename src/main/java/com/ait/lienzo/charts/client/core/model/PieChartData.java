@@ -16,6 +16,7 @@
 
 package com.ait.lienzo.charts.client.core.model;
 
+import com.ait.lienzo.charts.client.core.model.DataTable.DataTableJSO;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public final class PieChartData
@@ -34,16 +35,23 @@ public final class PieChartData
         }
     }
 
-    public PieChartData(DataTable dataTable, String categoriesProperty, String valuesProperty)
+    public PieChartData(final DataTable table, String categoriesProperty, String valuesProperty)
     {
-        this(PieChartDataJSO.make());
-        this.m_jso.setDataTable(dataTable);
-        DataTableColumn categoriesCol = getDataTable().getColumn(categoriesProperty);
-        DataTableColumn valuesCol = getDataTable().getColumn(valuesProperty);
+        m_jso = PieChartDataJSO.make();
+
+        m_jso.setDataTableJSO(table.getJSO());
+
+        DataTableColumn categoriesCol = table.getColumn(categoriesProperty);
+
+        DataTableColumn valuesCol = table.getColumn(valuesProperty);
+
         if (categoriesCol == null || !categoriesCol.getType().equals(DataTableColumn.DataTableColumnType.STRING)) throw new RuntimeException("PieChart only support STRING data types for categories property");
+
         if (valuesCol == null || !valuesCol.getType().equals(DataTableColumn.DataTableColumnType.NUMBER)) throw new RuntimeException("PieChart only support NUMERIC data types for values property");
-        this.m_jso.setCategoriesProperty(categoriesProperty);
-        this.m_jso.setValuesProperty(valuesProperty);
+
+        m_jso.setCategoriesProperty(categoriesProperty);
+
+        m_jso.setValuesProperty(valuesProperty);
     }
 
     public final PieChartDataJSO getJSO()
@@ -53,7 +61,7 @@ public final class PieChartData
 
     public final DataTable getDataTable()
     {
-        return this.m_jso.getDataTable();
+        return new DataTable(m_jso.getDataTableJSO());
     }
 
     public final String getCategoriesProperty()
@@ -68,7 +76,7 @@ public final class PieChartData
 
     public final int size()
     {
-        return this.m_jso.getDataTable().size();
+        return getDataTable().size();
     }
 
     public static final class PieChartDataJSO extends JavaScriptObject
@@ -98,11 +106,11 @@ public final class PieChartData
 			this.valuesProperty = property;
         }-*/;
 
-        public final native void setDataTable(DataTable dataTable) /*-{
+        public final native void setDataTableJSO(DataTableJSO dataTable) /*-{
 			this.dataTable = dataTable;
         }-*/;
 
-        public final native DataTable getDataTable() /*-{
+        public final native DataTableJSO getDataTableJSO() /*-{
 			return this.dataTable;
         }-*/;
     }

@@ -59,12 +59,13 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
     }
 
     @Override
-    protected List<AxisLabel> buildLabels() {
+    protected List<AxisLabel> buildLabels()
+    {
         List<AxisLabel> result = new LinkedList<AxisLabel>();
         DataTableColumn dataTableLabelsColumn = getDataSummary().getData().getDataTable().getColumn(getDataSummary().getData().getCategoryAxisProperty());
         String[] labelValues = dataTableLabelsColumn.getStringValues();
         int labelsCount = labelValues.length;
-        int seriesCount = getDataSummary().getNumSeries();
+        //int seriesCount = getDataSummary().getNumSeries();
         double labelSize = getChartSizeAttribute() / labelsCount;
         for (int i = 0, j = labelsCount - 1; i < labelsCount; i++, j--)
         {
@@ -77,7 +78,8 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
     }
 
     @Override
-    protected List<AxisValue<String>> buildValues(String modelProperty) {
+    protected List<AxisValue<String>> buildValues(String modelProperty)
+    {
         String[] values = getDataSummary().getData().getDataTable().getStringValues(modelProperty);
         int valuesCount = values.length;
         int seriesCount = getDataSummary().getNumSeries();
@@ -92,9 +94,8 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
                 double position = (barSize * seriesCount * i);
                 result.add(new AxisValue<String>(value, position));
             }
-            return result;
         }
         return result;
     }
-    
+
 }

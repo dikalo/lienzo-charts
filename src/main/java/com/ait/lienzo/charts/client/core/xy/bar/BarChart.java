@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2014 Ahome' Innovation Technologies. All rights reserved.
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,9 +12,15 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
  */
 
 package com.ait.lienzo.charts.client.core.xy.bar;
+
+import static com.ait.lienzo.client.core.animation.AnimationProperties.toPropertyList;
+import static com.ait.lienzo.client.core.animation.AnimationProperty.Properties.ALPHA;
+import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -46,8 +52,6 @@ import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
 import com.ait.lienzo.client.core.event.NodeMouseClickHandler;
@@ -148,46 +152,34 @@ public class BarChart extends AbstractChart<BarChart>
     @Override
     public BarChart init()
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
-
-        return this;
+        return BarChartAnimationHelper.create(this, LINEAR, getDefaultAnimationDuration());
     }
 
     @Override
     public BarChart init(double duration)
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
-
-        return this;
+        return BarChartAnimationHelper.create(this, LINEAR, Math.max(duration, 1));
     }
 
     @Override
     public BarChart init(AnimationTweener tweener, double duration)
     {
-        BarChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
-
-        return this;
+        return BarChartAnimationHelper.create(this, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
     }
 
     public BarChart reload(XYChartData data)
     {
-        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
-
-        return this;
+        return BarChartAnimationHelper.reload(this, data, LINEAR, getDefaultAnimationDuration());
     }
 
     public BarChart reload(XYChartData data, double duration)
     {
-        BarChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, Math.max(duration, 1), null);
-
-        return this;
+        return BarChartAnimationHelper.reload(this, data, LINEAR, Math.max(duration, 1));
     }
 
     public BarChart reload(XYChartData data, AnimationTweener tweener, double duration)
     {
-        BarChartAnimationHelper.reload(this, data, tweener, Math.max(duration, 1), null);
-
-        return this;
+        return BarChartAnimationHelper.reload(this, data, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
     }
 
     public final BarChart setCategoriesAxis(CategoryAxis xAxis)
@@ -510,7 +502,7 @@ public class BarChart extends AbstractChart<BarChart>
             final double w = event.getWidth() - getMarginLeft() - getMarginRight();
             final double h = event.getHeight() - getMarginTop() - getMarginBottom();
             // Apply resize to bar chart.
-            new BarChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null).run();
+            new BarChartResizeAnimation(this, w, h, LINEAR, getDefaultAnimationDuration(), null).run();
         }
         super.onChartResize(event);
     }
@@ -554,7 +546,7 @@ public class BarChart extends AbstractChart<BarChart>
 
         if (xAxisValues != null)
         {
-            List<Rectangle> bars = new LinkedList();
+            List<Rectangle> bars = new LinkedList<Rectangle>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
                 final AxisValue axisValue = xAxisValues.get(i);
@@ -628,9 +620,7 @@ public class BarChart extends AbstractChart<BarChart>
                     String id = value.getID();
                     if (!barId.equals(id))
                     {
-                        AnimationProperties animationProperties = new AnimationProperties();
-                        animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-                        value.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
+                        value.animate(LINEAR, toPropertyList(ALPHA(alpha)), getDefaultAnimationDuration());
                     }
                 }
             }

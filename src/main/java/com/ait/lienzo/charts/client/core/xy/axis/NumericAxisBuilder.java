@@ -65,8 +65,8 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     @Override
     protected List<AxisLabel> buildLabels()
     {
-        String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
-        Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
+        //String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
+        //Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
         int segments = axis.getSegments();
         Double maxValue = roundUp(getMaxValue());
         Double minValue = roundDown(getMinValue());
@@ -89,9 +89,9 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     protected List<AxisValue<Double>> buildValues(String modelProperty)
     {
         Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
-        int segments = axis.getSegments();
+        //int segments = axis.getSegments();
         Double maxValue = getMaxValue();
-        Double minValue = getMinValue();
+        //Double minValue = getMinValue();
 
         List<AxisValue<Double>> result = new LinkedList<AxisValue<Double>>();
         if (values != null && values.length > 0)

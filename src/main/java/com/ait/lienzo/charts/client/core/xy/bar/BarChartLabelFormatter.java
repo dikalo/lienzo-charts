@@ -1,20 +1,28 @@
+/*
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
+ */
 
 package com.ait.lienzo.charts.client.core.xy.bar;
-
-import com.ait.lienzo.client.core.animation.*;
-import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
-import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
-import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
-import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
-import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.Text;
-import com.google.gwt.core.client.GWT;
 
 import java.util.List;
 
 public class BarChartLabelFormatter
 {
-    private static final double            ANIMATION_DURATION = 500;
+    //private static final double            ANIMATION_DURATION = 500;
 
     private List<BarChartLabel>            labels;
 
@@ -29,6 +37,11 @@ public class BarChartLabelFormatter
     {
         this.labels = labels;
         this.callback = callback;
+    }
+    
+    public BarChartLabelFormatterCallback getBarChartLabelFormatterCallback()
+    {
+        return this.callback;
     }
 
     public void format(double maxWidth, double maxHeight)
@@ -108,6 +121,7 @@ public class BarChartLabelFormatter
         }
     }
 
+    /*
     private void animate(final BarChartLabel label, final String text, final String cutText, final double originalRotation)
     {
         final Rectangle labelContainer = label.getLabelContainer();
@@ -130,6 +144,7 @@ public class BarChartLabelFormatter
             }
         });
     }
+    
 
     private void unhighlight(BarChartLabel label, String text, String cutText, double originalRotation)
     {
@@ -140,7 +155,7 @@ public class BarChartLabelFormatter
     {
         highlight(label, text, cutText, true, 0);
     }
-
+    
     private void highlight(final BarChartLabel label, final String text, final String cutText, final boolean highlighting, final double rotation)
     {
         label.getLabel().setText(highlighting ? text : cutText);
@@ -167,7 +182,7 @@ public class BarChartLabelFormatter
         if (callback != null && highlighting) callback.onLabelHighlighed(label);
         if (callback != null && !highlighting) callback.onLabelUnHighlighed(label);
     }
-
+    
     private Text[] getLabelTexts()
     {
         Text[] result = new Text[labels.size()];
@@ -189,7 +204,7 @@ public class BarChartLabelFormatter
         }
         return result;
     }
-
+    */
     public interface BarChartLabelFormatterCallback
     {
         public void onLabelHighlighed(BarChartLabel label);

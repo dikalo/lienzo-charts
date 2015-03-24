@@ -84,6 +84,11 @@ public final class DataTable
         this(DataTableJSO.make());
     }
 
+    public DataTableJSO getJSO()
+    {
+        return m_jso;
+    }
+
     /**
      * The javascript native object.
      */

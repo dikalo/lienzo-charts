@@ -1,9 +1,28 @@
+/*
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
+ */
 
 package com.ait.lienzo.charts.client.core.xy.bar.animation;
 
+import java.util.List;
+import java.util.Map;
+
 import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
-import com.ait.lienzo.charts.client.core.xy.XYChartSeries;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
@@ -11,25 +30,28 @@ import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
-import com.ait.lienzo.client.core.animation.*;
+import com.ait.lienzo.client.core.animation.AnimationProperties;
+import com.ait.lienzo.client.core.animation.AnimationProperty;
+import com.ait.lienzo.client.core.animation.AnimationTweener;
+import com.ait.lienzo.client.core.animation.IAnimation;
+import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Rectangle;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Clears the Bar Chart children shapes by animating them to positions /size that perform a clear visual effect..</p> 
  */
 public class BarChartClearAnimation extends AbstractChartAnimation
 {
-    public BarChartClearAnimation(final BarChart barChart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback) {
+    public BarChartClearAnimation(final BarChart barChart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
+    {
         super(barChart, barChart.getChartWidth(), barChart.getChartHeight(), tweener, duration, callback);
+        
         init(barChart.getChartWidth(), barChart.getChartHeight());
     }
-        
+
     protected BarChart getBarChart()
     {
         return (BarChart) getNode();
@@ -42,7 +64,6 @@ public class BarChartClearAnimation extends AbstractChartAnimation
 
     private void init(final double chartWidth, final double chartHeight)
     {
-
         // Title & Legend & tooltip.
         final Text chartTitle = getBarChart().getChartTitle();
         final ChartLegend legend = getBarChart().getChartLegend();
@@ -55,26 +76,24 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         final List<Text> valuesAxisTitles = getBarChart().getValuesAxisTitle();
         final List<BarChartLabel> seriesLabels = getBarChart().getSeriesLabels();
         final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
-        final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
+        //final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
         final List<Line> valuesAxisIntervals = getBarChart().getValuesAxisIntervals();
         final List<BarChartLabel> valuesLabels = getBarChart().getValuesLabels();
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
 
         // Title.
-        if (chartTitle != null) 
+        if (chartTitle != null)
         {
             destroyTitle(chartTitle);
         }
-        
         // Categories axis title.
-        if (categoriesAxisTitles != null && !categoriesAxisTitles.isEmpty()) 
+        if (categoriesAxisTitles != null && !categoriesAxisTitles.isEmpty())
         {
-            for (Text t : categoriesAxisTitles) 
+            for (Text t : categoriesAxisTitles)
             {
                 destroyTitle(t);
             }
         }
-
         // Values axis title.
         if (valuesAxisTitles != null && !valuesAxisTitles.isEmpty())
         {
@@ -83,27 +102,24 @@ public class BarChartClearAnimation extends AbstractChartAnimation
                 destroyTitle(t);
             }
         }
-        
         // Categories labels.
         if (seriesLabels != null)
         {
             for (BarChartLabel label : seriesLabels)
             {
                 destroyCategoriesAxisLabel(label);
-                
+
             }
         }
-        
         // Values labels.
         if (valuesLabels != null)
         {
             for (BarChartLabel label : valuesLabels)
             {
                 destroyValuesAxisLabel(label);
-                
+
             }
         }
-        
         // Create the nodes' animations.
         final double yClearPos = chartHeight;
         final double xClearPos = ChartDirection.POSITIVE.equals(getBarChart().getDirection()) ? 0 : chartWidth;
@@ -141,14 +157,14 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         if (!getBarChart().getValuesAxisTitle().isEmpty()) add(getBarChart().getValuesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));
     }
 
-    private void destroyCategoriesAxisLabel(final BarChartLabel chartLabel) {
-
+    private void destroyCategoriesAxisLabel(final BarChartLabel chartLabel)
+    {
         // Final positions.
         if (isVertical())
         {
             final LabelsPosition valuesAxisLabelPosition = getBarChart().getValuesAxisLabelsPosition();
             final double lx = LabelsPosition.RIGHT.equals(valuesAxisLabelPosition) ? getBarChart().getChartWidth() : 0;
-            add(chartLabel, buildAnimationProperties(lx,0d));
+            add(chartLabel, buildAnimationProperties(lx, 0d));
         }
         else
         {
@@ -156,34 +172,33 @@ public class BarChartClearAnimation extends AbstractChartAnimation
             final double ly = LabelsPosition.BOTTOM.equals(valuesAxisLabelPosition) ? getBarChart().getChartHeight() : 0;
             add(chartLabel, buildAnimationProperties(0d, ly));
         }
-
         // Alpha animation.
         // add(chartLabel, buildAnimationProperties(0d));
-
     }
 
-    private void destroyValuesAxisLabel(final BarChartLabel chartLabel) {
-
+    private void destroyValuesAxisLabel(final BarChartLabel chartLabel)
+    {
         // Final positions.
         if (isVertical())
         {
             final LabelsPosition categoryAxisLabelPosition = getBarChart().getCategoriesAxisLabelsPosition();
             final double ly = LabelsPosition.BOTTOM.equals(categoryAxisLabelPosition) ? getBarChart().getChartHeight() : 0;
             add(chartLabel, buildAnimationProperties(0d, ly));
-        } else
+        }
+        else
         {
             final LabelsPosition categoryAxisLabelPosition = getBarChart().getCategoriesAxisLabelsPosition();
             final double lx = LabelsPosition.RIGHT.equals(categoryAxisLabelPosition) ? getBarChart().getChartWidth() : 0;
             add(chartLabel, buildAnimationProperties(lx, 0d));
         }
-
         // Alpha animation.
         // add(chartLabel, buildAnimationProperties(0d));
     }
 
-    private void destroyTitle(final Shape shape) {
+    private void destroyTitle(final Shape<?> shape)
+    {
         // Initial alpha.
-        shape.setAlpha(1d);
+        shape.setAlpha(1);
 
         // Animation to final alpha.
         add(shape, buildAnimationProperties(0d));

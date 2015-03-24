@@ -1,10 +1,26 @@
+/*
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
+ */
 
 package com.ait.lienzo.charts.client.core.resizer;
 
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.animation.LayerRedrawManager;
 import com.ait.lienzo.client.core.event.NodeDragEndEvent;
 import com.ait.lienzo.client.core.event.NodeDragEndHandler;
 import com.ait.lienzo.client.core.event.NodeDragMoveEvent;
@@ -27,26 +43,27 @@ import com.google.gwt.i18n.client.NumberFormat;
 
 public class ChartResizer extends Group
 {
-    private static final int             RECTANGLE_SIZE               = 30;
+    private static final int          RECTANGLE_SIZE               = 30;
 
-    private static final double          RECTANGLE_INITIA_ALPHA       = 0.2d;
+    private static final double       RECTANGLE_INITIA_ALPHA       = 0.2d;
 
-    private static final double          RECTANGLE_ANIMATION_DURATION = 500;
-    
-    private static final double          SIZE_TEXT_FONT_SIZE          = 15;
-    
-    private static final String          SIZE_TEXT_FONT_FAMILY        = "Verdana";
+    private static final double       RECTANGLE_ANIMATION_DURATION = 500;
 
-    private static final String          SIZE_TEXT_FONT_STYLE         = "Bold";
-    
-    private double                       width;
+    private static final double       SIZE_TEXT_FONT_SIZE          = 15;
 
-    private double                       height;
+    private static final String       SIZE_TEXT_FONT_FAMILY        = "Verdana";
 
-    private int                          initialXPosition;
+    private static final String       SIZE_TEXT_FONT_STYLE         = "Bold";
 
-    private int                          initialYPosition;
-    private static final NumberFormat    NUMBER_FORMAT                 = NumberFormat.getFormat("####");
+    private double                    width;
+
+    private double                    height;
+
+    private int                       initialXPosition;
+
+    private int                       initialYPosition;
+
+    private static final NumberFormat NUMBER_FORMAT                = NumberFormat.getFormat("####");
 
     public ChartResizer(final double width, final double height)
     {
@@ -138,7 +155,7 @@ public class ChartResizer extends Group
                 double finalWidth = ChartResizer.this.width + incrementX;
                 double finalHeight = ChartResizer.this.height + incrementY;
                 showSizeText(sizeText, finalWidth, finalHeight);
-                
+
                 // Animate the resize rectangle to its final position.
                 AnimationProperties rectangleAnimationProperties = new AnimationProperties();
                 rectangleAnimationProperties.push(AnimationProperty.Properties.X(finalWidth - RECTANGLE_SIZE));
@@ -153,9 +170,11 @@ public class ChartResizer extends Group
             }
         });
 
-        resizeRectangleButton.addNodeDragMoveHandler(new NodeDragMoveHandler() {
+        resizeRectangleButton.addNodeDragMoveHandler(new NodeDragMoveHandler()
+        {
             @Override
-            public void onNodeDragMove(NodeDragMoveEvent event) {
+            public void onNodeDragMove(NodeDragMoveEvent event)
+            {
                 int currentX = event.getX();
                 int currentY = event.getY();
                 int incrementX = currentX - initialXPosition;
@@ -169,11 +188,11 @@ public class ChartResizer extends Group
                 resizeArrow3.setStart(start).setEnd(new Point2D(0, finalHeight / 2));
                 resizeArrow4.setStart(start).setEnd(new Point2D(finalWidth / 2, 0));
                 showSizeText(sizeText, finalWidth, finalHeight);
-                
+
                 // Fire the resize event with apply flag not set (not final size yet).
                 ChartResizer.this.fireEvent(new ChartResizeEvent(finalWidth, finalHeight, false));
 
-                LayerRedrawManager.get().schedule(resizeRectangle.getLayer());
+                resizeRectangle.getLayer().batch();
             }
         });
         this.add(resizeRectangle);
@@ -183,21 +202,23 @@ public class ChartResizer extends Group
         this.add(resizeArrow3);
         this.add(resizeArrow4);
         this.add(sizeText);
-        
+
         return this;
     }
-    
-    private static void showSizeText(final Text text, final double w, final double h) {
+
+    private static void showSizeText(final Text text, final double w, final double h)
+    {
         final String _t = buildSizeText(w, h);
         text.setText(_t);
         final double tw = text.getBoundingBox().getWidth();
         final double th = text.getBoundingBox().getHeight();
-        final double tx = w/2 - tw/2;
-        final double ty = h/2 - th/2;
+        final double tx = w / 2 - tw / 2;
+        final double ty = h / 2 - th / 2;
         text.setX(tx).setY(ty).moveToTop();
     }
 
-    private static String buildSizeText(final double w, final double h) {
+    private static String buildSizeText(final double w, final double h)
+    {
         return NUMBER_FORMAT.format(w) + "/" + NUMBER_FORMAT.format(h);
     }
 
@@ -210,5 +231,4 @@ public class ChartResizer extends Group
     {
         return addEnsureHandler(ChartResizeAreaEvent.TYPE, handler);
     }
-    
 }

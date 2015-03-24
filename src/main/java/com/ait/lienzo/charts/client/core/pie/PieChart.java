@@ -16,6 +16,10 @@
 
 package com.ait.lienzo.charts.client.core.pie;
 
+import static com.ait.lienzo.client.core.animation.AnimationProperties.toPropertyList;
+import static com.ait.lienzo.client.core.animation.AnimationProperty.Properties.ALPHA;
+import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,8 +35,6 @@ import com.ait.lienzo.charts.client.core.pie.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.pie.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.pie.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
 import com.ait.lienzo.client.core.event.NodeMouseClickHandler;
@@ -81,46 +83,34 @@ public class PieChart extends AbstractChart<PieChart>
     @Override
     public PieChart init()
     {
-        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
-
-        return this;
+        return PieChartAnimationHelper.create(this, LINEAR, getDefaultAnimationDuration());
     }
 
     @Override
-    public PieChart init(double duration)
+    public PieChart init(final double duration)
     {
-        PieChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1), null);
-
-        return this;
+        return PieChartAnimationHelper.create(this, LINEAR, Math.max(duration, 1));
     }
 
     @Override
-    public PieChart init(AnimationTweener tweener, double duration)
+    public PieChart init(final AnimationTweener tweener, final double duration)
     {
-        PieChartAnimationHelper.create(this, tweener, Math.max(duration, 1), null);
-
-        return this;
+        return PieChartAnimationHelper.create(this, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
     }
 
     public PieChart reload(PieChartData data)
     {
-        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null);
-
-        return this;
+        return PieChartAnimationHelper.reload(this, data, LINEAR, getDefaultAnimationDuration());
     }
 
     public PieChart reload(PieChartData data, double duration)
     {
-        PieChartAnimationHelper.reload(this, data, AnimationTweener.LINEAR, Math.max(duration, 1), null);
-
-        return this;
+        return PieChartAnimationHelper.reload(this, data, LINEAR, Math.max(duration, 1));
     }
 
     public PieChart reload(PieChartData data, AnimationTweener tweener, double duration)
     {
-        PieChartAnimationHelper.reload(this, data, tweener, Math.max(duration, 1), null);
-
-        return this;
+        return PieChartAnimationHelper.reload(this, data, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
     }
 
     public HandlerRegistration addDataReloadedHandler(DataReloadedEventHandler handler)
@@ -197,23 +187,20 @@ public class PieChart extends AbstractChart<PieChart>
             });
             final int _i = i;
             final String category = categories[i];
+            final double tv = values[i];
             slice.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
             {
                 @Override
                 public void onNodeMouseEnter(NodeMouseEnterEvent event)
                 {
                     // Animate other slices.
-                    alphaToOtherSlices(slice.getID(), 0.5);
+                    alphaToOtherSlices(slice.getID(), 0.7);
 
                     // Show the tooltip.
-                    tooltip.setValues(category, getLabel(value * 100));
+                    tooltip.setValues(category, getValue(tv));
                     tooltip.show(getChartWidth() / 2, getChartHeight() / 2);
-
-                    // Hide text.
-                    AnimationProperties animationProperties = new AnimationProperties();
-                    animationProperties.push(AnimationProperty.Properties.ALPHA(0));
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
+                    if (_text != null) _text.animate(LINEAR, toPropertyList(ALPHA(0)), getDefaultAnimationDuration());
                 }
             });
             slice.addNodeMouseExitHandler(new NodeMouseExitHandler()
@@ -228,10 +215,9 @@ public class PieChart extends AbstractChart<PieChart>
                     if (tooltip != null) tooltip.hide();
 
                     // Show text.
-                    AnimationProperties animationProperties = new AnimationProperties();
-                    animationProperties.push(AnimationProperty.Properties.ALPHA(1));
+
                     Text _text = texts.get(_i);
-                    if (_text != null) _text.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
+                    if (_text != null) _text.animate(LINEAR, toPropertyList(ALPHA(1)), getDefaultAnimationDuration());
                 }
             });
             slice.setFillColor(getColor(i)).setStrokeColor(ColorName.BLACK).setStrokeWidth(1);
@@ -239,7 +225,7 @@ public class PieChart extends AbstractChart<PieChart>
             pieSlices.add(slice);
             slices.add(slice);
 
-            Text text = new Text(getLabel(value * 100), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setTextBaseLine(TextBaseLine.MIDDLE).setAlpha(0d);
+            Text text = new Text(getLabel(value * 100), getFontFamily(), getFontStyle(), getFontSize()).setFillColor(ColorName.BLACK).setTextBaseLine(TextBaseLine.MIDDLE).setAlpha(0);
             texts.add(text);
 
             labels.add(text);
@@ -295,7 +281,7 @@ public class PieChart extends AbstractChart<PieChart>
             final double w = event.getWidth() - getMarginLeft() - getMarginRight();
             final double h = event.getHeight() - getMarginTop() - getMarginBottom();
             // Apply resize to bar chart.
-            new PieChartResizeAnimation(this, w, h, AnimationTweener.LINEAR, getDefaultAnimationDuration(), null).run();
+            new PieChartResizeAnimation(this, w, h, LINEAR, getDefaultAnimationDuration(), null).run();
         }
         super.onChartResize(event);
     }
@@ -306,9 +292,7 @@ public class PieChart extends AbstractChart<PieChart>
         {
             if (!slice.getID().equals(sliceID))
             {
-                AnimationProperties animationProperties = new AnimationProperties();
-                animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-                slice.animate(AnimationTweener.LINEAR, animationProperties, getDefaultAnimationDuration());
+                slice.animate(LINEAR, toPropertyList(ALPHA(alpha)), getDefaultAnimationDuration());
             }
         }
     }
@@ -324,6 +308,12 @@ public class PieChart extends AbstractChart<PieChart>
     @Override
     protected void buildLegend()
     {
+        if (legend != null)
+        {
+            legend.removeAll();
+            
+            legend.removeFromParent();
+        }
         super.buildLegend();
 
         // Set legend entries.
@@ -408,6 +398,13 @@ public class PieChart extends AbstractChart<PieChart>
 
 		return numb.toFixed(2) + "%";
     }-*/;
+    
+    private final native String getValue(double valu)
+    /*-{
+        var numb = valu;
+
+        return numb.toFixed(2) + "";
+    }-*/;
 
     public static class PieChartFactory extends ChartFactory<PieChart>
     {
@@ -435,8 +432,6 @@ public class PieChart extends AbstractChart<PieChart>
 
     public static class PieSlice extends Slice
     {
-        private boolean m_animating = false;
-
         public PieSlice(double radius, double sofar, double value)
         {
             super(radius, Math.PI * (-0.5 + 2 * sofar), Math.PI * (-0.5 + 2 * (sofar + value)), false);
@@ -451,16 +446,5 @@ public class PieChart extends AbstractChart<PieChart>
         {
             return Math.PI * (-0.5 + 2 * (sofar + value));
         }
-
-        public final void setAnimating(boolean animating)
-        {
-            m_animating = animating;
-        }
-
-        public final boolean isAnimating()
-        {
-            return m_animating;
-        }
     }
-
 }

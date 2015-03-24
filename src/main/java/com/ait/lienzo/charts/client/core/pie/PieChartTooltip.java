@@ -1,9 +1,30 @@
+/*
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
+ */
 
 package com.ait.lienzo.charts.client.core.pie;
 
-import com.ait.lienzo.client.core.animation.LayerRedrawManager;
-import com.ait.lienzo.client.core.shape.*;
+import com.ait.lienzo.client.core.shape.Group;
+import com.ait.lienzo.client.core.shape.Rectangle;
+import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.Triangle;
+import com.ait.lienzo.client.core.types.BoundingBox;
 import com.ait.lienzo.client.core.types.Point2D;
+import com.ait.lienzo.client.core.types.Shadow;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.IColor;
 import com.ait.lienzo.shared.core.types.TextAlign;
@@ -33,6 +54,8 @@ public class PieChartTooltip extends Group
 
     private Triangle            triangle;
 
+    private Triangle            tmasking;
+
     private Text                categoriesText;
 
     private Text                valuesText;
@@ -41,19 +64,23 @@ public class PieChartTooltip extends Group
 
     private String              _valuesText;
 
+    private static final Shadow SHADOW                 = new Shadow(ColorName.BLACK.getColor().setA(0.80), 10, 3, 3);
+
     public PieChartTooltip()
     {
         build();
     }
 
-    protected IPrimitive<?> build()
+    protected PieChartTooltip build()
     {
-        rectangle = new Rectangle(1, 1).setFillColor(TOOLTIP_COLOR).setCornerRadius(30);
-        triangle = new Triangle(new Point2D(1, 1), new Point2D(1, 1), new Point2D(1, 1)).setFillColor(TOOLTIP_COLOR);
-        categoriesText = new Text("", FONT_FAMILY, CATEGORIES_FONT_STYLE, FONT_SIZE).setFillColor(LABEL_COLOR).setTextAlign(TextAlign.LEFT).setTextBaseLine(TextBaseLine.TOP);
-        valuesText = new Text("", FONT_FAMILY, VALUES_FONT_STYLE, FONT_SIZE).setFillColor(LABEL_COLOR).setTextAlign(TextAlign.LEFT).setTextBaseLine(TextBaseLine.TOP);
+        rectangle = new Rectangle(1, 1).setFillColor(TOOLTIP_COLOR).setCornerRadius(5).setStrokeWidth(1).setShadow(SHADOW);
+        triangle = new Triangle(new Point2D(1, 1), new Point2D(1, 1), new Point2D(1, 1)).setFillColor(TOOLTIP_COLOR).setStrokeWidth(1).setShadow(SHADOW);
+        tmasking = new Triangle(new Point2D(1, 1), new Point2D(1, 1), new Point2D(1, 1)).setFillColor(TOOLTIP_COLOR);
+        categoriesText = new Text("", FONT_FAMILY, CATEGORIES_FONT_STYLE, FONT_SIZE).setFillColor(LABEL_COLOR).setTextAlign(TextAlign.LEFT).setTextBaseLine(TextBaseLine.MIDDLE);
+        valuesText = new Text("", FONT_FAMILY, VALUES_FONT_STYLE, FONT_SIZE).setFillColor(LABEL_COLOR).setTextAlign(TextAlign.LEFT).setTextBaseLine(TextBaseLine.MIDDLE);
         add(rectangle);
         add(triangle);
+        add(tmasking);
         add(categoriesText);
         add(valuesText);
         categoriesText.moveToTop();
@@ -63,49 +90,52 @@ public class PieChartTooltip extends Group
         return this;
     }
 
-    public void show(final double x, final double y)
+    public PieChartTooltip show(final double x, final double y)
     {
-        setVisible(true);
         this.categoriesText.setText(_categoriesText);
-        double ctw = this.categoriesText.getBoundingBox().getWidth();
-        double cth = this.categoriesText.getBoundingBox().getHeight();
+        BoundingBox bb = categoriesText.getBoundingBox();
+        final double ctw = bb.getWidth();
+        final double cth = bb.getHeight();
         this.valuesText.setText(_valuesText);
-        double vtw = this.valuesText.getBoundingBox().getWidth();
-        double vth = this.valuesText.getBoundingBox().getHeight();
-        double rw = ctw > vtw ? ctw : vtw;
-        rw += TOOLTIP_PADDING_WIDTH;
-        double rh = cth + vth;
-        rh += TOOLTIP_PADDING_HEIGHT;
-        rectangle.setWidth(rw).setHeight(rh);
-        double rx = rectangle.getX();
-        double ry = rectangle.getY();
+        bb = valuesText.getBoundingBox();
+        final double vtw = bb.getWidth();
+        final double vth = bb.getHeight();
+        final double rw = (ctw > vtw ? ctw : vtw) + TOOLTIP_PADDING_WIDTH;
+        final double rh = (cth + vth) + TOOLTIP_PADDING_HEIGHT;
+        rectangle.setWidth(rw).setHeight(rh).setCornerRadius(5);
+        final double rx = rectangle.getX();
+        final double ry = rectangle.getY();
         triangle.setPoints(new Point2D(rx + rw / 2 - TRIANGLE_SIZE, ry + rh), new Point2D(rx + rw / 2, rh + TRIANGLE_SIZE), new Point2D(rx + rw / 2 + TRIANGLE_SIZE, ry + rh));
-        double vtx = rw / 2 - vtw / 2;
-        double ctx = rw / 2 - ctw / 2;
-        double vty = rh / 2 - vth / 2;
-        double cty = vty + cth + 1;
+        tmasking.setPoints(new Point2D(rx + rw / 2 - TRIANGLE_SIZE - 3, ry + rh - 3), new Point2D(rx + rw / 2, rh + TRIANGLE_SIZE - 3), new Point2D(rx + rw / 2 + TRIANGLE_SIZE + 3, ry + rh - 3));
+        final double vtx = rw / 2 - vtw / 2;
+        final double ctx = rw / 2 - ctw / 2;
+        final double vty = rh / 2 - vth / 2;
+        final double cty = vty + cth + 1;
         this.categoriesText.setX(ctx).setY(cty);
         this.valuesText.setX(vtx).setY(vty);
         setX(x - rw / 2);
         setY(y - rh);
         moveToTop();
-        redraw();
+        setVisible(true);
+        getLayer().batch();
+        return this;
     }
 
-    public void hide()
+    public PieChartTooltip hide()
     {
         setVisible(false);
-        redraw();
+
+        getLayer().batch();
+
+        return this;
     }
 
-    public void setValues(String _categoriesText, String _valuesText)
+    public PieChartTooltip setValues(String categoriesText, String valuesText)
     {
-        this._categoriesText = _categoriesText;
-        this._valuesText = _valuesText;
-    }
+        this._categoriesText = categoriesText;
 
-    private void redraw()
-    {
-        LayerRedrawManager.get().schedule(getLayer());
+        this._valuesText = valuesText;
+
+        return this;
     }
 }

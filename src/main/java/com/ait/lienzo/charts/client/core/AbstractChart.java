@@ -18,16 +18,23 @@
 
 package com.ait.lienzo.charts.client.core;
 
+import static com.ait.lienzo.client.core.animation.AnimationProperties.toPropertyList;
+import static com.ait.lienzo.client.core.animation.AnimationProperty.Properties.ALPHA;
+import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
+
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
-import com.ait.lienzo.charts.client.core.resizer.*;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeAreaEvent;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeAreaEventHandler;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeEvent;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizeEventHandler;
+import com.ait.lienzo.charts.client.core.resizer.ChartResizer;
 import com.ait.lienzo.charts.shared.core.types.ChartAlign;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LegendAlign;
 import com.ait.lienzo.charts.shared.core.types.LegendPosition;
 import com.ait.lienzo.client.core.Attribute;
-import com.ait.lienzo.client.core.animation.AnimationProperties;
-import com.ait.lienzo.client.core.animation.AnimationProperty;
+import com.ait.lienzo.client.core.AttributeOp.BooleanOp;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.event.AnimationFrameAttributesChangedBatcher;
 import com.ait.lienzo.client.core.event.AttributesChangedEvent;
@@ -49,6 +56,7 @@ import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import static com.ait.lienzo.client.core.AttributeOp.*;
 
 /**
  *  <p>Base chart implementation class.</p>
@@ -71,30 +79,29 @@ import com.google.gwt.json.client.JSONString;
  */
 public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<IPrimitive<?>, T>
 {
-    // Default animation duration when applying alpha to chart areas.
-    public static final double          AREAS_ALPHA_ANIMATION_DURATION = 200;
+    public static final double          DEFAULT_MARGIN             = 50;
 
-    public static final double          DEFAULT_MARGIN                 = 50;
+    private static final BooleanOp      XYWH_OP                    = any(Attribute.X, Attribute.Y, Attribute.WIDTH, Attribute.HEIGHT);
 
-    protected IAttributesChangedBatcher attributesChangedBatcher       = new AnimationFrameAttributesChangedBatcher();
+    protected IAttributesChangedBatcher attributesChangedBatcher   = new AnimationFrameAttributesChangedBatcher();
 
-    protected final Group               chartArea                      = new Group();
+    protected final Group               chartArea                  = new Group();
 
-    protected final Group               topArea                        = new Group();
+    protected final Group               topArea                    = new Group();
 
-    protected final Group               bottomArea                     = new Group();
+    protected final Group               bottomArea                 = new Group();
 
-    protected final Group               rightArea                      = new Group();
+    protected final Group               rightArea                  = new Group();
 
-    protected final Group               leftArea                       = new Group();
+    protected final Group               leftArea                   = new Group();
 
-    protected ChartResizer              resizer                        = null;
+    protected ChartResizer              resizer                    = null;
 
-    protected Text                      chartTitle                     = null;
+    protected Text                      chartTitle                 = null;
 
-    protected ChartLegend               legend                         = null;
+    protected ChartLegend               legend                     = null;
 
-    private double                      m_defaultAnimationDuration     = 500;
+    private double                      m_defaultAnimationDuration = 500;
 
     protected AbstractChart(ChartNodeType type)
     {
@@ -217,11 +224,9 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
             @Override
             public void onAttributesChanged(AttributesChangedEvent event)
             {
-                if (event.has(Attribute.X) || event.has(Attribute.Y) || event.has(Attribute.WIDTH) || event.has(Attribute.HEIGHT))
+                if (event.evaluate(XYWH_OP))
                 {
-                    final double x = getX();
-                    final double y = getY();
-                    moveAreas(x, y);
+                    moveAreas(getX(), getY());
                 }
             }
         };
@@ -252,13 +257,17 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
 
     protected void applyAlphaToAreas(final double alpha)
     {
-        AnimationProperties animationProperties = new AnimationProperties();
-        animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
-        leftArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
-        rightArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
-        topArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
-        bottomArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
-        chartArea.animate(AnimationTweener.LINEAR, animationProperties, AREAS_ALPHA_ANIMATION_DURATION);
+        final double duration = Math.min(getDefaultAnimationDuration() / 2, 200);
+
+        leftArea.animate(LINEAR, toPropertyList(ALPHA(alpha)), duration);
+
+        rightArea.animate(LINEAR, toPropertyList(ALPHA(alpha)), duration);
+
+        topArea.animate(LINEAR, toPropertyList(ALPHA(alpha)), duration);
+
+        bottomArea.animate(LINEAR, toPropertyList(ALPHA(alpha)), duration);
+
+        chartArea.animate(LINEAR, toPropertyList(ALPHA(alpha)), duration);
     }
 
     protected void buildLegend()
@@ -347,6 +356,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         if (isResizable())
         {
             resizer = new ChartResizer(getWidth(), getHeight());
+
             resizer.setX(getX()).setY(getY()).moveToTop();
 
             resizer.addChartResizeEventHandler(new ChartResizeEventHandler()
@@ -357,7 +367,6 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
                     AbstractChart.this.onChartResize(event);
                 }
             });
-
             resizer.addChartResizeAreaEventHandler(new ChartResizeAreaEventHandler()
             {
                 @Override
@@ -373,7 +382,6 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
                     }
                 }
             });
-
             add(resizer);
         }
     }
@@ -684,6 +692,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     public final T setMarginLeft(final double margin)
     {
         getAttributes().put(ChartAttribute.MARGIN_LEFT.getProperty(), margin);
+
         return cast();
     }
 
@@ -699,6 +708,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
     public final T setMarginTop(final double margin)
     {
         getAttributes().put(ChartAttribute.MARGIN_TOP.getProperty(), margin);
+
         return cast();
     }
 

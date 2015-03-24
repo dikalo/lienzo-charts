@@ -1,3 +1,20 @@
+/*
+   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   Author: Roger Martinez - Red Hat
+ */
 
 package com.ait.lienzo.charts.client.core.pie.animation;
 
@@ -41,11 +58,11 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
             return;
         }
         super.calculate(w, h);
-        
+
         moveGroups(w, h);
 
         final DataTable dataTable = data.getDataTable();
-        final String[] categories = dataTable.getColumn(data.getCategoriesProperty()).getStringValues();
+        //final String[] categories = dataTable.getColumn(data.getCategoriesProperty()).getStringValues();
         final Double[] values = dataTable.getColumn(data.getValuesProperty()).getNumericValues();
 
         double sofar = 0;
@@ -67,9 +84,9 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
             if (slice != null)
             {
                 double startAngle = PieChart.PieSlice.buildStartAngle(sofar);
-                
+
                 double endAngle = PieChart.PieSlice.buildEngAngle(sofar, value);
-                
+
                 doAnimatePieSlice(slice, radius, startAngle, endAngle);
             }
             else
