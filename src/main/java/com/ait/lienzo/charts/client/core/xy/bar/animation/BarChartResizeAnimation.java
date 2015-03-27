@@ -21,7 +21,7 @@ package com.ait.lienzo.charts.client.core.xy.bar.animation;
 import com.ait.lienzo.charts.client.core.animation.StackedTweeningAnimation;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabel;
+import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.shape.Line;
@@ -70,7 +70,7 @@ public class BarChartResizeAnimation extends AbstractBarChartAnimation
     }
 
     @Override
-    protected void doAnimateCategoriesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
+    protected void doAnimateCategoriesAxisIntervals(final XYChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
         chartLabel.set(axisLabel);
         chartLabel.setX(x).setY(y);
@@ -83,7 +83,7 @@ public class BarChartResizeAnimation extends AbstractBarChartAnimation
     }
 
     @Override
-    protected void doAnimateValuesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
+    protected void doAnimateValuesAxisIntervals(final XYChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
         chartLabel.set(axisLabel);
         chartLabel.setX(x).setY(y);

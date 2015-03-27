@@ -16,24 +16,24 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy.bar;
+package com.ait.lienzo.charts.client.core.xy.label;
 
 import java.util.List;
 
-public class BarChartLabelFormatter
+public class XYChartLabelFormatter
 {
     //private static final double            ANIMATION_DURATION = 500;
 
-    private List<BarChartLabel>            labels;
+    private List<XYChartLabel>            labels;
 
     private BarChartLabelFormatterCallback callback;
 
-    public BarChartLabelFormatter(List<BarChartLabel> labels)
+    public XYChartLabelFormatter(List<XYChartLabel> labels)
     {
         this.labels = labels;
     }
 
-    public BarChartLabelFormatter(List<BarChartLabel> labels, BarChartLabelFormatterCallback callback)
+    public XYChartLabelFormatter(List<XYChartLabel> labels, BarChartLabelFormatterCallback callback)
     {
         this.labels = labels;
         this.callback = callback;
@@ -50,7 +50,7 @@ public class BarChartLabelFormatter
 
         if (labels != null && !labels.isEmpty())
         {
-            for (BarChartLabel label : labels)
+            for (XYChartLabel label : labels)
             {
                 // label.getLabelContainer().setAlpha(1);
                 // label.getLabelContainer().setFillColor(new Color(40 * label.getAxisLabel().getIndex(), 0, 0));
@@ -70,7 +70,7 @@ public class BarChartLabelFormatter
     {
         if (labels != null && !labels.isEmpty())
         {
-            for (BarChartLabel label : labels)
+            for (XYChartLabel label : labels)
             {
                 if (label.getLabel().getBoundingBox().getWidth() > maxWidth) return -45;
             }
@@ -81,7 +81,7 @@ public class BarChartLabelFormatter
     /**
      * Formats the label Text shapes in the given axis by cutting text value.
      */
-    private void cut(BarChartLabel label, double maxWidth, double maxHeight, double rotation)
+    private void cut(XYChartLabel label, double maxWidth, double maxHeight, double rotation)
     {
         String text = label.getLabel().getText();
 
@@ -102,7 +102,7 @@ public class BarChartLabelFormatter
         label.getLabelContainer().moveToTop();
     }
 
-    private void cutLabelText(BarChartLabel label, double maxWidth, double maxHeight, double rotation)
+    private void cutLabelText(XYChartLabel label, double maxWidth, double maxHeight, double rotation)
     {
         String text = label.getLabel().getText();
         if (text != null && text.length() > 1 && label.getLabel().getBoundingBox().getWidth() > maxWidth)
@@ -207,9 +207,9 @@ public class BarChartLabelFormatter
     */
     public interface BarChartLabelFormatterCallback
     {
-        public void onLabelHighlighed(BarChartLabel label);
+        public void onLabelHighlighed(XYChartLabel label);
 
-        public void onLabelUnHighlighed(BarChartLabel label);
+        public void onLabelUnHighlighed(XYChartLabel label);
     }
 
     /**

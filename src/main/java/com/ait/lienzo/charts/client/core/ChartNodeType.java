@@ -26,6 +26,8 @@ public class ChartNodeType extends GroupType
 
     public static final ChartNodeType BAR_CHART = new ChartNodeType("Lienzo.BarChart");
 
+    public static final ChartNodeType LINE_CHART = new ChartNodeType("Lienzo.LineChart");
+
     public ChartNodeType(String value)
     {
         super(value);

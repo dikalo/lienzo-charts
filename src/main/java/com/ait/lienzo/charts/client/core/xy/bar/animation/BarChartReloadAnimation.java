@@ -22,7 +22,7 @@ import com.ait.lienzo.charts.client.core.AbstractChart;
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabel;
+import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
@@ -81,7 +81,7 @@ public final class BarChartReloadAnimation extends AbstractBarChartAnimation
     }
 
     @Override
-    protected void doAnimateCategoriesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
+    protected void doAnimateCategoriesAxisIntervals(final XYChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
         // Text.
         chartLabel.set(axisLabel);
@@ -97,7 +97,7 @@ public final class BarChartReloadAnimation extends AbstractBarChartAnimation
     }
 
     @Override
-    protected void doAnimateValuesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
+    protected void doAnimateValuesAxisIntervals(final XYChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y)
     {
         // Text.
         chartLabel.set(axisLabel);

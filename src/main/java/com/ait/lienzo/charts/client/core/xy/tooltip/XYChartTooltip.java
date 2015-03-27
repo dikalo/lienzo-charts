@@ -16,7 +16,7 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy.bar;
+package com.ait.lienzo.charts.client.core.xy.tooltip;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Rectangle;
@@ -30,7 +30,7 @@ import com.ait.lienzo.shared.core.types.IColor;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 
-public class BarChartTooltip extends Group
+public class XYChartTooltip extends Group
 {
     public static final double  TRIANGLE_SIZE          = 10;
 
@@ -62,12 +62,12 @@ public class BarChartTooltip extends Group
 
     private static final Shadow SHADOW                 = new Shadow(ColorName.BLACK.getColor().setA(0.80), 10, 3, 3);
 
-    public BarChartTooltip()
+    public XYChartTooltip()
     {
         build();
     }
 
-    protected BarChartTooltip build()
+    protected XYChartTooltip build()
     {
         rectangle = new Rectangle(1, 1).setFillColor(TOOLTIP_COLOR).setCornerRadius(5).setStrokeWidth(1).setShadow(SHADOW);
         triangle = new Triangle(new Point2D(1, 1), new Point2D(1, 1), new Point2D(1, 1)).setFillColor(TOOLTIP_COLOR).setStrokeWidth(1).setShadow(SHADOW);
@@ -86,7 +86,7 @@ public class BarChartTooltip extends Group
         return this;
     }
 
-    public BarChartTooltip show(String _categoriesText, String _valuesText)
+    public XYChartTooltip show(String _categoriesText, String _valuesText)
     {
         this.categoriesText.setText(_categoriesText);
         BoundingBox bb = categoriesText.getBoundingBox();
@@ -117,7 +117,7 @@ public class BarChartTooltip extends Group
         return this;
     }
 
-    public BarChartTooltip hide()
+    public XYChartTooltip hide()
     {
         setVisible(false);
         

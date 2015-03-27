@@ -16,7 +16,7 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy.bar;
+package com.ait.lienzo.charts.client.core.xy.label;
 
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.client.core.shape.Group;
@@ -27,7 +27,7 @@ import com.ait.lienzo.shared.core.types.IColor;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 
-public class BarChartLabel extends Group
+public class XYChartLabel extends Group
 {
     private static final String FONT_FAMILY = "Verdana";
 
@@ -43,7 +43,7 @@ public class BarChartLabel extends Group
 
     private Rectangle           labelContainer;
 
-    public BarChartLabel(AxisLabel axisLabel)
+    public XYChartLabel(AxisLabel axisLabel)
     {
         this.axisLabel = axisLabel;
         build();

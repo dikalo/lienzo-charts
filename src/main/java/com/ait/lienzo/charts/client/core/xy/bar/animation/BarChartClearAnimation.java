@@ -24,10 +24,9 @@ import java.util.Map;
 import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
-import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabel;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartTooltip;
+import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
+import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
@@ -67,18 +66,18 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         // Title & Legend & tooltip.
         final Text chartTitle = getBarChart().getChartTitle();
         final ChartLegend legend = getBarChart().getChartLegend();
-        final BarChartTooltip tooltip = getBarChart().getChartTooltip();
+        final XYChartTooltip tooltip = getBarChart().getChartTooltip();
         if (legend != null) legend.removeFromParent();
         if (tooltip != null) tooltip.removeFromParent();
 
         // Bar children.
         final List<Text> categoriesAxisTitles = getBarChart().getCategoriesAxisTitle();
         final List<Text> valuesAxisTitles = getBarChart().getValuesAxisTitle();
-        final List<BarChartLabel> seriesLabels = getBarChart().getSeriesLabels();
+        final List<XYChartLabel> seriesLabels = getBarChart().getSeriesLabels();
         final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
         //final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
         final List<Line> valuesAxisIntervals = getBarChart().getValuesAxisIntervals();
-        final List<BarChartLabel> valuesLabels = getBarChart().getValuesLabels();
+        final List<XYChartLabel> valuesLabels = getBarChart().getValuesLabels();
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
 
         // Title.
@@ -105,7 +104,7 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         // Categories labels.
         if (seriesLabels != null)
         {
-            for (BarChartLabel label : seriesLabels)
+            for (XYChartLabel label : seriesLabels)
             {
                 destroyCategoriesAxisLabel(label);
 
@@ -114,7 +113,7 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         // Values labels.
         if (valuesLabels != null)
         {
-            for (BarChartLabel label : valuesLabels)
+            for (XYChartLabel label : valuesLabels)
             {
                 destroyValuesAxisLabel(label);
 
@@ -157,7 +156,7 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         if (!getBarChart().getValuesAxisTitle().isEmpty()) add(getBarChart().getValuesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));
     }
 
-    private void destroyCategoriesAxisLabel(final BarChartLabel chartLabel)
+    private void destroyCategoriesAxisLabel(final XYChartLabel chartLabel)
     {
         // Final positions.
         if (isVertical())
@@ -176,7 +175,7 @@ public class BarChartClearAnimation extends AbstractChartAnimation
         // add(chartLabel, buildAnimationProperties(0d));
     }
 
-    private void destroyValuesAxisLabel(final BarChartLabel chartLabel)
+    private void destroyValuesAxisLabel(final XYChartLabel chartLabel)
     {
         // Final positions.
         if (isVertical())

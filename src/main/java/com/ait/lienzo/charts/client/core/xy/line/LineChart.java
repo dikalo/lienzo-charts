@@ -16,7 +16,7 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy.bar;
+package com.ait.lienzo.charts.client.core.xy.line;
 
 import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.axis.Axis;
@@ -28,33 +28,28 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
-import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartResizeAnimation;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedHandler;
-import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
-import com.ait.lienzo.client.core.event.*;
 import com.ait.lienzo.client.core.shape.IContainer;
+import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Rectangle;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
+import com.ait.lienzo.client.core.types.Point2D;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 import java.util.*;
 
-import static com.ait.lienzo.client.core.animation.AnimationProperties.toPropertyList;
-import static com.ait.lienzo.client.core.animation.AnimationProperty.Properties.ALPHA;
-import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
-
 /**
- * <p>XY chart implementation using rectangles as shapes for values.</p>
- * <p>It can be drawn as a bar chart or a column chart depending on the <code>CHART_ORIENTATION</code> attribute.</p>
+ * <p>XY chart implementation using Line as shapes for values.</p>
  *  
  * <p>Attributes:</p>
  * <ul>
@@ -87,68 +82,63 @@ import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
  * </ul>
  * 
  */
-public class BarChart extends XYChart<BarChart>
+public class LineChart extends XYChart<LineChart>
 {
-    // Default separation size between bars.
-    public static final double         BAR_SEPARATION          = 2;
+    final Map<String, List<Line>> seriesValues            = new LinkedHashMap<String, List<Line>>(); // The Point2D instances that represents the data.
 
-    public static final double         BAR_MAX_SIZE            = 75;
-
-    // If bar are too big, use this proportion (30%).
-    public static final double         BAR_MAX_SIZE_PROPORTION = 0.3;
-
-    final Map<String, List<Rectangle>> seriesValues            = new LinkedHashMap<String, List<Rectangle>>(); // The rectangles that represents the data.
-
-    protected BarChart(JSONObject node, ValidationContext ctx) throws ValidationException
+    protected LineChart(JSONObject node, ValidationContext ctx) throws ValidationException
     {
-        super(node, ChartNodeType.BAR_CHART, ctx);
+        super(node, ChartNodeType.LINE_CHART, ctx);
     }
 
-    public BarChart()
+    public LineChart()
     {
-        super(ChartNodeType.BAR_CHART);
+        super(ChartNodeType.LINE_CHART);
 
         getMetaData().put("creator", "Roger Martinez");
     }
 
     @Override
-    public BarChart init()
+    public LineChart init()
     {
-        return BarChartAnimationHelper.create(this, LINEAR, getDefaultAnimationDuration());
+        return LineChartAnimationHelper.create(this, AnimationTweener.LINEAR, getDefaultAnimationDuration());
     }
 
     @Override
-    public BarChart init(double duration)
+    public LineChart init(double duration)
     {
-        return BarChartAnimationHelper.create(this, LINEAR, Math.max(duration, 1));
+        return LineChartAnimationHelper.create(this, AnimationTweener.LINEAR, Math.max(duration, 1));
     }
 
     @Override
-    public BarChart init(AnimationTweener tweener, double duration)
+    public LineChart init(AnimationTweener tweener, double duration)
     {
-        return BarChartAnimationHelper.create(this, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
+        return LineChartAnimationHelper.create(this, ((tweener != null) ? tweener : AnimationTweener.LINEAR), Math.max(duration, 1));
     }
 
-    public BarChart reload(XYChartData data)
+    public LineChart reload(XYChartData data)
     {
-        return BarChartAnimationHelper.reload(this, data, LINEAR, getDefaultAnimationDuration());
+        // TODO: return BarChartAnimationHelper.reload(this, data, LINEAR, getDefaultAnimationDuration());
+        return this;
     }
 
-    public BarChart reload(XYChartData data, double duration)
+    public LineChart reload(XYChartData data, double duration)
     {
-        return BarChartAnimationHelper.reload(this, data, LINEAR, Math.max(duration, 1));
+        // TODO: return BarChartAnimationHelper.reload(this, data, LINEAR, Math.max(duration, 1));
+        return this;
     }
 
-    public BarChart reload(XYChartData data, AnimationTweener tweener, double duration)
+    public LineChart reload(XYChartData data, AnimationTweener tweener, double duration)
     {
-        return BarChartAnimationHelper.reload(this, data, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
+        // TODO: return BarChartAnimationHelper.reload(this, data, ((tweener != null) ? tweener : LINEAR), Math.max(duration, 1));
+        return this;
     }
 
-    public static class BarChartFactory extends XYChartFactory<BarChart>
+    public static class LineChartFactory extends XYChartFactory<LineChart>
     {
-        public BarChartFactory()
+        public LineChartFactory()
         {
-            super(ChartNodeType.BAR_CHART);
+            super(ChartNodeType.LINE_CHART);
         }
 
         @Override
@@ -158,9 +148,9 @@ public class BarChart extends XYChart<BarChart>
         }
 
         @Override
-        protected BarChart container(JSONObject node, ValidationContext ctx) throws ValidationException
+        protected LineChart container(JSONObject node, ValidationContext ctx) throws ValidationException
         {
-            return new BarChart(node, ctx);
+            return new LineChart(node, ctx);
         }
     }
 
@@ -184,19 +174,20 @@ public class BarChart extends XYChart<BarChart>
             final double w = event.getWidth() - getMarginLeft() - getMarginRight();
             final double h = event.getHeight() - getMarginTop() - getMarginBottom();
             // Apply resize to bar chart.
-            new BarChartResizeAnimation(this, w, h, LINEAR, getDefaultAnimationDuration(), null).run();
+            // TODO: new BarChartResizeAnimation(this, w, h, LINEAR, getDefaultAnimationDuration(), null).run();
         }
         super.onChartResize(event);
     }
 
-    public BarChart buildSeriesValues(final XYChartSeries series, final int numSeries)
+    public LineChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
         List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
         List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
-            List<Rectangle> bars = new LinkedList<Rectangle>();
+            List<Line> lines = new LinkedList<Line>();
+            List<Point2D> points = new LinkedList<Point2D>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
                 final AxisValue axisValue = xAxisValues.get(i);
@@ -205,33 +196,36 @@ public class BarChart extends XYChart<BarChart>
                 Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
                 final String yValueFormatted = valuesAxisBuilder.format(yValue);
+                final Point2D point = new Point2D(0,0);
+                points.add(point);
+                
+                /*
+                TODO
 
-                final Rectangle bar = new Rectangle(0, 0);
-                bar.setID(buildId("value", numSeries, i));
-                bars.add(bar);
 
                 // Click handler (filtering).
                 final int row = i;
-                bar.addNodeMouseClickHandler(new NodeMouseClickHandler()
+                point.addNodeMouseClickHandler(new NodeMouseClickHandler()
                 {
                     @Override
                     public void onNodeMouseClick(NodeMouseClickEvent event)
                     {
-                        BarChart.this.fireEvent(new ValueSelectedEvent(series.getName(), getData().getCategoryAxisProperty(), row));
+                        LineChart.this.fireEvent(new ValueSelectedEvent(series.getName(), getData().getCategoryAxisProperty(), row));
                     }
                 });
+                
 
                 // Mouse events for the bar shape.
                 final int numValue = i;
-                bar.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
+                point.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
                 {
                     @Override
                     public void onNodeMouseEnter(NodeMouseEnterEvent event)
                     {
-                        double x = bar.getX();
-                        double y = bar.getY();
-                        double width = bar.getWidth();
-                        double height = bar.getHeight();
+                        double x = point.getX();
+                        double y = point.getY();
+                        double width = point.getWidth();
+                        double height = point.getHeight();
                         double xTooltip = isVertical() ? x + width / 2 : x + width;
                         double yTooltip = isVertical() ? y - XYChartTooltip.TRIANGLE_SIZE : y + height / 2;
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
@@ -249,35 +243,24 @@ public class BarChart extends XYChart<BarChart>
                         tooltip.hide();
                     }
                 });
-                chartArea.add(bar);
+                
+                 */
+                
+                if (i > 0) {
+                    final Point2D lastPoint = points.get(i - 1);
+                    final Line line = new Line(lastPoint, point);
+                    lines.add(line);
+                    chartArea.add(line);
+                    GWT.log("buildSeriesValues - Added line");
+                }
             }
-            seriesValues.put(series.getName(), bars);
+            seriesValues.put(series.getName(), lines);
 
         }
         return this;
     }
 
-    protected void seriesValuesAlpha(int numSeries, int numValue, double alpha)
-    {
-        String barId = BarChart.buildId("value", numSeries, numValue);
-        for (Map.Entry<String, List<Rectangle>> entry : seriesValues.entrySet())
-        {
-            List<Rectangle> values = entry.getValue();
-            if (values != null && !values.isEmpty())
-            {
-                for (Rectangle value : values)
-                {
-                    String id = value.getID();
-                    if (!barId.equals(id))
-                    {
-                        value.animate(LINEAR, toPropertyList(ALPHA(alpha)), getDefaultAnimationDuration());
-                    }
-                }
-            }
-        }
-    }
-
-    public BarChart removeSeriesValues(final String seriesName)
+    public LineChart removeSeriesValues(final String seriesName)
     {
         if (seriesName != null)
         {
@@ -326,6 +309,23 @@ public class BarChart extends XYChart<BarChart>
         return categoriesAxisBuilder;
     }
 
+    public void clear()
+    {
+        super.clear();
+
+        if (!seriesValues.isEmpty())
+        {
+            for (Collection<Line> lines : seriesValues.values())
+            {
+                for (Line line : lines)
+                {
+                    line.removeFromParent();
+                }
+            }
+            seriesValues.clear();
+        }
+    }
+
     protected AxisBuilder buildValuesAxisBuilder(final boolean isVertical)
     {
         AxisBuilder valuesAxisBuilder = null;
@@ -367,29 +367,7 @@ public class BarChart extends XYChart<BarChart>
         return valuesAxisBuilder;
     }
 
-    public void clear()
-    {
-        super.clear();
-        
-        if (!seriesValues.isEmpty())
-        {
-            for (Collection<Rectangle> rectangles : seriesValues.values())
-            {
-                for (Rectangle rectangle : rectangles)
-                {
-                    rectangle.removeFromParent();
-                }
-            }
-            seriesValues.clear();
-        }
-    }
-
-    public static String buildId(String prefix, int numSeries, int numValue)
-    {
-        return prefix + numSeries + "" + numValue;
-    }
-
-    public Map<String, List<Rectangle>> getSeriesValues()
+    public Map<String, List<Line>> getSeriesValues()
     {
         return seriesValues;
     }

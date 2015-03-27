@@ -18,27 +18,22 @@
 
 package com.ait.lienzo.charts.client.core.xy.bar.animation;
 
-import java.util.List;
-import java.util.Map;
-
-import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
+import com.ait.lienzo.charts.client.core.xy.XYChartAnimation;
 import com.ait.lienzo.charts.client.core.xy.XYChartSeries;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabel;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChartLabelFormatter;
-import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
-import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.Text;
 import com.ait.lienzo.shared.core.types.IColor;
 
-public abstract class AbstractBarChartAnimation extends AbstractChartAnimation
+import java.util.List;
+import java.util.Map;
+
+public abstract class AbstractBarChartAnimation extends XYChartAnimation
 {
     public AbstractBarChartAnimation(final BarChart barChart, final double chartWidth, final double chartHeight, AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
@@ -49,195 +44,6 @@ public abstract class AbstractBarChartAnimation extends AbstractChartAnimation
     {
         return (BarChart) getNode();
     }
-
-    protected boolean isVertical()
-    {
-        return getBarChart().isVertical();
-    }
-
-    protected void calculate(final double w, final double h)
-    {
-        super.calculate(w, h);
-
-        calculateCategoriesAxisTitle(w, h);
-        calculateValuesAxisTitle(w, h);
-        calculateCategoriesAxisIntervals(w, h);
-        calculateValuesAxisIntervals(w, h);
-        calculateValues(w, h);
-    }
-
-    protected void calculateCategoriesAxisTitle(final double w, final double h)
-    {
-        // Category axis title.
-        if (!getBarChart().getCategoriesAxisTitle().isEmpty())
-        {
-            final Double ctx = isVertical() ? w / 2 : null;
-            final Double cty = isVertical() ? 30d : h / 2;
-            doAnimateCategoriesAxisTitle(getBarChart().getCategoriesAxisTitle().get(0), ctx, cty);
-        }
-    }
-
-    protected abstract void doAnimateCategoriesAxisTitle(final Text categoriesAxisTitle, final Double x, final Double y);
-
-    protected void calculateValuesAxisTitle(final double w, final double h)
-    {
-        // Values axis title.
-        if (!getBarChart().getValuesAxisTitle().isEmpty())
-        {
-            final Double vtx = isVertical() ? null : w / 2;
-            final Double vty = isVertical() ? h / 2 : 30d;
-            doAnimateValuesAxisTitle(getBarChart().getValuesAxisTitle().get(0), vtx, vty);
-        }
-    }
-
-    protected abstract void doAnimateValuesAxisTitle(final Text valuesAxisTitle, final Double x, final Double y);
-
-    protected void calculateCategoriesAxisIntervals(final double w, final double h)
-    {
-        if (getBarChart().isShowCategoriesLabels())
-        {
-            final double ml = getBarChart().getMarginLeft();
-            final double mr = getBarChart().getMarginRight();
-            final double mt = getBarChart().getMarginTop();
-            final double mb = getBarChart().getMarginBottom();
-            final List<BarChartLabel> seriesLabels = getBarChart().getSeriesLabels();
-            final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
-            final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
-            final int lsize = labels.size();
-            final LabelsPosition clp = getBarChart().getCategoriesAxisLabelsPosition();
-
-            if (labels != null && !labels.isEmpty())
-            {
-                // Check max labels size.
-                final double maxLabelWidth = isVertical() ? w / lsize : (clp.equals(LabelsPosition.RIGHT) ? mr : ml);
-                final double maxLabelHeight = isVertical() ? (clp.equals(LabelsPosition.BOTTOM) ? mb : mt) : h / lsize;
-                final BarChartLabelFormatter categoriesLabelFormatter = new BarChartLabelFormatter(seriesLabels);
-
-                // Apply format to the labels.
-                categoriesLabelFormatter.format(maxLabelWidth, maxLabelHeight);
-
-                for (int i = 0; i < labels.size(); i++)
-                {
-                    final AxisLabel label = labels.get(i);
-                    final double position = label.getPosition();
-                    final BarChartLabel chartLabel = seriesLabels.get(i);
-
-                    if (isVertical())
-                    {
-                        final double labelWidth = chartLabel.getLabelWidth();
-                        //TODO: Use ComposedTweeningAnimation#add()
-                        doAnimateCategoriesAxisIntervals(chartLabel, label, position - labelWidth / 2, 10d);
-                    }
-                    else
-                    {
-                        double xPos = 0;
-                        if (!clp.equals(LabelsPosition.RIGHT))
-                        {
-                            // Left.
-                            final double margin = ml;
-                            final double lw = chartLabel.getLabelWidth();
-                            xPos = (lw + 5 > margin) ? 0 : margin - lw - 5;
-                        }
-                        else
-                        {
-                            // Right.
-                            xPos = 5;
-                        }
-                        //TODO: Use ComposedTweeningAnimation#add()
-                        doAnimateCategoriesAxisIntervals(chartLabel, label, xPos, position - chartLabel.getLabelHeight() / 2);
-                    }
-                }
-            }
-            else
-            {
-                seriesLabels.clear();
-            }
-        }
-    }
-
-    protected abstract void doAnimateCategoriesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y);
-
-    protected void calculateValuesAxisIntervals(final double w, final double h)
-    {
-        final double ml = getBarChart().getMarginLeft();
-        final double mr = getBarChart().getMarginRight();
-        final double mt = getBarChart().getMarginTop();
-        final double mb = getBarChart().getMarginBottom();
-        final List<Line> valuesAxisIntervals = getBarChart().getValuesAxisIntervals();
-        final List<BarChartLabel> valuesLabels = getBarChart().getValuesLabels();
-        final AxisBuilder valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
-
-        final List<AxisLabel> labels = valuesAxisBuilder.getLabels();
-        if (labels != null && !labels.isEmpty())
-        {
-            final int lsize = labels.size();
-            final LabelsPosition vlp = getBarChart().getValuesAxisLabelsPosition();
-
-            final double maxLabelWidth = isVertical() ? (vlp.equals(LabelsPosition.LEFT) ? ml : mr) : w / 2;
-            final double maxLabelHeight = isVertical() ? h / lsize : (vlp.equals(LabelsPosition.TOP) ? mt : mb);
-            final BarChartLabelFormatter valuesLabelFormatter = new BarChartLabelFormatter(valuesLabels);
-
-            // Apply format to the labels.
-            valuesLabelFormatter.format(maxLabelWidth, maxLabelHeight);
-
-            for (int i = 0; i < labels.size(); i++)
-            {
-                final AxisLabel label = labels.get(i);
-                final double position = label.getPosition();
-
-                final double p00 = isVertical() ? 0 : position;
-                final double p01 = isVertical() ? position : 0;
-                final double p10 = isVertical() ? w : position;
-                final double p11 = isVertical() ? position : h;
-                doAnimateValuesAxisIntervals(valuesAxisIntervals.get(i), p00, p01, p10, p11);
-
-                if (getBarChart().isShowValuesLabels())
-                {
-                    BarChartLabel chartLabel = valuesLabels.get(i);
-
-                    if (isVertical())
-                    {
-                        double xPos = 0;
-                        if (vlp.equals(LabelsPosition.LEFT))
-                        {
-                            // Left.
-                            final double marginLeft = ml;
-                            final double lw = chartLabel.getLabelWidth();
-                            xPos = (lw + 5 > marginLeft) ? 0 : marginLeft - lw - 5;
-                        }
-                        else
-                        {
-                            // Right.
-                            xPos = 5;
-                        }
-                        doAnimateValuesAxisIntervals(chartLabel, label, xPos, position - 5);
-                    }
-                    else
-                    {
-                        double yPos = 0;
-                        if (vlp.equals(LabelsPosition.TOP))
-                        {
-                            // Top.
-                            final double marginTop = mt;
-                            final double lh = chartLabel.getLabelHeight();
-                            yPos = (lh + 5 > marginTop) ? 0 : marginTop - lh - 5;
-                        }
-                        else
-                        {
-                            // Bottom.
-                            yPos = 5;
-                        }
-                        doAnimateValuesAxisIntervals(chartLabel, label, position, yPos);
-                    }
-
-                }
-            }
-        }
-    }
-
-    protected abstract void doAnimateValuesAxisIntervals(Line valueAxisInterval, final double p00, final double p01, final double p10, final double p11);
-
-    protected abstract void doAnimateValuesAxisIntervals(final BarChartLabel chartLabel, final AxisLabel axisLabel, final Double x, final Double y);
 
     protected void calculateValues(final double w, final double h)
     {
