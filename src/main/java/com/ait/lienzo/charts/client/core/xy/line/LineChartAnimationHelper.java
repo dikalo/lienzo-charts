@@ -19,7 +19,10 @@
 package com.ait.lienzo.charts.client.core.xy.line;
 
 import com.ait.lienzo.charts.client.core.xy.XYChartData;
+import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartClearAnimation;
 import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartCreateAnimation;
+import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartReloadAnimation;
+import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartResizeAnimation;
 import com.ait.lienzo.client.core.animation.*;
 
 /**
@@ -50,7 +53,7 @@ public final class LineChartAnimationHelper
 
     public static final LineChart resize(final LineChart lineChart, final double width, final double height, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
-        // TODO: new LineChartResizeAnimation(lineChart, width, height, tweener, duration, callback).run();
+        new LineChartResizeAnimation(lineChart, width, height, tweener, duration, callback).run();
 
         return lineChart;
     }
@@ -62,7 +65,7 @@ public final class LineChartAnimationHelper
 
     public static final LineChart clear(final LineChart lineChart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
-        // TODO: new LineChartClearAnimation(lineChart, tweener, duration, callback).run();
+        new LineChartClearAnimation(lineChart, tweener, duration, callback).run();
 
         return lineChart;
     }
@@ -74,7 +77,24 @@ public final class LineChartAnimationHelper
 
     public static final LineChart reload(final LineChart lineChart, final XYChartData data, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
-        // TODO
+        if (isCleanRequired(lineChart.getData(), data))
+        {
+            new LineChartClearAnimation(lineChart, tweener, duration, new AnimationCallback()
+            {
+                @Override
+                public void onClose(IAnimation animation, IAnimationHandle handle)
+                {
+                    super.onClose(animation, handle);
+                    lineChart.setData(data);
+                    create(lineChart, tweener, duration, callback);
+                }
+            }).run();
+        }
+        else if (lineChart.getData() != null && data != null)
+        {
+            // Reload data as may have been updated.
+            new LineChartReloadAnimation(lineChart, data, tweener, duration, callback).run();
+        }
         return lineChart;
     }
 

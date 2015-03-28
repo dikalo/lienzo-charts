@@ -19,12 +19,13 @@
 package com.ait.lienzo.charts.client.core.xy.bar.animation;
 
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
-import com.ait.lienzo.charts.client.core.xy.XYChartAnimation;
+import com.ait.lienzo.charts.client.core.xy.animation.XYChartAnimation;
 import com.ait.lienzo.charts.client.core.xy.XYChartSeries;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
+import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.shape.Rectangle;
@@ -48,63 +49,59 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
     protected void calculateValues(final double w, final double h)
     {
         final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
-        XYChartSeries[] series = getBarChart().getData().getSeries();
+        final XYChartSeries[] series = getBarChart().getData().getSeries();
         final ChartLegend legend = getBarChart().getChartLegend();
 
         // Find removed series in order to remove bar rectangle instances.
-        for (String removedSerieName : categoriesAxisBuilder.getDataSummary().getRemovedSeries())
+        for (String removedSeriesName : categoriesAxisBuilder.getDataSummary().getRemovedSeries())
         {
-            // TODO: Remove serie values should be done only in a BarChartReloadAnimation?
-            getBarChart().removeSeriesValues(removedSerieName);
-            if (legend != null) legend.remove(removedSerieName).build();
+            // TODO: Remove series values should be done only in a BarChartReloadAnimation?
+            getBarChart().removeSeriesValues(removedSeriesName);
+            if (legend != null) legend.remove(removedSeriesName).build();
         }
         categoriesAxisBuilder.getDataSummary().getRemovedSeries().clear();
 
         // Iterate over all series.
-        for (int numSerie = 0; numSerie < series.length; numSerie++)
+        for (int numSeries = 0; numSeries < series.length; numSeries++)
         {
-            final XYChartSeries serie = series[numSerie];
-            if (serie != null)
+            final XYChartSeries _series = series[numSeries];
+            if (_series != null)
             {
                 // If a new serie is added, draw new bar rectangle instances.
                 boolean isSeriesNew = false;
-                if (categoriesAxisBuilder.getDataSummary().getAddedSeries().contains(serie.getName()))
+                if (categoriesAxisBuilder.getDataSummary().getAddedSeries().contains(_series.getName()))
                 {
-                    // TODO: Build serie values should be done only in a BarChartReloadAnimation?
-                    getBarChart().buildSeriesValues(serie, numSerie);
-                    if (legend != null) legend.add(new ChartLegend.ChartLegendEntry(serie.getName(), serie.getColor())).build();
-                    categoriesAxisBuilder.getDataSummary().getAddedSeries().remove(serie.getName());
+                    // TODO: Build series values should be done only in a BarChartReloadAnimation?
+                    getBarChart().buildSeriesValues(_series, numSeries);
+                    if (legend != null) legend.add(new ChartLegend.ChartLegendEntry(_series.getName(), _series.getColor())).build();
+                    categoriesAxisBuilder.getDataSummary().getAddedSeries().remove(_series.getName());
                     isSeriesNew = true;
                 }
-                if (isVertical()) calculateValuesForVertical(serie, numSerie, w, h, isSeriesNew);
-                else calculateValuesForHorizontal(serie, numSerie, w, h, isSeriesNew);
+                if (isVertical()) calculateValuesForVertical(_series, numSeries, w, h, isSeriesNew);
+                else calculateValuesForHorizontal(_series, numSeries, w, h, isSeriesNew);
             }
         }
     }
 
     protected AbstractBarChartAnimation calculateValuesForVertical(final XYChartSeries serie, final int numSerie, final Double width, final Double height, boolean isSeriesNew)
     {
-        final double ml = getBarChart().getMarginLeft();
-        final double mr = getBarChart().getMarginRight();
-        final double mt = getBarChart().getMarginTop();
-        final double mb = getBarChart().getMarginBottom();
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
         final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
         final AxisBuilder valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
-        XYChartSeries[] series = getBarChart().getData().getSeries();
+        final XYChartSeries[] series = getBarChart().getData().getSeries();
 
-        // Rebuild bars for serie values
-        List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
-        List<Rectangle> bars = seriesValues.get(serie.getName());
+        // Rebuild bars for series values
+        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
+        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
+        final List<Rectangle> bars = seriesValues.get(serie.getName());
 
         if (categoryAxisValues != null && categoryAxisValues.size() > 0)
         {
             for (int i = 0; i < categoryAxisValues.size(); i++)
             {
-                AxisValue categoryAxisvalue = categoryAxisValues.get(i);
-                AxisValue valueAxisvalue = valuesAxisValues.get(i);
-                double yAxisValuePosition = valueAxisvalue.getPosition();
+                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
+                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final double yAxisValuePosition = valueAxisValue.getPosition();
 
                 // Obtain width and height values for the bar.
                 double barHeight = yAxisValuePosition;
@@ -112,8 +109,8 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
                 if (barWidth <= 0) barWidth = 1;
 
                 // Calculate bar positions.
-                double y = height - barHeight;
-                double x = (barWidth * series.length * i) + (barWidth * numSerie) + (getBarChart().getValuesAxis().getSegments() * (i + 1));
+                double y = getBarChart().getDirection().equals(ChartDirection.POSITIVE) ? height - barHeight : height;
+                double x = categoryAxisValue.getPosition() - barWidth/2 + (barWidth * numSerie);
                 double alpha = 1d;
 
                 // If current bar is not in Y axis intervals (max / min values), resize it and apply an alpha.
@@ -151,7 +148,7 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
 
     protected double getAvailableWidth(final double chartWidth, final int valuesCount)
     {
-        int yAxisDivisions = getBarChart().getValuesAxis().getSegments();
+        final int yAxisDivisions = getBarChart().getValuesAxis().getSegments();
         return chartWidth - (yAxisDivisions * (valuesCount + 1));
     }
 
@@ -160,30 +157,31 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
         final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
         final AxisBuilder valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
-        XYChartSeries[] series = getBarChart().getData().getSeries();
+        final XYChartSeries[] series = getBarChart().getData().getSeries();
 
-        // Rebuild bars for serie values
-        List<AxisValue> yAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
-        List<AxisValue> xAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        List<AxisLabel> xAxisLabels = valuesAxisBuilder.getLabels();
-        List<Rectangle> bars = seriesValues.get(serie.getName());
+        // Rebuild bars for series values
+        final List<AxisValue> yAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
+        final List<AxisValue> xAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
+        final List<AxisLabel> xAxisLabels = valuesAxisBuilder.getLabels();
+        final List<Rectangle> bars = seriesValues.get(serie.getName());
 
         if (yAxisValues != null && yAxisValues.size() > 0)
         {
             for (int i = 0; i < yAxisValues.size(); i++)
             {
-                AxisValue xAxisvalue = xAxisValues.get(i);
-                double xAxisValuePosition = xAxisvalue.getPosition();
+                final AxisValue xAxisValue = xAxisValues.get(i);
+                final AxisValue yAxisValue = yAxisValues.get(i);
+                final double xAxisValuePosition = xAxisValue.getPosition();
 
                 // Obtain width and height values for the bar.
-                int valuesSize = yAxisValues.size();
+                final int valuesSize = yAxisValues.size();
                 double barWidth = xAxisValuePosition;
                 double barHeight = getHeightForBar(height, series.length, valuesSize);
                 if (barHeight <= 0) barHeight = 1;
 
                 // Calculate bar positions.
-                double x = 0;
-                double y = (barHeight * series.length * i) + (barHeight * numSerie);
+                double x = getBarChart().getDirection().equals(ChartDirection.POSITIVE) ? 0d : width - barWidth;
+                double y = yAxisValue.getPosition() - barHeight/2 + (barHeight * numSerie);
                 double alpha = 1d;
 
                 // If current bar is not in Y axis intervals (max / min values), resize it and apply an alpha.

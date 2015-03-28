@@ -82,7 +82,7 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
 
     @Override
     public IAnimation doClose() {
-        ChartResizer resizer = getChart().getChartResizer();
+        final ChartResizer resizer = getChart().getChartResizer();
         if (resizer != null) resizer.moveToTop();
         return super.doClose();
     }
@@ -90,7 +90,7 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
     protected static AnimationProperties buildAnimationProperties(final Double x, final Double y)
     {
         if (x == null && y == null) return null;
-        AnimationProperties animationProperties = new AnimationProperties();
+        final AnimationProperties animationProperties = new AnimationProperties();
         if (x != null) animationProperties.push(AnimationProperty.Properties.X(x));
         if (y != null) animationProperties.push(AnimationProperty.Properties.Y(y));
         return animationProperties;
@@ -99,7 +99,7 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
     protected static AnimationProperties buildAnimationProperties(final Double x, final Double y, final Double w, final Double h)
     {
         if (x == null && y == null && w == null && h == null) return null;
-        AnimationProperties animationProperties = new AnimationProperties();
+        final AnimationProperties animationProperties = new AnimationProperties();
         if (x != null) animationProperties.push(AnimationProperty.Properties.X(x));
         if (y != null) animationProperties.push(AnimationProperty.Properties.Y(y));
         if (w != null) animationProperties.push(AnimationProperty.Properties.WIDTH(w));
@@ -110,7 +110,7 @@ public abstract class AbstractChartAnimation extends StackedTweeningAnimation
     public static AnimationProperties buildAnimationProperties(final Double alpha)
     {
         if (alpha == null) return null;
-        AnimationProperties animationProperties = new AnimationProperties();
+        final AnimationProperties animationProperties = new AnimationProperties();
         if (alpha != null) animationProperties.push(AnimationProperty.Properties.ALPHA(alpha));
         return animationProperties;
     }

@@ -90,8 +90,8 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
             for (int i = 0, j = valuesCount - 1; i < valuesCount; i++, j--)
             {
                 String value = (getAxisDirection().equals(AxisDirection.DESC)) ? values[i] : values[j];
-                double barSize = (getChartSizeAttribute() - (valuesCount + 1)) / valuesCount / seriesCount;
-                double position = (barSize * seriesCount * i);
+                double valueSize = (getChartSizeAttribute() - (valuesCount + 1)) / valuesCount / seriesCount;
+                double position = (valueSize * seriesCount * i) + valueSize/2;
                 result.add(new AxisValue<String>(value, position));
             }
         }

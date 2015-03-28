@@ -29,10 +29,10 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartResizeAnimation;
-import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEvent;
-import com.ait.lienzo.charts.client.core.xy.bar.event.DataReloadedEventHandler;
-import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedEvent;
-import com.ait.lienzo.charts.client.core.xy.bar.event.ValueSelectedHandler;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
+import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
@@ -164,16 +164,6 @@ public class BarChart extends XYChart<BarChart>
         }
     }
 
-    public HandlerRegistration addDataReloadedHandler(DataReloadedEventHandler handler)
-    {
-        return addEnsureHandler(DataReloadedEvent.TYPE, handler);
-    }
-
-    public HandlerRegistration addValueSelectedHandler(ValueSelectedHandler handler)
-    {
-        return addEnsureHandler(ValueSelectedEvent.TYPE, handler);
-    }
-
     @Override
     protected void onChartResize(ChartResizeEvent event)
     {
@@ -191,18 +181,18 @@ public class BarChart extends XYChart<BarChart>
 
     public BarChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
-        List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
-        List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
+        final List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
-            List<Rectangle> bars = new LinkedList<Rectangle>();
+            final List<Rectangle> bars = new LinkedList<Rectangle>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
                 final AxisValue axisValue = xAxisValues.get(i);
-                AxisValue yAxisValue = yAxisValues.get(i);
-                Object value = axisValue.getValue();
-                Object yValue = yAxisValue.getValue();
+                final AxisValue yAxisValue = yAxisValues.get(i);
+                final Object value = axisValue.getValue();
+                final Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
                 final String yValueFormatted = valuesAxisBuilder.format(yValue);
 
@@ -259,7 +249,7 @@ public class BarChart extends XYChart<BarChart>
 
     protected void seriesValuesAlpha(int numSeries, int numValue, double alpha)
     {
-        String barId = BarChart.buildId("value", numSeries, numValue);
+        final String barId = BarChart.buildId("value", numSeries, numValue);
         for (Map.Entry<String, List<Rectangle>> entry : seriesValues.entrySet())
         {
             List<Rectangle> values = entry.getValue();
@@ -289,11 +279,11 @@ public class BarChart extends XYChart<BarChart>
     protected AxisBuilder buildCategoryAxisBuilder(final boolean isVertical)
     {
         AxisBuilder categoriesAxisBuilder = null;
-        Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
+        final Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
 
         if (isVertical)
         {
-            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartWidth(), direction, categoriesAxisJSO);
@@ -309,7 +299,7 @@ public class BarChart extends XYChart<BarChart>
         }
         else
         {
-            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartHeight(), direction, categoriesAxisJSO);
@@ -329,11 +319,11 @@ public class BarChart extends XYChart<BarChart>
     protected AxisBuilder buildValuesAxisBuilder(final boolean isVertical)
     {
         AxisBuilder valuesAxisBuilder = null;
-        Axis.AxisJSO valuesAxisJSO = getValuesAxis();
+        final Axis.AxisJSO valuesAxisJSO = getValuesAxis();
 
         if (isVertical)
         {
-            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
             if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
                 throw new RuntimeException("CategoryAxis type cannot be used in BarChart (vertical) for the values axis.");
@@ -349,7 +339,7 @@ public class BarChart extends XYChart<BarChart>
         }
         else
         {
-            AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
 
             if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
@@ -384,7 +374,7 @@ public class BarChart extends XYChart<BarChart>
         }
     }
 
-    public static String buildId(String prefix, int numSeries, int numValue)
+    private static String buildId(String prefix, int numSeries, int numValue)
     {
         return prefix + numSeries + "" + numValue;
     }

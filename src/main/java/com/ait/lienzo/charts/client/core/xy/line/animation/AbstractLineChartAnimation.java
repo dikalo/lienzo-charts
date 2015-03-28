@@ -19,17 +19,16 @@
 package com.ait.lienzo.charts.client.core.xy.line.animation;
 
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
-import com.ait.lienzo.charts.client.core.xy.XYChartAnimation;
+import com.ait.lienzo.charts.client.core.xy.animation.XYChartAnimation;
 import com.ait.lienzo.charts.client.core.xy.XYChartSeries;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
-import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
-import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
 import com.ait.lienzo.charts.client.core.xy.line.LineChart;
+import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
+import com.ait.lienzo.client.core.shape.Circle;
 import com.ait.lienzo.client.core.shape.Line;
-import com.ait.lienzo.client.core.shape.Rectangle;
 import com.ait.lienzo.client.core.types.Point2D;
 import com.ait.lienzo.shared.core.types.IColor;
 
@@ -51,81 +50,75 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
     protected void calculateValues(final double w, final double h)
     {
         final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
-        XYChartSeries[] series = getLineChart().getData().getSeries();
+        final XYChartSeries[] series = getLineChart().getData().getSeries();
         final ChartLegend legend = getLineChart().getChartLegend();
 
-        // Find removed series in order to remove bar rectangle instances.
-        for (String removedSerieName : categoriesAxisBuilder.getDataSummary().getRemovedSeries())
+        // Find removed series in order to remove line instances.
+        for (String removedSeriesName : categoriesAxisBuilder.getDataSummary().getRemovedSeries())
         {
-            // TODO: Remove serie values should be done only in a BarChartReloadAnimation?
-            getLineChart().removeSeriesValues(removedSerieName);
-            if (legend != null) legend.remove(removedSerieName).build();
+            // TODO: Remove series values should be done only in a LineChartReloadAnimation?
+            getLineChart().removeSeriesValues(removedSeriesName);
+            if (legend != null) legend.remove(removedSeriesName).build();
         }
         categoriesAxisBuilder.getDataSummary().getRemovedSeries().clear();
 
         // Iterate over all series.
-        for (int numSerie = 0; numSerie < series.length; numSerie++)
+        for (int numSeries = 0; numSeries < series.length; numSeries++)
         {
-            final XYChartSeries serie = series[numSerie];
-            if (serie != null)
+            final XYChartSeries _series = series[numSeries];
+            if (_series != null)
             {
-                // If a new serie is added, draw new bar rectangle instances.
+                // If a new series is added, draw new line instances.
                 boolean isSeriesNew = false;
-                if (categoriesAxisBuilder.getDataSummary().getAddedSeries().contains(serie.getName()))
+                if (categoriesAxisBuilder.getDataSummary().getAddedSeries().contains(_series.getName()))
                 {
-                    // TODO: Build serie values should be done only in a BarChartReloadAnimation?
-                    getLineChart().buildSeriesValues(serie, numSerie);
-                    if (legend != null) legend.add(new ChartLegend.ChartLegendEntry(serie.getName(), serie.getColor())).build();
-                    categoriesAxisBuilder.getDataSummary().getAddedSeries().remove(serie.getName());
+                    // TODO: Build series values should be done only in a LineChartReloadAnimation?
+                    getLineChart().buildSeriesValues(_series, numSeries);
+                    if (legend != null) legend.add(new ChartLegend.ChartLegendEntry(_series.getName(), _series.getColor())).build();
+                    categoriesAxisBuilder.getDataSummary().getAddedSeries().remove(_series.getName());
                     isSeriesNew = true;
                 }
-                if (isVertical()) calculateValuesForVertical(serie, numSerie, w, h, isSeriesNew);
-                else calculateValuesForHorizontal(serie, numSerie, w, h, isSeriesNew);
+                if (isVertical()) calculateValuesForVertical(_series, numSeries, w, h, isSeriesNew);
+                else calculateValuesForHorizontal(_series, numSeries, w, h, isSeriesNew);
             }
         }
     }
 
-    protected AbstractLineChartAnimation calculateValuesForVertical(final XYChartSeries serie, final int numSerie, final Double width, final Double height, boolean isSeriesNew)
+    protected AbstractLineChartAnimation calculateValuesForVertical(final XYChartSeries series, final int numSeries, final Double width, final Double height, boolean isSeriesNew)
     {
-        final double ml = getLineChart().getMarginLeft();
-        final double mr = getLineChart().getMarginRight();
-        final double mt = getLineChart().getMarginTop();
-        final double mb = getLineChart().getMarginBottom();
         final Map<String, List<Line>> seriesValues = getLineChart().getSeriesValues();
+        final Map<String, List<Circle>> seriesCircles = getLineChart().getSeriesPoints();
         final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
         final AxisBuilder valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
-        XYChartSeries[] series = getLineChart().getData().getSeries();
 
-        // Rebuild bars for serie values
-        List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
-        List<Line> lines = seriesValues.get(serie.getName());
+        // Rebuild line for series values
+        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
+        final List<Line> lines = seriesValues.get(series.getName());
+        final List<Circle> circles = seriesCircles.get(series.getName());
         Double lastX = null;
         Double lastY = null;
         if (categoryAxisValues != null && categoryAxisValues.size() > 0)
         {
             for (int i = 0; i < categoryAxisValues.size(); i++)
             {
-                AxisValue categoryAxisvalue = categoryAxisValues.get(i);
-                double xAxisValuePosition = categoryAxisvalue.getPosition();
-                AxisValue valueAxisvalue = valuesAxisValues.get(i);
-                double yAxisValuePosition = valueAxisvalue.getPosition();
+                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
+                final double xAxisValuePosition = categoryAxisValue.getPosition();
+                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final double yAxisValuePosition = valueAxisValue.getPosition();
 
                 // Calculate positions.
-                Double x = null;
-                Double y = null;
+                Double x = xAxisValuePosition;
+                Double y = height - yAxisValuePosition;
                 if (lastX == null && lastY == null) {
-                    lastY = height - yAxisValuePosition;
-                    lastX = xAxisValuePosition;
-                } else {
-                    y = height - yAxisValuePosition;
-                    x = xAxisValuePosition;
+                    lastY = y;
+                    lastX = x;
+                    x = null;
+                    y = null;
                 }
 
                 /*
-                TODO
-                 
-                // If current bar is not in Y axis intervals (max / min values), resize it and apply an alpha.
+                // TODO: If current line is not in Y axis intervals (max / min values), resize it and apply an alpha.
                 boolean isOutOfChartArea = y < 0;
                 if (isOutOfChartArea)
                 {
@@ -135,29 +128,97 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
                 }
                 */
 
+                // Animate line shapes.
                 if (lastX != null && lastY != null && x != null && y != null) {
-                    Point2D p1 = new Point2D(lastX, lastY);
-                    Point2D p2 = new Point2D(x, y);
+                    final Point2D p1 = new Point2D(lastX, lastY);
+                    final Point2D p2 = new Point2D(x, y);
                     final Line line = lines.get(i - 1);
                     line.moveToTop();
                     line.setDraggable(false);
 
-                    doAnimateValues(line, p1, p2, width, height, serie.getColor(), isSeriesNew);
+                    doAnimateValues(line, p1, p2, width, height, series.getColor(), isSeriesNew);
                     
                     lastX = x;
                     lastY = y;
                 }
+
+                // Animate circle shapes.
+                final Circle circle = circles.get(i);
+                doAnimateValues(circle, lastX, lastY, width, height, series.getColor(), isSeriesNew);
             }
         }
 
         return this;
     }
 
-    protected AbstractLineChartAnimation calculateValuesForHorizontal(final XYChartSeries serie, final int numSerie, Double width, final Double height, boolean isSeriesNew)
+    protected AbstractLineChartAnimation calculateValuesForHorizontal(final XYChartSeries series, final int numSeries, Double width, final Double height, boolean isSeriesNew)
     {
-        // TODO
+        final Map<String, List<Line>> seriesValues = getLineChart().getSeriesValues();
+        final Map<String, List<Circle>> seriesCircles = getLineChart().getSeriesPoints();
+        final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
+        final AxisBuilder valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
+
+        // Rebuild line for series values
+        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
+        final List<Line> lines = seriesValues.get(series.getName());
+        final List<Circle> circles = seriesCircles.get(series.getName());
+        Double lastX = null;
+        Double lastY = null;
+        if (categoryAxisValues != null && categoryAxisValues.size() > 0)
+        {
+            for (int i = 0; i < categoryAxisValues.size(); i++)
+            {
+                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
+                final double yAxisValuePosition = categoryAxisValue.getPosition();
+                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final double xAxisValuePosition = valueAxisValue.getPosition();
+
+                // Calculate positions.
+                Double x = getLineChart().getDirection().equals(ChartDirection.POSITIVE) ? xAxisValuePosition : 0d;
+                Double y = yAxisValuePosition;
+                if (lastX == null && lastY == null) {
+                    lastX = x;
+                    lastY = y;
+                    x = null;
+                    y = null;
+                }
+
+                /*
+                // TODO: // If current line is not in Y axis intervals (max / min values), resize it and apply an alpha.
+                double lastXIntervalPosition = xAxisLabels.get(xAxisLabels.size() - 1).getPosition();
+                boolean isOutOfChartArea = barWidth > lastXIntervalPosition;
+                if (isOutOfChartArea)
+                {
+                    alpha = 0.1d;
+                    barWidth = width;
+                }
+                */
+
+                // Animate line shapes.
+                if (lastX != null && lastY != null && x != null && y != null) {
+                    final Point2D p1 = new Point2D(lastX, lastY);
+                    final Point2D p2 = new Point2D(x, y);
+                    final Line line = lines.get(i - 1);
+                    line.moveToTop();
+                    line.setDraggable(false);
+
+                    doAnimateValues(line, p1, p2, width, height, series.getColor(), isSeriesNew);
+
+                    lastX = x;
+                    lastY = y;
+                }
+
+                // Animate circle shapes.
+                final Circle circle = circles.get(i);
+                doAnimateValues(circle, lastX, lastY, width, height, series.getColor(), isSeriesNew);
+            }
+        }
+        
         return this;
     }
 
     protected abstract void doAnimateValues(final Line line, final Point2D p1, final Point2D p2, final Double w, final Double h, IColor color, final boolean isSeriesNew);
+
+    protected abstract void doAnimateValues(final Circle circle, final Double x, final Double y, final Double w, final Double h, IColor color, final boolean isSeriesNew);
 }

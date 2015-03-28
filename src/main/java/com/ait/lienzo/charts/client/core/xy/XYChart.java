@@ -26,6 +26,10 @@ import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
+import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
 import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
@@ -41,6 +45,7 @@ import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 import java.util.LinkedList;
@@ -228,6 +233,16 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
         return position;
 
+    }
+
+    public HandlerRegistration addDataReloadedHandler(DataReloadedEventHandler handler)
+    {
+        return addEnsureHandler(DataReloadedEvent.TYPE, handler);
+    }
+
+    public HandlerRegistration addValueSelectedHandler(ValueSelectedHandler handler)
+    {
+        return addEnsureHandler(ValueSelectedEvent.TYPE, handler);
     }
 
     public abstract static class XYChartFactory<T extends XYChart<T>> extends ChartFactory<T>
@@ -451,11 +466,6 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         valuesAxisBuilder = null;
         if (tooltip != null) tooltip.removeFromParent();
         super.clear();
-    }
-
-    public static String buildId(String prefix, int numSeries, int numValue)
-    {
-        return prefix + numSeries + "" + numValue;
     }
 
     public List<Text> getCategoriesAxisTitle()

@@ -19,21 +19,12 @@
 package com.ait.lienzo.charts.client.core.xy.bar.animation;
 
 import com.ait.lienzo.charts.client.core.AbstractChart;
-import com.ait.lienzo.charts.client.core.animation.PointsAnimationProperty;
-import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
-import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
-import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
-import com.ait.lienzo.client.core.Attribute;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
-import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.Shape;
-import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.types.Point2D;
 import com.ait.lienzo.shared.core.types.IColor;
 
 /**

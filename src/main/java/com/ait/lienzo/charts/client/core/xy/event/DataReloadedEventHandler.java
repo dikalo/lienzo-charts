@@ -16,7 +16,7 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy.bar.event;
+package com.ait.lienzo.charts.client.core.xy.event;
 
 import com.google.gwt.event.shared.EventHandler;
 

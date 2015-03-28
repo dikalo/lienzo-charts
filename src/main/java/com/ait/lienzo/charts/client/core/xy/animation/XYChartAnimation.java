@@ -16,10 +16,11 @@
    Author: Roger Martinez - Red Hat
  */
 
-package com.ait.lienzo.charts.client.core.xy;
+package com.ait.lienzo.charts.client.core.xy.animation;
 
 import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.animation.PointsAnimationProperty;
+import com.ait.lienzo.charts.client.core.xy.XYChart;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
