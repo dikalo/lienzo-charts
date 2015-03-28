@@ -121,7 +121,7 @@ public class XYChartTooltip extends Group
     {
         setVisible(false);
         
-        getLayer().batch();
+        if (getLayer() != null) getLayer().batch();
         
         return this;
     }

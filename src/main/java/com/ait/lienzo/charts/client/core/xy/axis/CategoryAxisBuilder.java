@@ -59,7 +59,14 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
     }
 
     @Override
-    protected List<AxisLabel> buildLabels()
+    protected List<AxisLabel> buildValuesAxisLabels()
+    {
+        // TODO
+        return null;
+    }
+
+    @Override
+    protected List<AxisLabel> buildCategoriesAxisLabels()
     {
         List<AxisLabel> result = new LinkedList<AxisLabel>();
         DataTableColumn dataTableLabelsColumn = getDataSummary().getData().getDataTable().getColumn(getDataSummary().getData().getCategoryAxisProperty());
@@ -70,7 +77,7 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
         for (int i = 0, j = labelsCount - 1; i < labelsCount; i++, j--)
         {
             String text = labelValues[i];
-            double position = (getAxisDirection().equals(AxisDirection.DESC)) ? labelSize * i : labelSize * j;
+            double position = (getAxisDirection().equals(AxisDirection.ASC)) ? labelSize * i : labelSize * j;
             position += labelSize / 2;
             result.add(new AxisLabel(i, text, position));
         }
@@ -89,7 +96,7 @@ public final class CategoryAxisBuilder extends CachedAxisBuilder<String>
         {
             for (int i = 0, j = valuesCount - 1; i < valuesCount; i++, j--)
             {
-                String value = (getAxisDirection().equals(AxisDirection.DESC)) ? values[i] : values[j];
+                String value = (getAxisDirection().equals(AxisDirection.ASC)) ? values[i] : values[j];
                 double valueSize = (getChartSizeAttribute() - (valuesCount + 1)) / valuesCount / seriesCount;
                 double position = (valueSize * seriesCount * i) + valueSize/2;
                 result.add(new AxisValue<String>(value, position));

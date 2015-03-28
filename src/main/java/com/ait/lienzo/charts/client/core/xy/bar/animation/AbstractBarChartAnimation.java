@@ -162,7 +162,7 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
         // Rebuild bars for series values
         final List<AxisValue> yAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
         final List<AxisValue> xAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        final List<AxisLabel> xAxisLabels = valuesAxisBuilder.getLabels();
+        final List<AxisLabel> xAxisLabels = valuesAxisBuilder.getValuesAxisLabels();
         final List<Rectangle> bars = seriesValues.get(serie.getName());
 
         if (yAxisValues != null && yAxisValues.size() > 0)

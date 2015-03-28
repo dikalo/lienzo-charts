@@ -280,10 +280,10 @@ public class BarChart extends XYChart<BarChart>
     {
         AxisBuilder categoriesAxisBuilder = null;
         final Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
+        final AxisDirection direction = AxisDirection.ASC;
 
         if (isVertical)
         {
-            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartWidth(), direction, categoriesAxisJSO);
@@ -299,7 +299,6 @@ public class BarChart extends XYChart<BarChart>
         }
         else
         {
-            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartHeight(), direction, categoriesAxisJSO);
@@ -340,7 +339,6 @@ public class BarChart extends XYChart<BarChart>
         else
         {
             final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
-
             if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
                 throw new RuntimeException("CategoryAxis type cannot be used in BarChart (horizontal) for the values axis.");

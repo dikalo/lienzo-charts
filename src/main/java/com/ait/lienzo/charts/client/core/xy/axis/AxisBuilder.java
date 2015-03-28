@@ -63,11 +63,18 @@ public abstract class AxisBuilder<T>
     }
 
     /**
-     * Get axis labels for all series
-     * TODO: Cache.
-     * @return All serie axis labels.
+     * Get axis labels for a values axis (no matter which model property).
+     *
+     * @return Values axis labels.
      */
-    public abstract List<AxisLabel> getLabels();
+    public abstract List<AxisLabel> getValuesAxisLabels();
+
+    /**
+     * Get axis labels for a categories axis.
+     *
+     * @return Categories axis labels.
+     */
+    public abstract List<AxisLabel> getCategoriesAxisLabels();
 
     /**
      * Get axis values for a given property in the datatable model..

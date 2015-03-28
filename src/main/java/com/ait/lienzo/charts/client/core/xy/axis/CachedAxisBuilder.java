@@ -28,7 +28,9 @@ import java.util.Map;
 
 public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
 {
-    private List<AxisLabel>                       labels;
+    private List<AxisLabel>                       categoriesAxisLabels;
+    
+    private List<AxisLabel>                       valuesAxisLabels;
 
     final private Map<String, List<AxisValue<T>>> values = new HashMap<String, List<AxisValue<T>>>();
 
@@ -44,18 +46,30 @@ public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
         clear();
     }
 
-    protected abstract List<AxisLabel> buildLabels();
+    protected abstract List<AxisLabel> buildValuesAxisLabels();
+
+    protected abstract List<AxisLabel> buildCategoriesAxisLabels();
 
     protected abstract List<AxisValue<T>> buildValues(String modelProperty);
 
     @Override
-    public List<AxisLabel> getLabels()
+    public List<AxisLabel> getValuesAxisLabels()
     {
-        if (labels == null)
+        if (valuesAxisLabels == null)
         {
-            labels = buildLabels();
+            valuesAxisLabels = buildValuesAxisLabels();
         }
-        return labels;
+        return valuesAxisLabels;
+    }
+
+    @Override
+    public List<AxisLabel> getCategoriesAxisLabels()
+    {
+        if (categoriesAxisLabels == null)
+        {
+            categoriesAxisLabels = buildCategoriesAxisLabels();
+        }
+        return categoriesAxisLabels;
     }
 
     @Override
@@ -72,20 +86,21 @@ public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
     @Override
     public void reload(XYChartData data, Collection<String> currentSeries, double chartSizeAttribute)
     {
-        super.reload(data, currentSeries, chartSizeAttribute);
         clear();
+        super.reload(data, currentSeries, chartSizeAttribute);
     }
 
     @Override
     public void reload(double chartSizeAttribute)
     {
-        super.reload(chartSizeAttribute);
         clear();
+        super.reload(chartSizeAttribute);
     }
 
     protected void clear()
     {
-        labels = null;
+        valuesAxisLabels = null;
+        categoriesAxisLabels = null;
         values.clear();
     }
 }

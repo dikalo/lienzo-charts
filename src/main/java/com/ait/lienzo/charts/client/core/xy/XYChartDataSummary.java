@@ -30,13 +30,13 @@ public class XYChartDataSummary
 {
     private XYChartData  data;
 
-    private double       maxNumericValue;
+    final private double[]       maxNumericValue = new double[2];
 
-    private Date         maxDateValue;
+    final private Date[]         maxDateValue = new Date[2];
 
-    private double       minNumericValue;
+    final private double[]       minNumericValue = new double[2];
 
-    private Date         minDateValue;
+    final private Date[]         minDateValue = new Date[2];
 
     private int          numSeries;
 
@@ -46,21 +46,37 @@ public class XYChartDataSummary
     // TODO: Refactor list impl to NFastArrayList?
     private List<String> removedSeries = new ArrayList<String>();
 
-    public XYChartDataSummary(XYChartData data)
+    private AxisSummary categoriesAxisSummary;
+
+    private AxisSummary valuesAxisSummary;
+
+    /**
+     * <p>Data summary contract for both axis: categories and values.</p> 
+     */
+    public interface AxisSummary {
+        double getMaxNumericValue();
+        double getMinNumericValue();
+        Date getMaxDateValue();
+        Date getMinDateValue();
+    }
+    
+    public XYChartDataSummary(final XYChartData data)
     {
         this.data = data;
 
-        build();
+        // Build both data summary instances for the categories and values axis.
+        buildCategoriesAxisSummary();
+        buildValuesAxisSummary();
     }
 
-    public XYChartDataSummary(XYChartData data, Collection<String> currentSerieNames)
+    public XYChartDataSummary(final XYChartData data, final Collection<String> currentSerieNames)
     {
         // Build the summary.
         this(data);
 
         if (data != null && currentSerieNames != null)
         {
-            // Chech added or removed series from last chart data.
+            // Check added or removed series from last chart data.
             XYChartSeries[] newSeries = data.getSeries();
 
             for (XYChartSeries newSerie : newSeries)
@@ -69,12 +85,12 @@ public class XYChartDataSummary
             }
             for (String oldSerieName : currentSerieNames)
             {
-                if (isSerieRemoved(newSeries, oldSerieName)) removedSeries.add(oldSerieName);
+                if (isSeriesRemoved(newSeries, oldSerieName)) removedSeries.add(oldSerieName);
             }
         }
     }
 
-    private boolean isSerieRemoved(XYChartSeries[] series, String serieName)
+    private boolean isSeriesRemoved(final XYChartSeries[] series, final String serieName)
     {
         if (serieName == null || series == null) return false;
 
@@ -85,72 +101,158 @@ public class XYChartDataSummary
         return true;
     }
 
-    public void build()
+    public void buildValuesAxisSummary()
     {
         if (data == null) return;
 
+        // Obtain limit values for number and date columns, for each series.
         final XYChartSeries[] series = data.getSeries();
         this.numSeries = series.length;
+        final DataTable dataTable = data.getDataTable();
         for (int i = 0; i < series.length; i++)
         {
-            XYChartSeries serie = series[i];
-            //String categoryAxisProperty = data.getCategoryAxisProperty();
-            String valuesAxisProperty = serie.getValuesAxisProperty();
-
-            DataTable dataTable = data.getDataTable();
-            //DataTableColumn categoryColumn = dataTable.getColumn(categoryAxisProperty);
-            DataTableColumn valuesColumn = dataTable.getColumn(valuesAxisProperty);
-            DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
-
-            Object[] values = null;
-            switch (valuesColumnType)
-            {
+            final XYChartSeries serie = series[i];
+            final String valuesAxisProperty = serie.getValuesAxisProperty();
+            final DataTableColumn valuesColumn = dataTable.getColumn(valuesAxisProperty);
+            final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
+            switch (valuesColumnType) {
                 case NUMBER:
-                    values = valuesColumn.getNumericValues();
-                    if (values != null && values.length > 0)
-                    {
-                        for (int j = 0; j < values.length; j++)
-                        {
-                            Double value = (Double) values[j];
-                            if (value >= maxNumericValue) maxNumericValue = value;
-                            if (value <= minNumericValue) minNumericValue = value;
-                        }
-                    }
+                    final Double[] columnLimits = (Double[]) getLimitValues(valuesColumn, maxNumericValue[1], minNumericValue[1]);
+                    if (columnLimits[0] <= minNumericValue[1]) minNumericValue[1] = columnLimits[0];
+                    if (columnLimits[1] >= maxNumericValue[1]) maxNumericValue[1] = columnLimits[1];
                     break;
                 case DATE:
-                    values = valuesColumn.getDateValues();
-                    if (values != null && values.length > 0)
-                    {
-                        for (int j = 0; j < values.length; j++)
-                        {
-                            Date value = (Date) values[j];
-                            if (value.after(maxDateValue)) maxDateValue = value;
-                            if (value.before(minDateValue)) minDateValue = value;
-                        }
-                    }
+                    final Date[] _columnLimits = (Date[]) getLimitValues(valuesColumn, maxDateValue[1], minDateValue[1]);
+                    if (_columnLimits[1].after(maxDateValue[1])) maxDateValue[1] = _columnLimits[1];
+                    if (_columnLimits[0].before(minDateValue[1])) minDateValue[1] = _columnLimits[0];
                     break;
             }
         }
+        
+        // Build the axis summary instance.
+        this.valuesAxisSummary  = new AxisSummary() {
+            @Override
+            public double getMaxNumericValue() {
+                return maxNumericValue[1];
+            }
+
+            @Override
+            public Date getMaxDateValue() {
+                return maxDateValue[1];
+            }
+
+            @Override
+            public double getMinNumericValue() {
+                return minNumericValue[1];
+            }
+
+            @Override
+            public Date getMinDateValue() {
+                return minDateValue[1];
+            }
+        };
+    }
+    
+    private void buildCategoriesAxisSummary() {
+        final DataTable dataTable = data.getDataTable();
+        final DataTableColumn valuesColumn = dataTable.getColumn(getData().getCategoryAxisProperty());
+        final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
+
+        // Obtain limit values for number and date columns, for category axis column,
+        switch (valuesColumnType) {
+            case NUMBER:
+                final Double[] columnLimits = (Double[]) getLimitValues(valuesColumn, maxNumericValue[0], minNumericValue[0]);
+                if (columnLimits[0] <= minNumericValue[0]) minNumericValue[0] = columnLimits[0];
+                if (columnLimits[1] >= maxNumericValue[0]) maxNumericValue[0] = columnLimits[1];
+                break;
+            case DATE:
+                final Date[] _columnLimits = (Date[]) getLimitValues(valuesColumn, maxDateValue[0], minDateValue[0]);
+                if (_columnLimits[1].after(maxDateValue[0])) maxDateValue[0] = _columnLimits[1];
+                if (_columnLimits[0].before(minDateValue[0])) minDateValue[0] = _columnLimits[0];
+                break;
+        }
+        
+        // Build the axis summary instance.
+        this.categoriesAxisSummary = new AxisSummary() {
+            @Override
+            public double getMaxNumericValue() {
+                return maxNumericValue[0];
+            }
+
+            @Override
+            public Date getMaxDateValue() {
+                return maxDateValue[0];
+            }
+
+            @Override
+            public double getMinNumericValue() {
+                return minNumericValue[0];
+            }
+
+            @Override
+            public Date getMinDateValue() {
+                return minDateValue[0];
+            }
+        };
+    }
+    
+    private Object[] getLimitValues(final DataTableColumn valuesColumn, final Object maxValue, final Object minValue) {
+        final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
+        
+        Object[] values = null;
+        switch (valuesColumnType)
+        {
+            case NUMBER:
+                values = valuesColumn.getNumericValues();
+                if (values != null && values.length > 0)
+                {
+                    double maxNumericValue = maxValue != null ? ((Double)maxValue) : 0d;
+                    double minNumericValue = minValue != null ? ((Double)minValue) : 0d;
+                    final Double[] result = new Double[] {minNumericValue, maxNumericValue};
+
+                    for (int j = 0; j < values.length; j++)
+                    {
+                        Double value = (Double) values[j];
+                        if (value >= maxNumericValue) maxNumericValue = value;
+                        if (value <= minNumericValue) minNumericValue = value;
+                    }
+                    
+                    result[0] = minNumericValue;
+                    result[1] = maxNumericValue;
+                    return result;
+                }
+                break;
+            case DATE:
+                values = valuesColumn.getDateValues();
+                if (values != null && values.length > 0)
+                {
+                    Date maxDateValue = maxValue != null ? ((Date)maxValue) : null;;
+                    Date minDateValue = minValue != null ? ((Date)minValue) : null;;
+                    final Date[] result = new Date[] {minDateValue, maxDateValue};
+
+                    for (int j = 0; j < values.length; j++)
+                    {
+                        Date value = (Date) values[j];
+                        if (value.after(maxDateValue)) maxDateValue = value;
+                        if (value.before(minDateValue)) minDateValue = value;
+                    }
+
+                    result[0] = minDateValue;
+                    result[1] = maxDateValue;
+                    return result;
+                }
+                break;
+        }
+        
+        return null;
     }
 
-    public double getMaxNumericValue()
-    {
-        return maxNumericValue;
+    public AxisSummary getCategoriesAxisSummary() {
+        return categoriesAxisSummary;
     }
 
-    public Date getMaxDateValue()
-    {
-        return maxDateValue;
-    }
-
-    public double getMinNumericValue()
-    {
-        return minNumericValue;
-    }
-
-    public Date getMinDateValue()
-    {
-        return minDateValue;
+    public AxisSummary getValuesAxisSummary() {
+        return valuesAxisSummary;
     }
 
     public XYChartData getData()
