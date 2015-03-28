@@ -66,9 +66,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
     protected final List<XYChartLabel>          seriesLabels            = new LinkedList<XYChartLabel>();             // The labels for each interval (rectangle) in the X axis.
 
     // Axis builders.
-    protected AxisBuilder                        categoriesAxisBuilder;
+    protected AxisBuilder<?>                        categoriesAxisBuilder;
 
-    protected AxisBuilder                        valuesAxisBuilder;
+    protected AxisBuilder<?>                        valuesAxisBuilder;
 
     protected XYChartTooltip tooltip                 = null;                                        // The tooltip.
 
@@ -387,8 +387,8 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     }
 
-    protected abstract AxisBuilder buildCategoryAxisBuilder(final boolean isVertical);
-    protected abstract AxisBuilder buildValuesAxisBuilder(final boolean isVertical);
+    protected abstract AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical);
+    protected abstract AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical);
     public abstract  XYChart buildSeriesValues(final XYChartSeries series, final int numSeries);
 
     @Override
@@ -492,12 +492,12 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return seriesLabels;
     }
 
-    public AxisBuilder getCategoriesAxisBuilder()
+    public AxisBuilder<?> getCategoriesAxisBuilder()
     {
         return categoriesAxisBuilder;
     }
 
-    public AxisBuilder getValuesAxisBuilder()
+    public AxisBuilder<?> getValuesAxisBuilder()
     {
         return valuesAxisBuilder;
     }

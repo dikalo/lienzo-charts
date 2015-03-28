@@ -29,10 +29,7 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartResizeAnimation;
-import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEvent;
-import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
-import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
@@ -43,7 +40,6 @@ import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Rectangle;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 import java.util.*;
@@ -181,16 +177,16 @@ public class BarChart extends XYChart<BarChart>
 
     public BarChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
-        final List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
-        final List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<? extends AxisValue<?>> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
+        final List<? extends AxisValue<?>> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
             final List<Rectangle> bars = new LinkedList<Rectangle>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
-                final AxisValue axisValue = xAxisValues.get(i);
-                final AxisValue yAxisValue = yAxisValues.get(i);
+                final AxisValue<?> axisValue = xAxisValues.get(i);
+                final AxisValue<?> yAxisValue = yAxisValues.get(i);
                 final Object value = axisValue.getValue();
                 final Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
@@ -276,9 +272,9 @@ public class BarChart extends XYChart<BarChart>
         return this;
     }
 
-    protected AxisBuilder buildCategoryAxisBuilder(final boolean isVertical)
+    protected AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder categoriesAxisBuilder = null;
+        AxisBuilder<?> categoriesAxisBuilder = null;
         final Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
         final AxisDirection direction = AxisDirection.ASC;
 
@@ -315,9 +311,9 @@ public class BarChart extends XYChart<BarChart>
         return categoriesAxisBuilder;
     }
 
-    protected AxisBuilder buildValuesAxisBuilder(final boolean isVertical)
+    protected AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder valuesAxisBuilder = null;
+        AxisBuilder<?> valuesAxisBuilder = null;
         final Axis.AxisJSO valuesAxisJSO = getValuesAxis();
 
         if (isVertical)

@@ -78,7 +78,7 @@ public abstract class AxisBuilder<T>
 
     /**
      * Get axis values for a given property in the datatable model..
-     * TODO: Cache.
+     *
      * @parm modelProperty The property in the datatable model.. 
      * @return Series axis values.
      */
@@ -97,7 +97,14 @@ public abstract class AxisBuilder<T>
         m_chartSizeAttribute = chartSizeAttribute;
     }
 
-    public String format(T value)
+    @SuppressWarnings({"unchekced"})
+    public String format(Object value)
+    {
+        return formatHelper((T) value);
+    }
+
+    // Wildcard capture helper method.
+    protected String formatHelper(T value)
     {
         // TODO: Override by subclasses. Format each type using datatable column -> pattern attribute.
         return value.toString();

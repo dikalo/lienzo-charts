@@ -165,7 +165,7 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     }
 
     @Override
-    public String format(Double value)
+    protected String formatHelper(Double value)
     {
         if (value != null) return getNumberFormat().format(value);
         return NULL_VALUE;

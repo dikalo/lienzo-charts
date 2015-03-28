@@ -28,10 +28,7 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
-import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEvent;
-import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
-import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartResizeAnimation;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
@@ -44,8 +41,6 @@ import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.client.core.types.Point2D;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 import java.util.*;
@@ -179,8 +174,8 @@ public class LineChart extends XYChart<LineChart>
 
     public LineChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
-        List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
-        List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        List<? extends AxisValue<?>> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
+        List<? extends AxisValue<?>> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
@@ -189,8 +184,8 @@ public class LineChart extends XYChart<LineChart>
             final List<Point2D> points = new LinkedList<Point2D>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
-                final AxisValue axisValue = xAxisValues.get(i);
-                final AxisValue yAxisValue = yAxisValues.get(i);
+                final AxisValue<?> axisValue = xAxisValues.get(i);
+                final AxisValue<?> yAxisValue = yAxisValues.get(i);
                 final Object value = axisValue.getValue();
                 final Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
@@ -290,9 +285,9 @@ public class LineChart extends XYChart<LineChart>
         return prefix + numSeries + "" + numValue;
     }
 
-    protected AxisBuilder buildCategoryAxisBuilder(final boolean isVertical)
+    protected AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder categoriesAxisBuilder = null;
+        AxisBuilder<?> categoriesAxisBuilder = null;
         final Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
         final AxisDirection direction = AxisDirection.ASC;
 
@@ -329,9 +324,9 @@ public class LineChart extends XYChart<LineChart>
         return categoriesAxisBuilder;
     }
 
-    protected AxisBuilder buildValuesAxisBuilder(final boolean isVertical)
+    protected AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder valuesAxisBuilder = null;
+        AxisBuilder<?> valuesAxisBuilder = null;
         final Axis.AxisJSO valuesAxisJSO = getValuesAxis();
 
         if (isVertical)
