@@ -97,7 +97,7 @@ public abstract class AxisBuilder<T>
         m_chartSizeAttribute = chartSizeAttribute;
     }
 
-    @SuppressWarnings({"unchekced"})
+    @SuppressWarnings("unchecked")
     public String format(Object value)
     {
         return formatHelper((T) value);

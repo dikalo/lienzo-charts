@@ -33,7 +33,6 @@ import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.shared.core.types.TextAlign;
 
 public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 {
@@ -111,31 +110,31 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 
             double ly = 0 - Math.cos(n_ang) * (radius / 2);
 
-            TextAlign align;
+            //TextAlign align;
 
             if (n_ang <= (Math.PI * 0.5))
             {
                 lx += 2;
 
-                align = TextAlign.LEFT;
+                //align = TextAlign.LEFT;
             }
             else if ((n_ang > (Math.PI * 0.5)) && (n_ang <= Math.PI))
             {
                 lx += 2;
 
-                align = TextAlign.LEFT;
+                //align = TextAlign.LEFT;
             }
             else if ((n_ang > Math.PI) && (n_ang <= (Math.PI * 1.5)))
             {
                 lx -= 2;
 
-                align = TextAlign.RIGHT;
+                //align = TextAlign.RIGHT;
             }
             else
             {
                 lx -= 2;
 
-                align = TextAlign.RIGHT;
+                //align = TextAlign.RIGHT;
             }
             final double xToolTip = lx;
             final double yToolTip = ly;

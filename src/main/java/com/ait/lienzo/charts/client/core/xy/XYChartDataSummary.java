@@ -28,38 +28,42 @@ import com.ait.lienzo.charts.client.core.model.DataTableColumn;
 
 public class XYChartDataSummary
 {
-    private XYChartData  data;
+    private XYChartData    data;
 
-    final private double[]       maxNumericValue = new double[2];
+    final private double[] maxNumericValue = new double[2];
 
-    final private Date[]         maxDateValue = new Date[2];
+    final private Date[]   maxDateValue    = new Date[2];
 
-    final private double[]       minNumericValue = new double[2];
+    final private double[] minNumericValue = new double[2];
 
-    final private Date[]         minDateValue = new Date[2];
+    final private Date[]   minDateValue    = new Date[2];
 
-    private int          numSeries;
-
-    // TODO: Refactor list impl to NFastArrayList?
-    private List<String> addedSeries   = new ArrayList<String>();
+    private int            numSeries;
 
     // TODO: Refactor list impl to NFastArrayList?
-    private List<String> removedSeries = new ArrayList<String>();
+    private List<String>   addedSeries     = new ArrayList<String>();
 
-    private AxisSummary categoriesAxisSummary;
+    // TODO: Refactor list impl to NFastArrayList?
+    private List<String>   removedSeries   = new ArrayList<String>();
 
-    private AxisSummary valuesAxisSummary;
+    private AxisSummary    categoriesAxisSummary;
+
+    private AxisSummary    valuesAxisSummary;
 
     /**
      * <p>Data summary contract for both axis: categories and values.</p> 
      */
-    public interface AxisSummary {
+    public interface AxisSummary
+    {
         double getMaxNumericValue();
+
         double getMinNumericValue();
+
         Date getMaxDateValue();
+
         Date getMinDateValue();
     }
-    
+
     public XYChartDataSummary(final XYChartData data)
     {
         this.data = data;
@@ -115,7 +119,8 @@ public class XYChartDataSummary
             final String valuesAxisProperty = serie.getValuesAxisProperty();
             final DataTableColumn valuesColumn = dataTable.getColumn(valuesAxisProperty);
             final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
-            switch (valuesColumnType) {
+            switch (valuesColumnType)
+            {
                 case NUMBER:
                     final Double[] columnLimits = (Double[]) getLimitValues(valuesColumn, maxNumericValue[1], minNumericValue[1]);
                     if (columnLimits[0] <= minNumericValue[1]) minNumericValue[1] = columnLimits[0];
@@ -126,40 +131,50 @@ public class XYChartDataSummary
                     if (_columnLimits[1].after(maxDateValue[1])) maxDateValue[1] = _columnLimits[1];
                     if (_columnLimits[0].before(minDateValue[1])) minDateValue[1] = _columnLimits[0];
                     break;
+                case STRING:
+                default:
+                    break;
             }
         }
-        
+
         // Build the axis summary instance.
-        this.valuesAxisSummary  = new AxisSummary() {
+        this.valuesAxisSummary = new AxisSummary()
+        {
             @Override
-            public double getMaxNumericValue() {
+            public double getMaxNumericValue()
+            {
                 return maxNumericValue[1];
             }
 
             @Override
-            public Date getMaxDateValue() {
+            public Date getMaxDateValue()
+            {
                 return maxDateValue[1];
             }
 
             @Override
-            public double getMinNumericValue() {
+            public double getMinNumericValue()
+            {
                 return minNumericValue[1];
             }
 
             @Override
-            public Date getMinDateValue() {
+            public Date getMinDateValue()
+            {
                 return minDateValue[1];
             }
         };
     }
-    
-    private void buildCategoriesAxisSummary() {
+
+    private void buildCategoriesAxisSummary()
+    {
         final DataTable dataTable = data.getDataTable();
         final DataTableColumn valuesColumn = dataTable.getColumn(getData().getCategoryAxisProperty());
         final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
 
         // Obtain limit values for number and date columns, for category axis column,
-        switch (valuesColumnType) {
+        switch (valuesColumnType)
+        {
             case NUMBER:
                 final Double[] columnLimits = (Double[]) getLimitValues(valuesColumn, maxNumericValue[0], minNumericValue[0]);
                 if (columnLimits[0] <= minNumericValue[0]) minNumericValue[0] = columnLimits[0];
@@ -170,35 +185,44 @@ public class XYChartDataSummary
                 if (_columnLimits[1].after(maxDateValue[0])) maxDateValue[0] = _columnLimits[1];
                 if (_columnLimits[0].before(minDateValue[0])) minDateValue[0] = _columnLimits[0];
                 break;
+            case STRING:
+            default:
+                break;
         }
-        
+
         // Build the axis summary instance.
-        this.categoriesAxisSummary = new AxisSummary() {
+        this.categoriesAxisSummary = new AxisSummary()
+        {
             @Override
-            public double getMaxNumericValue() {
+            public double getMaxNumericValue()
+            {
                 return maxNumericValue[0];
             }
 
             @Override
-            public Date getMaxDateValue() {
+            public Date getMaxDateValue()
+            {
                 return maxDateValue[0];
             }
 
             @Override
-            public double getMinNumericValue() {
+            public double getMinNumericValue()
+            {
                 return minNumericValue[0];
             }
 
             @Override
-            public Date getMinDateValue() {
+            public Date getMinDateValue()
+            {
                 return minDateValue[0];
             }
         };
     }
-    
-    private Object[] getLimitValues(final DataTableColumn valuesColumn, final Object maxValue, final Object minValue) {
+
+    private Object[] getLimitValues(final DataTableColumn valuesColumn, final Object maxValue, final Object minValue)
+    {
         final DataTableColumn.DataTableColumnType valuesColumnType = valuesColumn.getType();
-        
+
         Object[] values = null;
         switch (valuesColumnType)
         {
@@ -206,9 +230,9 @@ public class XYChartDataSummary
                 values = valuesColumn.getNumericValues();
                 if (values != null && values.length > 0)
                 {
-                    double maxNumericValue = maxValue != null ? ((Double)maxValue) : 0d;
-                    double minNumericValue = minValue != null ? ((Double)minValue) : 0d;
-                    final Double[] result = new Double[] {minNumericValue, maxNumericValue};
+                    double maxNumericValue = maxValue != null ? ((Double) maxValue) : 0d;
+                    double minNumericValue = minValue != null ? ((Double) minValue) : 0d;
+                    final Double[] result = new Double[] { minNumericValue, maxNumericValue };
 
                     for (int j = 0; j < values.length; j++)
                     {
@@ -216,7 +240,7 @@ public class XYChartDataSummary
                         if (value >= maxNumericValue) maxNumericValue = value;
                         if (value <= minNumericValue) minNumericValue = value;
                     }
-                    
+
                     result[0] = minNumericValue;
                     result[1] = maxNumericValue;
                     return result;
@@ -226,9 +250,11 @@ public class XYChartDataSummary
                 values = valuesColumn.getDateValues();
                 if (values != null && values.length > 0)
                 {
-                    Date maxDateValue = maxValue != null ? ((Date)maxValue) : null;;
-                    Date minDateValue = minValue != null ? ((Date)minValue) : null;;
-                    final Date[] result = new Date[] {minDateValue, maxDateValue};
+                    Date maxDateValue = maxValue != null ? ((Date) maxValue) : null;
+                    ;
+                    Date minDateValue = minValue != null ? ((Date) minValue) : null;
+                    ;
+                    final Date[] result = new Date[] { minDateValue, maxDateValue };
 
                     for (int j = 0; j < values.length; j++)
                     {
@@ -242,16 +268,20 @@ public class XYChartDataSummary
                     return result;
                 }
                 break;
+            case STRING:
+            default:
+                break;
         }
-        
         return null;
     }
 
-    public AxisSummary getCategoriesAxisSummary() {
+    public AxisSummary getCategoriesAxisSummary()
+    {
         return categoriesAxisSummary;
     }
 
-    public AxisSummary getValuesAxisSummary() {
+    public AxisSummary getValuesAxisSummary()
+    {
         return valuesAxisSummary;
     }
 
