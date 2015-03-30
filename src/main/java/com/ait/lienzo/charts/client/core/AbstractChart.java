@@ -567,7 +567,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().delete(ChartAttribute.ALIGN.getProperty());
+            getAttributes().remove(ChartAttribute.ALIGN.getProperty());
         }
         return cast();
     }
@@ -585,7 +585,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().delete(ChartAttribute.ORIENTATION.getProperty());
+            getAttributes().remove(ChartAttribute.ORIENTATION.getProperty());
         }
         return cast();
     }
@@ -603,7 +603,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().delete(ChartAttribute.DIRECTION.getProperty());
+            getAttributes().remove(ChartAttribute.DIRECTION.getProperty());
         }
         return cast();
     }
@@ -621,7 +621,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().delete(ChartAttribute.LEGEND_POSITION.getProperty());
+            getAttributes().remove(ChartAttribute.LEGEND_POSITION.getProperty());
         }
         return cast();
     }
@@ -639,7 +639,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().delete(ChartAttribute.LEGEND_ALIGN.getProperty());
+            getAttributes().remove(ChartAttribute.LEGEND_ALIGN.getProperty());
         }
         return cast();
     }
