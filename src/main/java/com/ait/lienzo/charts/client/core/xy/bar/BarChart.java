@@ -30,7 +30,6 @@ import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.bar.animation.BarChartResizeAnimation;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
-import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
@@ -38,6 +37,7 @@ import com.ait.lienzo.client.core.event.*;
 import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Rectangle;
+import com.ait.lienzo.client.core.shape.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.google.gwt.json.client.JSONObject;
@@ -219,10 +219,10 @@ public class BarChart extends XYChart<BarChart>
                         double width = bar.getWidth();
                         double height = bar.getHeight();
                         double xTooltip = isVertical() ? x + width / 2 : x + width;
-                        double yTooltip = isVertical() ? y - XYChartTooltip.TRIANGLE_SIZE : y + height / 2;
+                        double yTooltip = isVertical() ? y - ToolTip.TRIANGLE_SIZE : y + height / 2;
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
-                        tooltip.setX(xTooltip).setY(yTooltip);
-                        tooltip.show(xValueFormatted, yValueFormatted);
+                        tooltip.setValues(xValueFormatted, yValueFormatted);
+                        tooltip.show(xTooltip, yTooltip);
                     }
                 });
 

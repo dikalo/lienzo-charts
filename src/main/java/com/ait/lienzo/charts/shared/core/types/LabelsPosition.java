@@ -17,7 +17,7 @@
 package com.ait.lienzo.charts.shared.core.types;
 
 import com.ait.lienzo.shared.core.types.EnumWithValue;
-import com.ait.tooling.nativetools.client.primitive.NFastStringMap;
+import com.ait.tooling.nativetools.client.collection.NFastStringMap;
 
 import java.util.List;
 

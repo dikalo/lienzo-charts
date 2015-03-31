@@ -22,7 +22,6 @@ import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.model.DataTable;
 import com.ait.lienzo.charts.client.core.model.PieChartData;
 import com.ait.lienzo.charts.client.core.pie.PieChart;
-import com.ait.lienzo.charts.client.core.pie.PieChartTooltip;
 import com.ait.lienzo.client.core.Attribute;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
@@ -33,6 +32,7 @@ import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.ToolTip;
 
 public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 {
@@ -174,7 +174,7 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
         slices.setX(x).setY(y);
     }
 
-    protected abstract void doAnimateToolTip(final PieChartTooltip tooltip, final double x, final double y);
+    protected abstract void doAnimateToolTip(final ToolTip tooltip, final double x, final double y);
 
     protected abstract void doAnimatePieSlice(final PieChart.PieSlice slice, final double radius, final double startAngle, final double endAngle);
 

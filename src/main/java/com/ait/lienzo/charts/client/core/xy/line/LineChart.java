@@ -219,8 +219,8 @@ public class LineChart extends XYChart<LineChart>
                         double x = circle.getX();
                         double y = circle.getY();
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
-                        tooltip.setX(x).setY(y);
-                        tooltip.show(xValueFormatted, yValueFormatted);
+                        tooltip.setValues(xValueFormatted, yValueFormatted);
+                        tooltip.show(x, y);
                     }
                 });
 

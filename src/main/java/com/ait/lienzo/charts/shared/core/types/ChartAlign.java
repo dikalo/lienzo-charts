@@ -19,7 +19,7 @@ package com.ait.lienzo.charts.shared.core.types;
 import java.util.List;
 
 import com.ait.lienzo.shared.core.types.EnumWithValue;
-import com.ait.tooling.nativetools.client.primitive.NFastStringMap;
+import com.ait.tooling.nativetools.client.collection.NFastStringMap;
 
 public enum ChartAlign implements EnumWithValue
 {

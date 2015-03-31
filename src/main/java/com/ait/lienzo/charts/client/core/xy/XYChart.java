@@ -30,7 +30,6 @@ import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
-import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
@@ -38,6 +37,7 @@ import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.ColorName;
@@ -70,7 +70,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     protected AxisBuilder<?>           valuesAxisBuilder;
 
-    protected XYChartTooltip           tooltip             = null;                          // The tooltip.
+    protected ToolTip                  tooltip             = null;                          // The tooltip.
 
     protected XYChart(final JSONObject node, final ChartNodeType nodeType, final ValidationContext ctx) throws ValidationException
     {
@@ -403,7 +403,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     private void buildTooltip()
     {
-        tooltip = new XYChartTooltip();
+        tooltip = new ToolTip();
 
         chartArea.add(tooltip);
     }
@@ -503,7 +503,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return valuesAxisBuilder;
     }
 
-    public XYChartTooltip getChartTooltip()
+    public ToolTip getChartTooltip()
     {
         return tooltip;
     }

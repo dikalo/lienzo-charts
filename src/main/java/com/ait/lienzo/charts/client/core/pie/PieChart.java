@@ -44,9 +44,11 @@ import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
 import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.IContainer;
+import com.ait.lienzo.client.core.shape.IPrimitive;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Slice;
 import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.Color;
@@ -66,7 +68,7 @@ public class PieChart extends AbstractChart<PieChart>
 
     private List<PieSlice>           pieSlices            = new LinkedList<PieSlice>();
 
-    private PieChartTooltip          tooltip;
+    private ToolTip                  tooltip;
 
     private static final ColorName[] DEFAULT_SLICE_COLORS = new ColorName[] { ColorName.DEEPPINK, ColorName.YELLOW, ColorName.SALMON, ColorName.CORNFLOWERBLUE, ColorName.AQUA, ColorName.DEEPSKYBLUE, ColorName.GREENYELLOW, ColorName.BLUEVIOLET, ColorName.FUCHSIA, ColorName.MAGENTA, ColorName.MAROON };
 
@@ -255,7 +257,7 @@ public class PieChart extends AbstractChart<PieChart>
         return pieSlices;
     }
 
-    public PieChartTooltip getTooltip()
+    public ToolTip getTooltip()
     {
         return tooltip;
     }
@@ -311,7 +313,7 @@ public class PieChart extends AbstractChart<PieChart>
         if (legend != null)
         {
             legend.removeAll();
-            
+
             legend.removeFromParent();
         }
         super.buildLegend();
@@ -336,12 +338,12 @@ public class PieChart extends AbstractChart<PieChart>
 
     private void buildTooltip()
     {
-        tooltip = new PieChartTooltip();
+        tooltip = new ToolTip();
 
         addOnAreaChartCentered(tooltip);
     }
 
-    protected void addOnAreaChartCentered(Group group)
+    protected void addOnAreaChartCentered(IPrimitive<?> group)
     {
         chartArea.add(group);
         group.setX(getChartWidth() / 2);
@@ -398,12 +400,12 @@ public class PieChart extends AbstractChart<PieChart>
 
 		return numb.toFixed(2) + "%";
     }-*/;
-    
+
     private final native String getValue(double valu)
     /*-{
-        var numb = valu;
+		var numb = valu;
 
-        return numb.toFixed(2) + "";
+		return numb.toFixed(2) + "";
     }-*/;
 
     public static class PieChartFactory extends ChartFactory<PieChart>

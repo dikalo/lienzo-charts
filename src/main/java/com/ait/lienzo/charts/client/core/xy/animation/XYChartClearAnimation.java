@@ -22,7 +22,6 @@ import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.XYChart;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
-import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
 import com.ait.lienzo.client.core.animation.*;
@@ -30,6 +29,7 @@ import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
+import com.ait.lienzo.client.core.shape.ToolTip;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
         // Title & Legend & tooltip.
         final Text chartTitle = getXYChart().getChartTitle();
         final ChartLegend legend = getXYChart().getChartLegend();
-        final XYChartTooltip tooltip = getXYChart().getChartTooltip();
+        final ToolTip tooltip = getXYChart().getChartTooltip();
         if (legend != null) legend.removeFromParent();
         if (tooltip != null) tooltip.removeFromParent();
 
