@@ -57,7 +57,7 @@ final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
     @Override
     public final String getNameSpace()
     {
-        return "LienzoCharts";
+        return "Lienzo-Charts";
     }
 
     @Override
