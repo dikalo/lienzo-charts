@@ -48,7 +48,7 @@ import com.ait.lienzo.client.core.shape.IPrimitive;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Slice;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.ToolTip;
+import com.ait.lienzo.client.core.shape.guides.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.Color;
@@ -200,6 +200,7 @@ public class PieChart extends AbstractChart<PieChart>
 
                     // Show the tooltip.
                     tooltip.setValues(category, getValue(tv));
+                    tooltip.setLayer(slice.getViewport().getOverLayer());
                     tooltip.show(getChartWidth() / 2, getChartHeight() / 2);
                     Text _text = texts.get(_i);
                     if (_text != null) _text.animate(LINEAR, toPropertyList(ALPHA(0)), getDefaultAnimationDuration());

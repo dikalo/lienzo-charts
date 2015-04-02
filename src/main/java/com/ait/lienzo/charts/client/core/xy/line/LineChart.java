@@ -85,12 +85,13 @@ import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
  */
 public class LineChart extends XYChart<LineChart>
 {
-    private final static double LINE_STROKE_WIDTH = 5d;
-    private final static double CIRCLE_RADIUS = 10d;
+    private final static double     LINE_STROKE_WIDTH = 5d;
 
-    final Map<String, List<Circle>> seriesPoints = new LinkedHashMap<String, List<Circle>>(); // The circle instances that represents the exact data point for axis type category.
-    
-    final Map<String, List<Line>> seriesValues            = new LinkedHashMap<String, List<Line>>(); // The Line instances that represents the data.
+    private final static double     CIRCLE_RADIUS     = 10d;
+
+    final Map<String, List<Circle>> seriesPoints      = new LinkedHashMap<String, List<Circle>>(); // The circle instances that represents the exact data point for axis type category.
+
+    final Map<String, List<Line>>   seriesValues      = new LinkedHashMap<String, List<Line>>();  // The Line instances that represents the data.
 
     protected LineChart(JSONObject node, ValidationContext ctx) throws ValidationException
     {
@@ -190,14 +191,14 @@ public class LineChart extends XYChart<LineChart>
                 final Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
                 final String yValueFormatted = valuesAxisBuilder.format(yValue);
-                final Point2D point = new Point2D(0,0);
+                final Point2D point = new Point2D(0, 0);
                 points.add(point);
-                
+
                 // Build the circle that shows exact point.
                 final Circle circle = new Circle(CIRCLE_RADIUS);
                 circles.add(circle);
                 chartArea.add(circle);
-                
+
                 // Click handler (filtering).
                 final int row = i;
                 circle.addNodeMouseClickHandler(new NodeMouseClickHandler()
@@ -219,6 +220,7 @@ public class LineChart extends XYChart<LineChart>
                         double x = circle.getX();
                         double y = circle.getY();
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
+                        tooltip.setLayer(circle.getViewport().getOverLayer());
                         tooltip.setValues(xValueFormatted, yValueFormatted);
                         tooltip.show(x, y);
                     }
@@ -233,11 +235,12 @@ public class LineChart extends XYChart<LineChart>
                         tooltip.hide();
                     }
                 });
-                
+
                 // Build lines between value positions.
-                if (i > 0) {
+                if (i > 0)
+                {
                     final Point2D lastPoint = points.get(i - 1);
-                    
+
                     final Line line = new Line(lastPoint, point).setStrokeWidth(LINE_STROKE_WIDTH);
                     lines.add(line);
                     chartArea.add(line);
@@ -392,7 +395,7 @@ public class LineChart extends XYChart<LineChart>
             seriesPoints.clear();
         }
     }
-    
+
     public Map<String, List<Line>> getSeriesValues()
     {
         return seriesValues;

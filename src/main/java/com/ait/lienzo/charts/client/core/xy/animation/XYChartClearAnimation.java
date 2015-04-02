@@ -29,7 +29,7 @@ import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.ToolTip;
+import com.ait.lienzo.client.core.shape.guides.ToolTip;
 
 import java.util.List;
 

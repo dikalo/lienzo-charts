@@ -37,7 +37,6 @@ import com.ait.lienzo.client.core.event.*;
 import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Rectangle;
-import com.ait.lienzo.client.core.shape.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.google.gwt.json.client.JSONObject;
@@ -219,8 +218,9 @@ public class BarChart extends XYChart<BarChart>
                         double width = bar.getWidth();
                         double height = bar.getHeight();
                         double xTooltip = isVertical() ? x + width / 2 : x + width;
-                        double yTooltip = isVertical() ? y - ToolTip.TRIANGLE_SIZE : y + height / 2;
+                        double yTooltip = isVertical() ? y - tooltip.getTailValue() : y + height / 2;
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
+                        tooltip.setLayer(bar.getViewport().getOverLayer());
                         tooltip.setValues(xValueFormatted, yValueFormatted);
                         tooltip.show(xTooltip, yTooltip);
                     }

@@ -32,7 +32,7 @@ import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.ToolTip;
+import com.ait.lienzo.client.core.shape.guides.ToolTip;
 
 public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 {
