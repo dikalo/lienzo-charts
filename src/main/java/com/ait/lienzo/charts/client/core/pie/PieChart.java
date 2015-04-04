@@ -124,6 +124,11 @@ public class PieChart extends AbstractChart<PieChart>
     {
         return addEnsureHandler(ValueSelectedEvent.TYPE, handler);
     }
+    
+    public PieChart getPieChart()
+    {
+        return this;
+    }
 
     @Override
     public void doDraw()
@@ -198,10 +203,12 @@ public class PieChart extends AbstractChart<PieChart>
                     // Animate other slices.
                     alphaToOtherSlices(slice.getID(), 0.7);
 
+                    final double xToolTip = getPieChart().getX() + getPieChart().getChartArea().getX() + (getChartWidth() / 2);
+                    final double yToolTip = getPieChart().getY() + getPieChart().getChartArea().getY() + (getChartHeight() / 2);
                     // Show the tooltip.
                     tooltip.setValues(category, getValue(tv));
                     tooltip.setLayer(slice.getViewport().getOverLayer());
-                    tooltip.show(getChartWidth() / 2, getChartHeight() / 2);
+                    tooltip.show(xToolTip, yToolTip);
                     Text _text = texts.get(_i);
                     if (_text != null) _text.animate(LINEAR, toPropertyList(ALPHA(0)), getDefaultAnimationDuration());
                 }
@@ -270,7 +277,7 @@ public class PieChart extends AbstractChart<PieChart>
         labels.removeFromParent();
         pieSlices.clear();
         slices.removeFromParent();
-        if (tooltip != null) tooltip.removeFromParent();
+        if (tooltip != null) tooltip.hide();
         super.clear();
     }
 
@@ -340,8 +347,9 @@ public class PieChart extends AbstractChart<PieChart>
     private void buildTooltip()
     {
         tooltip = new ToolTip();
-
-        addOnAreaChartCentered(tooltip);
+        tooltip.setX(getChartWidth() / 2);
+        tooltip.setY(getChartHeight() / 2);
+        tooltip.setAlpha(1d);
     }
 
     protected void addOnAreaChartCentered(IPrimitive<?> group)

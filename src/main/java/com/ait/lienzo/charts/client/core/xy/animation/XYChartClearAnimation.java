@@ -61,7 +61,7 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
         final ChartLegend legend = getXYChart().getChartLegend();
         final ToolTip tooltip = getXYChart().getChartTooltip();
         if (legend != null) legend.removeFromParent();
-        if (tooltip != null) tooltip.removeFromParent();
+        if (tooltip != null) tooltip.hide();
 
         // Bar children.
         final List<Text> categoriesAxisTitles = getXYChart().getCategoriesAxisTitle();

@@ -404,8 +404,6 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
     private void buildTooltip()
     {
         tooltip = new ToolTip();
-
-        chartArea.add(tooltip);
     }
 
     @Override
@@ -464,7 +462,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
         categoriesAxisBuilder = null;
         valuesAxisBuilder = null;
-        if (tooltip != null) tooltip.removeFromParent();
+        if (tooltip != null) tooltip.hide();
         super.clear();
     }
 

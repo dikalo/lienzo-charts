@@ -304,6 +304,11 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
             legend.moveToTop();
         }
     }
+    
+    public Group getChartArea()
+    {
+        return chartArea;
+    }
 
     public Double[] getLegendPositions(final double w, final double h)
     {

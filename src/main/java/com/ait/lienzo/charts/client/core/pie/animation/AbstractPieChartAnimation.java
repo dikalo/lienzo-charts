@@ -136,8 +136,8 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 
                 //align = TextAlign.RIGHT;
             }
-            final double xToolTip = lx;
-            final double yToolTip = ly;
+            final double xToolTip = lx + getPieChart().getX() + getPieChart().getChartArea().getX();
+            final double yToolTip = ly + getPieChart().getY() + getPieChart().getChartArea().getY();
             slice.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
             {
                 @Override
