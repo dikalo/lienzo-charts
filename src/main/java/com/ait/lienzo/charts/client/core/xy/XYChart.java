@@ -91,7 +91,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().delete(ChartAttribute.CATEGORIES_AXIS.getProperty());
+            getAttributes().remove(ChartAttribute.CATEGORIES_AXIS.getProperty());
         }
         return this;
     }
@@ -109,7 +109,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().delete(ChartAttribute.VALUES_AXIS.getProperty());
+            getAttributes().remove(ChartAttribute.VALUES_AXIS.getProperty());
         }
         return this;
     }
@@ -127,7 +127,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().delete(ChartAttribute.XY_CHART_DATA.getProperty());
+            getAttributes().remove(ChartAttribute.XY_CHART_DATA.getProperty());
         }
         return this;
     }
@@ -182,7 +182,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().delete(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty());
+            getAttributes().remove(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty());
         }
         return this;
     }
@@ -212,7 +212,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().delete(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty());
+            getAttributes().remove(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty());
         }
         return this;
     }

@@ -25,7 +25,7 @@ import com.ait.lienzo.client.core.animation.IAnimation;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.animation.TimedAnimation;
 import com.ait.lienzo.client.core.shape.Node;
-import com.ait.lienzo.client.core.types.NFastArrayList;
+import com.ait.tooling.nativetools.client.collection.NFastArrayList;
 
 public class StackedTweeningAnimation extends TimedAnimation
 {
