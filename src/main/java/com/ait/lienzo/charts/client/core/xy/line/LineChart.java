@@ -28,7 +28,10 @@ import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisValue;
 import com.ait.lienzo.charts.client.core.xy.axis.CategoryAxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.NumericAxisBuilder;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
+import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.line.animation.LineChartResizeAnimation;
 import com.ait.lienzo.charts.shared.core.types.AxisDirection;
 import com.ait.lienzo.charts.shared.core.types.AxisType;
@@ -41,6 +44,8 @@ import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.client.core.types.Point2D;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 
 import java.util.*;
@@ -85,13 +90,12 @@ import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
  */
 public class LineChart extends XYChart<LineChart>
 {
-    private final static double     LINE_STROKE_WIDTH = 5d;
+    private final static double LINE_STROKE_WIDTH = 5d;
+    private final static double CIRCLE_RADIUS = 10d;
 
-    private final static double     CIRCLE_RADIUS     = 10d;
-
-    final Map<String, List<Circle>> seriesPoints      = new LinkedHashMap<String, List<Circle>>(); // The circle instances that represents the exact data point for axis type category.
-
-    final Map<String, List<Line>>   seriesValues      = new LinkedHashMap<String, List<Line>>();  // The Line instances that represents the data.
+    final Map<String, List<Circle>> seriesPoints = new LinkedHashMap<String, List<Circle>>(); // The circle instances that represents the exact data point for axis type category.
+    
+    final Map<String, List<Line>> seriesValues            = new LinkedHashMap<String, List<Line>>(); // The Line instances that represents the data.
 
     protected LineChart(JSONObject node, ValidationContext ctx) throws ValidationException
     {
@@ -175,8 +179,8 @@ public class LineChart extends XYChart<LineChart>
 
     public LineChart buildSeriesValues(final XYChartSeries series, final int numSeries)
     {
-        List<? extends AxisValue<?>> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
-        List<? extends AxisValue<?>> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        List<AxisValue> xAxisValues = categoriesAxisBuilder.getValues(getData().getCategoryAxisProperty());
+        List<AxisValue> yAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
 
         if (xAxisValues != null)
         {
@@ -185,20 +189,20 @@ public class LineChart extends XYChart<LineChart>
             final List<Point2D> points = new LinkedList<Point2D>();
             for (int i = 0; i < xAxisValues.size(); i++)
             {
-                final AxisValue<?> axisValue = xAxisValues.get(i);
-                final AxisValue<?> yAxisValue = yAxisValues.get(i);
+                final AxisValue axisValue = xAxisValues.get(i);
+                final AxisValue yAxisValue = yAxisValues.get(i);
                 final Object value = axisValue.getValue();
                 final Object yValue = yAxisValue.getValue();
                 final String xValueFormatted = categoriesAxisBuilder.format(value);
                 final String yValueFormatted = valuesAxisBuilder.format(yValue);
-                final Point2D point = new Point2D(0, 0);
+                final Point2D point = new Point2D(0,0);
                 points.add(point);
-
+                
                 // Build the circle that shows exact point.
                 final Circle circle = new Circle(CIRCLE_RADIUS);
                 circles.add(circle);
                 chartArea.add(circle);
-
+                
                 // Click handler (filtering).
                 final int row = i;
                 circle.addNodeMouseClickHandler(new NodeMouseClickHandler()
@@ -220,9 +224,8 @@ public class LineChart extends XYChart<LineChart>
                         double x = circle.getX();
                         double y = circle.getY();
                         seriesValuesAlpha(numSeries, numValue, 0.5d);
-                        tooltip.setLayer(circle.getViewport().getOverLayer());
-                        tooltip.setValues(xValueFormatted, yValueFormatted);
-                        tooltip.show(x, y);
+                        tooltip.setX(x).setY(y);
+                        tooltip.show(xValueFormatted, yValueFormatted);
                     }
                 });
 
@@ -235,12 +238,11 @@ public class LineChart extends XYChart<LineChart>
                         tooltip.hide();
                     }
                 });
-
+                
                 // Build lines between value positions.
-                if (i > 0)
-                {
+                if (i > 0) {
                     final Point2D lastPoint = points.get(i - 1);
-
+                    
                     final Line line = new Line(lastPoint, point).setStrokeWidth(LINE_STROKE_WIDTH);
                     lines.add(line);
                     chartArea.add(line);
@@ -288,14 +290,14 @@ public class LineChart extends XYChart<LineChart>
         return prefix + numSeries + "" + numValue;
     }
 
-    protected AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical)
+    protected AxisBuilder buildCategoryAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder<?> categoriesAxisBuilder = null;
+        AxisBuilder categoriesAxisBuilder = null;
         final Axis.AxisJSO categoriesAxisJSO = getCategoriesAxis();
-        final AxisDirection direction = AxisDirection.ASC;
 
         if (isVertical)
         {
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.DESC : AxisDirection.ASC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartWidth(), direction, categoriesAxisJSO);
@@ -311,6 +313,7 @@ public class LineChart extends XYChart<LineChart>
         }
         else
         {
+            final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
             if (Axis.getAxisTypeOf(categoriesAxisJSO) == AxisType.CATEGORY)
             {
                 categoriesAxisBuilder = new CategoryAxisBuilder(getData(), getChartHeight(), direction, categoriesAxisJSO);
@@ -327,9 +330,9 @@ public class LineChart extends XYChart<LineChart>
         return categoriesAxisBuilder;
     }
 
-    protected AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical)
+    protected AxisBuilder buildValuesAxisBuilder(final boolean isVertical)
     {
-        AxisBuilder<?> valuesAxisBuilder = null;
+        AxisBuilder valuesAxisBuilder = null;
         final Axis.AxisJSO valuesAxisJSO = getValuesAxis();
 
         if (isVertical)
@@ -351,6 +354,7 @@ public class LineChart extends XYChart<LineChart>
         else
         {
             final AxisDirection direction = isPositiveDirection(getDirection()) ? AxisDirection.ASC : AxisDirection.DESC;
+
             if (Axis.getAxisTypeOf(valuesAxisJSO) == AxisType.CATEGORY)
             {
                 throw new RuntimeException("CategoryAxis type cannot be used in LineChart for the values axis.");
@@ -395,7 +399,7 @@ public class LineChart extends XYChart<LineChart>
             seriesPoints.clear();
         }
     }
-
+    
     public Map<String, List<Line>> getSeriesValues()
     {
         return seriesValues;

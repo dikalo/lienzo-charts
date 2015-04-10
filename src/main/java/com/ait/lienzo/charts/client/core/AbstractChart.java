@@ -304,11 +304,6 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
             legend.moveToTop();
         }
     }
-    
-    public Group getChartArea()
-    {
-        return chartArea;
-    }
 
     public Double[] getLegendPositions(final double w, final double h)
     {
@@ -572,7 +567,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().remove(ChartAttribute.ALIGN.getProperty());
+            getAttributes().delete(ChartAttribute.ALIGN.getProperty());
         }
         return cast();
     }
@@ -590,7 +585,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().remove(ChartAttribute.ORIENTATION.getProperty());
+            getAttributes().delete(ChartAttribute.ORIENTATION.getProperty());
         }
         return cast();
     }
@@ -608,7 +603,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().remove(ChartAttribute.DIRECTION.getProperty());
+            getAttributes().delete(ChartAttribute.DIRECTION.getProperty());
         }
         return cast();
     }
@@ -626,7 +621,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().remove(ChartAttribute.LEGEND_POSITION.getProperty());
+            getAttributes().delete(ChartAttribute.LEGEND_POSITION.getProperty());
         }
         return cast();
     }
@@ -644,7 +639,7 @@ public abstract class AbstractChart<T extends AbstractChart<T>> extends GroupOf<
         }
         else
         {
-            getAttributes().remove(ChartAttribute.LEGEND_ALIGN.getProperty());
+            getAttributes().delete(ChartAttribute.LEGEND_ALIGN.getProperty());
         }
         return cast();
     }

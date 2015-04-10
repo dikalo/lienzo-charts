@@ -36,16 +36,11 @@ public final class DateAxisBuilder extends CachedAxisBuilder<Date>
     }
 
     @Override
-    protected List<AxisLabel> buildValuesAxisLabels()
+    protected List<AxisLabel> buildLabels()
     {
         return new ArrayList<AxisLabel>();
     }
 
-    @Override
-    protected List<AxisLabel> buildCategoriesAxisLabels()
-    {
-        return null;
-    }
     @Override
     protected List<AxisValue<Date>> buildValues(String modelProperty)
     {

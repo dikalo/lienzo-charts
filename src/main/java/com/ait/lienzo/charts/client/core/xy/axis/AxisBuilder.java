@@ -63,22 +63,15 @@ public abstract class AxisBuilder<T>
     }
 
     /**
-     * Get axis labels for a values axis (no matter which model property).
-     *
-     * @return Values axis labels.
+     * Get axis labels for all series
+     * TODO: Cache.
+     * @return All serie axis labels.
      */
-    public abstract List<AxisLabel> getValuesAxisLabels();
-
-    /**
-     * Get axis labels for a categories axis.
-     *
-     * @return Categories axis labels.
-     */
-    public abstract List<AxisLabel> getCategoriesAxisLabels();
+    public abstract List<AxisLabel> getLabels();
 
     /**
      * Get axis values for a given property in the datatable model..
-     *
+     * TODO: Cache.
      * @parm modelProperty The property in the datatable model.. 
      * @return Series axis values.
      */
@@ -97,14 +90,7 @@ public abstract class AxisBuilder<T>
         m_chartSizeAttribute = chartSizeAttribute;
     }
 
-    @SuppressWarnings("unchecked")
-    public String format(Object value)
-    {
-        return formatHelper((T) value);
-    }
-
-    // Wildcard capture helper method.
-    protected String formatHelper(T value)
+    public String format(T value)
     {
         // TODO: Override by subclasses. Format each type using datatable column -> pattern attribute.
         return value.toString();

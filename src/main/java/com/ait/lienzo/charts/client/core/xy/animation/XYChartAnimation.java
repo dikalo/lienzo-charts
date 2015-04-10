@@ -39,14 +39,14 @@ import java.util.List;
 
 public abstract class XYChartAnimation extends AbstractChartAnimation
 {
-    public XYChartAnimation(final XYChart<?> chart, final double chartWidth, final double chartHeight, AnimationTweener tweener, final double duration, final IAnimationCallback callback)
+    public XYChartAnimation(final XYChart chart, final double chartWidth, final double chartHeight, AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
         super(chart, chartWidth, chartHeight, tweener, duration, callback);
     }
 
-    protected XYChart<?> getXYChart()
+    protected XYChart getXYChart()
     {
-        return (XYChart<?>) getNode();
+        return (XYChart) getNode();
     }
 
     protected boolean isVertical()
@@ -115,8 +115,8 @@ public abstract class XYChartAnimation extends AbstractChartAnimation
             final double mt = getXYChart().getMarginTop();
             final double mb = getXYChart().getMarginBottom();
             final List<XYChartLabel> seriesLabels = getXYChart().getSeriesLabels();
-            final AxisBuilder<?> categoriesAxisBuilder = getXYChart().getCategoriesAxisBuilder();
-            final List<AxisLabel> labels = categoriesAxisBuilder.getCategoriesAxisLabels();
+            final AxisBuilder categoriesAxisBuilder = getXYChart().getCategoriesAxisBuilder();
+            final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
             final int lsize = labels.size();
             final LabelsPosition clp = getXYChart().getCategoriesAxisLabelsPosition();
 
@@ -207,9 +207,9 @@ public abstract class XYChartAnimation extends AbstractChartAnimation
         final double mb = getXYChart().getMarginBottom();
         final List<Line> valuesAxisIntervals = getXYChart().getValuesAxisIntervals();
         final List<XYChartLabel> valuesLabels = getXYChart().getValuesLabels();
-        final AxisBuilder<?> valuesAxisBuilder = getXYChart().getValuesAxisBuilder();
+        final AxisBuilder valuesAxisBuilder = getXYChart().getValuesAxisBuilder();
 
-        final List<AxisLabel> labels = valuesAxisBuilder.getValuesAxisLabels();
+        final List<AxisLabel> labels = valuesAxisBuilder.getLabels();
         if (labels != null && !labels.isEmpty())
         {
             final int lsize = labels.size();

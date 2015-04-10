@@ -22,6 +22,7 @@ import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.model.DataTable;
 import com.ait.lienzo.charts.client.core.model.PieChartData;
 import com.ait.lienzo.charts.client.core.pie.PieChart;
+import com.ait.lienzo.charts.client.core.pie.PieChartTooltip;
 import com.ait.lienzo.client.core.Attribute;
 import com.ait.lienzo.client.core.animation.AnimationProperties;
 import com.ait.lienzo.client.core.animation.AnimationProperty;
@@ -32,7 +33,7 @@ import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.guides.ToolTip;
+import com.ait.lienzo.shared.core.types.TextAlign;
 
 public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 {
@@ -110,34 +111,34 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
 
             double ly = 0 - Math.cos(n_ang) * (radius / 2);
 
-            //TextAlign align;
+            TextAlign align;
 
             if (n_ang <= (Math.PI * 0.5))
             {
                 lx += 2;
 
-                //align = TextAlign.LEFT;
+                align = TextAlign.LEFT;
             }
             else if ((n_ang > (Math.PI * 0.5)) && (n_ang <= Math.PI))
             {
                 lx += 2;
 
-                //align = TextAlign.LEFT;
+                align = TextAlign.LEFT;
             }
             else if ((n_ang > Math.PI) && (n_ang <= (Math.PI * 1.5)))
             {
                 lx -= 2;
 
-                //align = TextAlign.RIGHT;
+                align = TextAlign.RIGHT;
             }
             else
             {
                 lx -= 2;
 
-                //align = TextAlign.RIGHT;
+                align = TextAlign.RIGHT;
             }
-            final double xToolTip = lx + getPieChart().getX() + getPieChart().getChartArea().getX();
-            final double yToolTip = ly + getPieChart().getY() + getPieChart().getChartArea().getY();
+            final double xToolTip = lx;
+            final double yToolTip = ly;
             slice.addNodeMouseEnterHandler(new NodeMouseEnterHandler()
             {
                 @Override
@@ -174,7 +175,7 @@ public abstract class AbstractPieChartAnimation extends AbstractChartAnimation
         slices.setX(x).setY(y);
     }
 
-    protected abstract void doAnimateToolTip(final ToolTip tooltip, final double x, final double y);
+    protected abstract void doAnimateToolTip(final PieChartTooltip tooltip, final double x, final double y);
 
     protected abstract void doAnimatePieSlice(final PieChart.PieSlice slice, final double radius, final double startAngle, final double endAngle);
 

@@ -63,36 +63,24 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     }
 
     @Override
-    protected List<AxisLabel> buildValuesAxisLabels()
+    protected List<AxisLabel> buildLabels()
     {
-        final int segments = axis.getSegments();
-        final Double maxValue = roundUp(getMaxValue());
-        final Double minValue = roundDown(getMinValue());
-        
-        return buildAxisLabels(segments, maxValue, minValue, getAxisDirection());
-    }
+        //String modelProperty = getDataSummary().getData().getCategoryAxisProperty();
+        //Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
+        int segments = axis.getSegments();
+        Double maxValue = roundUp(getMaxValue());
+        Double minValue = roundDown(getMinValue());
 
-    @Override
-    protected List<AxisLabel> buildCategoriesAxisLabels()
-    {
-        final int segments = axis.getSegments();
-        final Double maxValue = roundUp(getCategoriesMaxValue());
-        final Double minValue = roundDown(getCategoriesMinValue());
+        double sizeAttributeIncrement = getChartSizeAttribute() / segments;
+        double valueIncrement = (maxValue - minValue) / segments;
 
-        return buildAxisLabels(segments, maxValue, minValue, getAxisDirection());
-    }
-    
-    private List<AxisLabel> buildAxisLabels(final int segments, final Double maxValue, final Double minValue, final AxisDirection axisDirection) {
-        final double sizeAttributeIncrement = getChartSizeAttribute() / segments;
-        final double valueIncrement = (maxValue - minValue) / segments;
-
-        final List<AxisLabel> result = new LinkedList<AxisLabel>();
+        List<AxisLabel> result = new LinkedList<AxisLabel>();
         for (int x = 0; x <= segments; x++)
         {
-            double currentChartSizeAttribute = (AxisDirection.DESC.equals(axisDirection)) ? getChartSizeAttribute() - (sizeAttributeIncrement * x) : sizeAttributeIncrement * x;
+            double currentchartSizeAttribute = (getAxisDirection().equals(AxisDirection.DESC)) ? getChartSizeAttribute() - (sizeAttributeIncrement * x) : sizeAttributeIncrement * x;
             double currentValue = valueIncrement * x;
             String formattedValue = format(currentValue);
-            result.add(new AxisLabel(x, formattedValue, currentChartSizeAttribute));
+            result.add(new AxisLabel(x, formattedValue, currentchartSizeAttribute));
         }
         return result;
     }
@@ -100,32 +88,20 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     @Override
     protected List<AxisValue<Double>> buildValues(String modelProperty)
     {
-        final Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
+        Double[] values = getDataSummary().getData().getDataTable().getNumericValues(modelProperty);
         //int segments = axis.getSegments();
-        final Double maxValue = modelProperty.equals(getDataSummary().getData().getCategoryAxisProperty()) ? getCategoriesMaxValue() : getMaxValue();
-        //TODO: Double minValue = getMinValue();
+        Double maxValue = getMaxValue();
+        //Double minValue = getMinValue();
 
-        
-        final List<AxisValue<Double>> result = buildValueList(values);
-        final boolean isAscendant = (getAxisDirection().equals(AxisDirection.ASC));
+        List<AxisValue<Double>> result = new LinkedList<AxisValue<Double>>();
         if (values != null && values.length > 0)
         {
             for (int i = 0, j = values.length - 1; i < values.length; i++, j--)
             {
-                Double value = isAscendant ? values[i] : values[j];
+                Double value = (getAxisDirection().equals(AxisDirection.DESC)) ? values[i] : values[j];
                 // Obtain width and height values for the shape.
                 double shapeSize = getSizeForShape(getChartSizeAttribute(), value, maxValue);
-                result.set(isAscendant ? i : j, new AxisValue<Double>(value, shapeSize));
-            }
-        }
-        return result;
-    }
-    
-    private List<AxisValue<Double>> buildValueList(final Double[] values) {
-        final List<AxisValue<Double>> result = new LinkedList<AxisValue<Double>>();
-        if (values != null && values.length > 0) {
-            for (int i = 0; i < values.length; i++) {
-                result.add(AxisValue.EMPTY_NUMBER_VALUE);
+                result.add(new AxisValue<Double>(value, shapeSize));
             }
         }
         return result;
@@ -133,29 +109,15 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
 
     protected Double getMinValue()
     {
-        final Double minValue = axis.getMinValue();
-        if (minValue == null) return getDataSummary().getValuesAxisSummary().getMinNumericValue();
+        Double minValue = axis.getMinValue();
+        if (minValue == null) return getDataSummary().getMinNumericValue();
         return minValue;
     }
 
     protected Double getMaxValue()
     {
-        final Double maxValue = axis.getMaxValue();
-        if (maxValue == null) return getDataSummary().getValuesAxisSummary().getMaxNumericValue();
-        return maxValue;
-    }
-
-    protected Double getCategoriesMinValue()
-    {
-        final Double minValue = axis.getMinValue();
-        if (minValue == null) return getDataSummary().getCategoriesAxisSummary().getMinNumericValue();
-        return minValue;
-    }
-
-    protected Double getCategoriesMaxValue()
-    {
-        final Double maxValue = axis.getMaxValue();
-        if (maxValue == null) return getDataSummary().getCategoriesAxisSummary().getMaxNumericValue();
+        Double maxValue = axis.getMaxValue();
+        if (maxValue == null) return getDataSummary().getMaxNumericValue();
         return maxValue;
     }
 
@@ -165,7 +127,7 @@ public final class NumericAxisBuilder extends CachedAxisBuilder<Double>
     }
 
     @Override
-    protected String formatHelper(Double value)
+    public String format(Double value)
     {
         if (value != null) return getNumberFormat().format(value);
         return NULL_VALUE;

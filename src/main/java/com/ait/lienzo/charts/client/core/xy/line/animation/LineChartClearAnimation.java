@@ -18,15 +18,12 @@
 
 package com.ait.lienzo.charts.client.core.xy.line.animation;
 
-import com.ait.lienzo.charts.client.core.animation.PointsAnimationProperty;
 import com.ait.lienzo.charts.client.core.xy.animation.XYChartClearAnimation;
 import com.ait.lienzo.charts.client.core.xy.line.LineChart;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
-import com.ait.lienzo.client.core.Attribute;
 import com.ait.lienzo.client.core.animation.*;
 import com.ait.lienzo.client.core.shape.Circle;
 import com.ait.lienzo.client.core.shape.Line;
-import com.ait.lienzo.client.core.types.Point2D;
 
 import java.util.List;
 import java.util.Map;
@@ -64,15 +61,8 @@ public class LineChartClearAnimation extends XYChartClearAnimation
             {
                 for (Line line : entry.getValue())
                 {
-                    final Point2D p1 = line.getPoint2DArray().get(0);
-                    final Point2D p2 = line.getPoint2DArray().get(1);
-                    PointsAnimationProperty points = null;
-                    if (isVertical()) points = new PointsAnimationProperty(new Point2D(p1.getX(), yClearPos), new Point2D(p2.getX(), yClearPos), Attribute.POINTS);
-                    else points = new PointsAnimationProperty(new Point2D(xClearPos, p1.getY()), new Point2D(xClearPos, p2.getY()), Attribute.POINTS);
-
-                    final AnimationProperties animationProperties = new AnimationProperties();
-                    animationProperties.push(points);
-                    add(line, animationProperties);
+                    if (isVertical()) add(line, buildAnimationProperties(null, yClearPos, null, 0d));
+                    else add(line, buildAnimationProperties(null, null, xClearPos, null));
                 }
             }
         }
@@ -85,7 +75,7 @@ public class LineChartClearAnimation extends XYChartClearAnimation
                 for (Circle circle : entry.getValue())
                 {
                     if (isVertical()) add(circle, buildAnimationProperties(null, yClearPos, null, 0d));
-                    else add(circle, buildAnimationProperties(xClearPos, null));
+                    else add(circle, buildAnimationProperties(null, null, xClearPos, null));
                 }
             }
         }

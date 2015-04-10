@@ -22,6 +22,7 @@ import com.ait.lienzo.charts.client.core.AbstractChart;
 import com.ait.lienzo.charts.client.core.ChartAttribute;
 import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.axis.Axis;
+import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
@@ -30,6 +31,7 @@ import com.ait.lienzo.charts.client.core.xy.event.DataReloadedEventHandler;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedEvent;
 import com.ait.lienzo.charts.client.core.xy.event.ValueSelectedHandler;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
+import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
@@ -37,7 +39,6 @@ import com.ait.lienzo.client.core.shape.IContainer;
 import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.guides.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.ColorName;
@@ -55,22 +56,22 @@ import java.util.List;
  */
 public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 {
-    protected final List<Text>         categoriesAxisTitle = new LinkedList<Text>();
+    protected final List<Text>                   categoriesAxisTitle     = new LinkedList<Text>();
 
-    protected final List<Text>         valuesAxisTitle     = new LinkedList<Text>();         ;
+    protected final List<Text>                   valuesAxisTitle         = new LinkedList<Text>();                       ;
 
-    protected final List<Line>         valuesAxisIntervals = new LinkedList<Line>();        // The lines that represents the intervals in the Y axis.
+    protected final List<Line>                   valuesAxisIntervals     = new LinkedList<Line>();                      // The lines that represents the intervals in the Y axis.
 
-    protected final List<XYChartLabel> valuesLabels        = new LinkedList<XYChartLabel>(); // The texts that represents the interval values in the Y axis.
+    protected final List<XYChartLabel>          valuesLabels            = new LinkedList<XYChartLabel>();             // The texts that represents the interval values in the Y axis.
 
-    protected final List<XYChartLabel> seriesLabels        = new LinkedList<XYChartLabel>(); // The labels for each interval (rectangle) in the X axis.
+    protected final List<XYChartLabel>          seriesLabels            = new LinkedList<XYChartLabel>();             // The labels for each interval (rectangle) in the X axis.
 
     // Axis builders.
-    protected AxisBuilder<?>           categoriesAxisBuilder;
+    protected AxisBuilder                        categoriesAxisBuilder;
 
-    protected AxisBuilder<?>           valuesAxisBuilder;
+    protected AxisBuilder                        valuesAxisBuilder;
 
-    protected ToolTip                  tooltip             = null;                          // The tooltip.
+    protected XYChartTooltip tooltip                 = null;                                        // The tooltip.
 
     protected XYChart(final JSONObject node, final ChartNodeType nodeType, final ValidationContext ctx) throws ValidationException
     {
@@ -82,7 +83,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         super(nodeType);
     }
 
-    public final T setCategoriesAxis(Axis xAxis)
+    public final XYChart setCategoriesAxis(CategoryAxis xAxis)
     {
         if (null != xAxis)
         {
@@ -90,9 +91,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().remove(ChartAttribute.CATEGORIES_AXIS.getProperty());
+            getAttributes().delete(ChartAttribute.CATEGORIES_AXIS.getProperty());
         }
-        return cast();
+        return this;
     }
 
     public final Axis.AxisJSO getCategoriesAxis()
@@ -100,7 +101,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return getAttributes().getObject(ChartAttribute.CATEGORIES_AXIS.getProperty()).cast();
     }
 
-    public final T setValuesAxis(Axis yAxis)
+    public final XYChart setValuesAxis(Axis yAxis)
     {
         if (null != yAxis)
         {
@@ -108,9 +109,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().remove(ChartAttribute.VALUES_AXIS.getProperty());
+            getAttributes().delete(ChartAttribute.VALUES_AXIS.getProperty());
         }
-        return cast();
+        return this;
     }
 
     public final Axis.AxisJSO getValuesAxis()
@@ -118,7 +119,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return getAttributes().getObject(ChartAttribute.VALUES_AXIS.getProperty()).cast();
     }
 
-    public final T setData(final XYChartData data)
+    public final XYChart setData(final XYChartData data)
     {
         if (null != data)
         {
@@ -126,9 +127,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().remove(ChartAttribute.XY_CHART_DATA.getProperty());
+            getAttributes().delete(ChartAttribute.XY_CHART_DATA.getProperty());
         }
-        return cast();
+        return this;
     }
 
     public final XYChartData getData()
@@ -141,11 +142,11 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return null;
     }
 
-    public final T setShowCategoriesAxisTitle(boolean showCategoriesAxisTitle)
+    public final XYChart setShowCategoriesAxisTitle(boolean showCategoriesAxisTitle)
     {
         getAttributes().put(ChartAttribute.SHOW_CATEGORIES_AXIS_TITLE.getProperty(), showCategoriesAxisTitle);
 
-        return cast();
+        return this;
     }
 
     public final boolean isShowCategoriesAxisTitle()
@@ -157,11 +158,11 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return true;
     }
 
-    public final T setShowValuesAxisTitle(boolean showValuesAxisTitle)
+    public final XYChart setShowValuesAxisTitle(boolean showValuesAxisTitle)
     {
         getAttributes().put(ChartAttribute.SHOW_VALUES_AXIS_TITLE.getProperty(), showValuesAxisTitle);
 
-        return cast();
+        return this;
     }
 
     public final boolean isShowValuesAxisTitle()
@@ -173,7 +174,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return true;
     }
 
-    public final T setCategoriesAxisLabelsPosition(LabelsPosition labelsPosition)
+    public final XYChart setCategoriesAxisLabelsPosition(LabelsPosition labelsPosition)
     {
         if (null != labelsPosition)
         {
@@ -181,9 +182,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().remove(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty());
+            getAttributes().delete(ChartAttribute.CATEGORIES_AXIS_LABELS_POSITION.getProperty());
         }
-        return cast();
+        return this;
     }
 
     public final LabelsPosition getCategoriesAxisLabelsPosition()
@@ -203,7 +204,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return position;
     }
 
-    public final T setValuesAxisLabelsPosition(LabelsPosition labelsPosition)
+    public final XYChart setValuesAxisLabelsPosition(LabelsPosition labelsPosition)
     {
         if (null != labelsPosition)
         {
@@ -211,9 +212,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         else
         {
-            getAttributes().remove(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty());
+            getAttributes().delete(ChartAttribute.VALUES_AXIS_LABELS_POSITION.getProperty());
         }
-        return cast();
+        return this;
     }
 
     public final LabelsPosition getValuesAxisLabelsPosition()
@@ -263,7 +264,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         {
             return false;
         }
-
+        
     }
 
     public boolean isVertical()
@@ -325,7 +326,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         // Categories axis intervals.
         if (isShowCategoriesLabels())
         {
-            List<AxisLabel> xAxisLabels = categoriesAxisBuilder.getCategoriesAxisLabels();
+            List<AxisLabel> xAxisLabels = categoriesAxisBuilder.getLabels();
             if (xAxisLabels != null)
             {
                 for (int i = 0; i < xAxisLabels.size(); i++)
@@ -349,7 +350,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         // Values axis intervals.
         // Build the shapes axis instances (line for intervals and text for labels).
-        List<AxisLabel> yAxisLabels = valuesAxisBuilder.getValuesAxisLabels();
+        List<AxisLabel> yAxisLabels = valuesAxisBuilder.getLabels();
         for (AxisLabel yAxisLabel : yAxisLabels)
         {
             final double p00 = isVertical() ? 0 : 0;
@@ -387,11 +388,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     }
 
-    protected abstract AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical);
-
-    protected abstract AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical);
-
-    public abstract T buildSeriesValues(final XYChartSeries series, final int numSeries);
+    protected abstract AxisBuilder buildCategoryAxisBuilder(final boolean isVertical);
+    protected abstract AxisBuilder buildValuesAxisBuilder(final boolean isVertical);
+    public abstract  XYChart buildSeriesValues(final XYChartSeries series, final int numSeries);
 
     @Override
     protected void buildTitle()
@@ -403,7 +402,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     private void buildTooltip()
     {
-        tooltip = new ToolTip();
+        tooltip = new XYChartTooltip();
+
+        chartArea.add(tooltip);
     }
 
     @Override
@@ -423,6 +424,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
     }
 
+    
     public void clear()
     {
         if (!categoriesAxisTitle.isEmpty())
@@ -459,10 +461,10 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
             }
             seriesLabels.clear();
         }
-
+        
         categoriesAxisBuilder = null;
         valuesAxisBuilder = null;
-        if (tooltip != null) tooltip.hide();
+        if (tooltip != null) tooltip.removeFromParent();
         super.clear();
     }
 
@@ -491,17 +493,17 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return seriesLabels;
     }
 
-    public AxisBuilder<?> getCategoriesAxisBuilder()
+    public AxisBuilder getCategoriesAxisBuilder()
     {
         return categoriesAxisBuilder;
     }
 
-    public AxisBuilder<?> getValuesAxisBuilder()
+    public AxisBuilder getValuesAxisBuilder()
     {
         return valuesAxisBuilder;
     }
 
-    public ToolTip getChartTooltip()
+    public XYChartTooltip getChartTooltip()
     {
         return tooltip;
     }

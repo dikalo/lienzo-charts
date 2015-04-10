@@ -28,9 +28,7 @@ import java.util.Map;
 
 public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
 {
-    private List<AxisLabel>                       categoriesAxisLabels;
-    
-    private List<AxisLabel>                       valuesAxisLabels;
+    private List<AxisLabel>                       labels;
 
     final private Map<String, List<AxisValue<T>>> values = new HashMap<String, List<AxisValue<T>>>();
 
@@ -46,30 +44,18 @@ public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
         clear();
     }
 
-    protected abstract List<AxisLabel> buildValuesAxisLabels();
-
-    protected abstract List<AxisLabel> buildCategoriesAxisLabels();
+    protected abstract List<AxisLabel> buildLabels();
 
     protected abstract List<AxisValue<T>> buildValues(String modelProperty);
 
     @Override
-    public List<AxisLabel> getValuesAxisLabels()
+    public List<AxisLabel> getLabels()
     {
-        if (valuesAxisLabels == null)
+        if (labels == null)
         {
-            valuesAxisLabels = buildValuesAxisLabels();
+            labels = buildLabels();
         }
-        return valuesAxisLabels;
-    }
-
-    @Override
-    public List<AxisLabel> getCategoriesAxisLabels()
-    {
-        if (categoriesAxisLabels == null)
-        {
-            categoriesAxisLabels = buildCategoriesAxisLabels();
-        }
-        return categoriesAxisLabels;
+        return labels;
     }
 
     @Override
@@ -86,21 +72,20 @@ public abstract class CachedAxisBuilder<T> extends AxisBuilder<T>
     @Override
     public void reload(XYChartData data, Collection<String> currentSeries, double chartSizeAttribute)
     {
-        clear();
         super.reload(data, currentSeries, chartSizeAttribute);
+        clear();
     }
 
     @Override
     public void reload(double chartSizeAttribute)
     {
-        clear();
         super.reload(chartSizeAttribute);
+        clear();
     }
 
     protected void clear()
     {
-        valuesAxisLabels = null;
-        categoriesAxisLabels = null;
+        labels = null;
         values.clear();
     }
 }

@@ -44,11 +44,9 @@ import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
 import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.IContainer;
-import com.ait.lienzo.client.core.shape.IPrimitive;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Slice;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.guides.ToolTip;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationContext;
 import com.ait.lienzo.client.core.shape.json.validators.ValidationException;
 import com.ait.lienzo.shared.core.types.Color;
@@ -68,7 +66,7 @@ public class PieChart extends AbstractChart<PieChart>
 
     private List<PieSlice>           pieSlices            = new LinkedList<PieSlice>();
 
-    private ToolTip                  tooltip;
+    private PieChartTooltip          tooltip;
 
     private static final ColorName[] DEFAULT_SLICE_COLORS = new ColorName[] { ColorName.DEEPPINK, ColorName.YELLOW, ColorName.SALMON, ColorName.CORNFLOWERBLUE, ColorName.AQUA, ColorName.DEEPSKYBLUE, ColorName.GREENYELLOW, ColorName.BLUEVIOLET, ColorName.FUCHSIA, ColorName.MAGENTA, ColorName.MAROON };
 
@@ -123,11 +121,6 @@ public class PieChart extends AbstractChart<PieChart>
     public HandlerRegistration addValueSelectedHandler(ValueSelectedHandler handler)
     {
         return addEnsureHandler(ValueSelectedEvent.TYPE, handler);
-    }
-    
-    public PieChart getPieChart()
-    {
-        return this;
     }
 
     @Override
@@ -203,12 +196,9 @@ public class PieChart extends AbstractChart<PieChart>
                     // Animate other slices.
                     alphaToOtherSlices(slice.getID(), 0.7);
 
-                    final double xToolTip = getPieChart().getX() + getPieChart().getChartArea().getX() + (getChartWidth() / 2);
-                    final double yToolTip = getPieChart().getY() + getPieChart().getChartArea().getY() + (getChartHeight() / 2);
                     // Show the tooltip.
                     tooltip.setValues(category, getValue(tv));
-                    tooltip.setLayer(slice.getViewport().getOverLayer());
-                    tooltip.show(xToolTip, yToolTip);
+                    tooltip.show(getChartWidth() / 2, getChartHeight() / 2);
                     Text _text = texts.get(_i);
                     if (_text != null) _text.animate(LINEAR, toPropertyList(ALPHA(0)), getDefaultAnimationDuration());
                 }
@@ -265,7 +255,7 @@ public class PieChart extends AbstractChart<PieChart>
         return pieSlices;
     }
 
-    public ToolTip getTooltip()
+    public PieChartTooltip getTooltip()
     {
         return tooltip;
     }
@@ -277,7 +267,7 @@ public class PieChart extends AbstractChart<PieChart>
         labels.removeFromParent();
         pieSlices.clear();
         slices.removeFromParent();
-        if (tooltip != null) tooltip.hide();
+        if (tooltip != null) tooltip.removeFromParent();
         super.clear();
     }
 
@@ -321,7 +311,7 @@ public class PieChart extends AbstractChart<PieChart>
         if (legend != null)
         {
             legend.removeAll();
-
+            
             legend.removeFromParent();
         }
         super.buildLegend();
@@ -346,13 +336,12 @@ public class PieChart extends AbstractChart<PieChart>
 
     private void buildTooltip()
     {
-        tooltip = new ToolTip();
-        tooltip.setX(getChartWidth() / 2);
-        tooltip.setY(getChartHeight() / 2);
-        tooltip.setAlpha(1d);
+        tooltip = new PieChartTooltip();
+
+        addOnAreaChartCentered(tooltip);
     }
 
-    protected void addOnAreaChartCentered(IPrimitive<?> group)
+    protected void addOnAreaChartCentered(Group group)
     {
         chartArea.add(group);
         group.setX(getChartWidth() / 2);
@@ -409,12 +398,12 @@ public class PieChart extends AbstractChart<PieChart>
 
 		return numb.toFixed(2) + "%";
     }-*/;
-
+    
     private final native String getValue(double valu)
     /*-{
-		var numb = valu;
+        var numb = valu;
 
-		return numb.toFixed(2) + "";
+        return numb.toFixed(2) + "";
     }-*/;
 
     public static class PieChartFactory extends ChartFactory<PieChart>

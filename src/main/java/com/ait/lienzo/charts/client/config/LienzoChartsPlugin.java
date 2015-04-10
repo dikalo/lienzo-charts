@@ -22,7 +22,7 @@ import com.ait.lienzo.charts.client.core.xy.bar.BarChart;
 import com.ait.lienzo.charts.client.core.xy.line.LineChart;
 import com.ait.lienzo.client.core.config.AbstractLienzoCorePlugin;
 import com.ait.lienzo.client.core.shape.json.IFactory;
-import com.ait.tooling.common.api.java.util.function.Supplier;
+import com.ait.lienzo.shared.java.util.function.Supplier;
 
 final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
 {
@@ -57,7 +57,7 @@ final class LienzoChartsPlugin extends AbstractLienzoCorePlugin
     @Override
     public final String getNameSpace()
     {
-        return "Lienzo-Charts";
+        return "LienzoCharts";
     }
 
     @Override

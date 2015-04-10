@@ -22,6 +22,7 @@ import com.ait.lienzo.charts.client.core.animation.AbstractChartAnimation;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.XYChart;
 import com.ait.lienzo.charts.client.core.xy.label.XYChartLabel;
+import com.ait.lienzo.charts.client.core.xy.tooltip.XYChartTooltip;
 import com.ait.lienzo.charts.shared.core.types.ChartDirection;
 import com.ait.lienzo.charts.shared.core.types.LabelsPosition;
 import com.ait.lienzo.client.core.animation.*;
@@ -29,22 +30,21 @@ import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.shape.Shape;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.guides.ToolTip;
 
 import java.util.List;
 
 public abstract class XYChartClearAnimation extends AbstractChartAnimation
 {
-    public XYChartClearAnimation(final XYChart<?> chart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
+    public XYChartClearAnimation(final XYChart chart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
         super(chart, chart.getChartWidth(), chart.getChartHeight(), tweener, duration, callback);
-
+        
         init(chart.getChartWidth(), chart.getChartHeight());
     }
 
-    protected XYChart<?> getXYChart()
+    protected XYChart getXYChart()
     {
-        return (XYChart<?>) getNode();
+        return (XYChart) getNode();
     }
 
     protected boolean isVertical()
@@ -53,15 +53,15 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
     }
 
     protected abstract void clearValues(final double chartWidth, final double chartHeight);
-
+    
     protected void init(final double chartWidth, final double chartHeight)
     {
         // Title & Legend & tooltip.
         final Text chartTitle = getXYChart().getChartTitle();
         final ChartLegend legend = getXYChart().getChartLegend();
-        final ToolTip tooltip = getXYChart().getChartTooltip();
+        final XYChartTooltip tooltip = getXYChart().getChartTooltip();
         if (legend != null) legend.removeFromParent();
-        if (tooltip != null) tooltip.hide();
+        if (tooltip != null) tooltip.removeFromParent();
 
         // Bar children.
         final List<Text> categoriesAxisTitles = getXYChart().getCategoriesAxisTitle();
@@ -131,7 +131,7 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
 
         // Apply animation to values.
         clearValues(chartWidth, chartHeight);
-
+        
         // Create axis titles' animations.
         if (!getXYChart().getCategoriesAxisTitle().isEmpty()) add((Node<?>) getXYChart().getCategoriesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));
         if (!getXYChart().getValuesAxisTitle().isEmpty()) add((Node<?>) getXYChart().getValuesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));

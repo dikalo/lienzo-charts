@@ -21,15 +21,16 @@ import java.util.List;
 import com.ait.lienzo.client.core.types.NFastStringMap;
 import com.ait.lienzo.shared.core.types.EnumWithValue;
 
-public enum ChartDirection implements EnumWithValue
+// TODO: Can be removed? Currently using ChartNodeType.
+public enum ChartType implements EnumWithValue
 {
-    POSITIVE("positive"), NEGATIVE("negative");
+    COLUMN("column"), BAR("bar"), LINE("line"), PIE("pie"), DONUT("donut"), AREA("area"), RADAR("radar");
 
-    private final String                                m_value;
+    private final String                           m_value;
 
-    private static final NFastStringMap<ChartDirection> LOOKUP_MAP = Statics.build(ChartDirection.values());
+    private static final NFastStringMap<ChartType> LOOKUP_MAP = Statics.build(ChartType.values());
 
-    private ChartDirection(String value)
+    private ChartType(String value)
     {
         m_value = value;
     }
@@ -46,18 +47,18 @@ public enum ChartDirection implements EnumWithValue
         return m_value;
     }
 
-    public static final ChartDirection lookup(String key)
+    public static final ChartType lookup(String key)
     {
-        return Statics.lookup(key, LOOKUP_MAP, POSITIVE);
+        return Statics.lookup(key, LOOKUP_MAP, COLUMN);
     }
 
     public static final List<String> getKeys()
     {
-        return Statics.getKeys(ChartDirection.values());
+        return Statics.getKeys(ChartType.values());
     }
 
-    public static final List<ChartDirection> getValues()
+    public static final List<ChartType> getValues()
     {
-        return Statics.getValues(ChartDirection.values());
+        return Statics.getValues(ChartType.values());
     }
 }

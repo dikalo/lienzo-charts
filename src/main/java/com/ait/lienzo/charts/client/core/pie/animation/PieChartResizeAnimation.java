@@ -20,10 +20,10 @@ package com.ait.lienzo.charts.client.core.pie.animation;
 
 import com.ait.lienzo.charts.client.core.animation.StackedTweeningAnimation;
 import com.ait.lienzo.charts.client.core.pie.PieChart;
+import com.ait.lienzo.charts.client.core.pie.PieChartTooltip;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.shape.Text;
-import com.ait.lienzo.client.core.shape.guides.ToolTip;
 
 public class PieChartResizeAnimation extends AbstractPieChartAnimation
 {
@@ -49,10 +49,8 @@ public class PieChartResizeAnimation extends AbstractPieChartAnimation
     }
 
     @Override
-    protected void doAnimateToolTip(ToolTip tooltip, double x, double y)
+    protected void doAnimateToolTip(PieChartTooltip tooltip, double x, double y)
     {
-        tooltip.setLayer(getPieChart().getViewport().getOverLayer());
-        
         tooltip.show(x, y);
     }
 
