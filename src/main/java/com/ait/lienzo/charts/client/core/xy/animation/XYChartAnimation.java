@@ -116,7 +116,7 @@ public abstract class XYChartAnimation extends AbstractChartAnimation
             final double mb = getXYChart().getMarginBottom();
             final List<XYChartLabel> seriesLabels = getXYChart().getSeriesLabels();
             final AxisBuilder categoriesAxisBuilder = getXYChart().getCategoriesAxisBuilder();
-            final List<AxisLabel> labels = categoriesAxisBuilder.getLabels();
+            final List<AxisLabel> labels = categoriesAxisBuilder.getCategoriesAxisLabels();
             final int lsize = labels.size();
             final LabelsPosition clp = getXYChart().getCategoriesAxisLabelsPosition();
 
@@ -207,9 +207,9 @@ public abstract class XYChartAnimation extends AbstractChartAnimation
         final double mb = getXYChart().getMarginBottom();
         final List<Line> valuesAxisIntervals = getXYChart().getValuesAxisIntervals();
         final List<XYChartLabel> valuesLabels = getXYChart().getValuesLabels();
-        final AxisBuilder valuesAxisBuilder = getXYChart().getValuesAxisBuilder();
+        final AxisBuilder<?> valuesAxisBuilder = getXYChart().getValuesAxisBuilder();
 
-        final List<AxisLabel> labels = valuesAxisBuilder.getLabels();
+        final List<AxisLabel> labels = valuesAxisBuilder.getValuesAxisLabels();
         if (labels != null && !labels.isEmpty())
         {
             final int lsize = labels.size();

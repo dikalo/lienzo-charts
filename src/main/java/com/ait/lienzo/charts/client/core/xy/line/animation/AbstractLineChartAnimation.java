@@ -49,7 +49,7 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
 
     protected void calculateValues(final double w, final double h)
     {
-        final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
         final XYChartSeries[] series = getLineChart().getData().getSeries();
         final ChartLegend legend = getLineChart().getChartLegend();
 
@@ -88,12 +88,12 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
     {
         final Map<String, List<Line>> seriesValues = getLineChart().getSeriesValues();
         final Map<String, List<Circle>> seriesCircles = getLineChart().getSeriesPoints();
-        final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
-        final AxisBuilder valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
 
         // Rebuild line for series values
-        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
-        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
+        final List<? extends AxisValue<?>> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<? extends AxisValue<?>> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
         final List<Line> lines = seriesValues.get(series.getName());
         final List<Circle> circles = seriesCircles.get(series.getName());
         Double lastX = null;
@@ -102,9 +102,9 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
         {
             for (int i = 0; i < categoryAxisValues.size(); i++)
             {
-                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
+                final AxisValue<?> categoryAxisValue = categoryAxisValues.get(i);
                 final double xAxisValuePosition = categoryAxisValue.getPosition();
-                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final AxisValue<?> valueAxisValue = valuesAxisValues.get(i);
                 final double yAxisValuePosition = valueAxisValue.getPosition();
 
                 // Calculate positions.
@@ -155,12 +155,12 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
     {
         final Map<String, List<Line>> seriesValues = getLineChart().getSeriesValues();
         final Map<String, List<Circle>> seriesCircles = getLineChart().getSeriesPoints();
-        final AxisBuilder categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
-        final AxisBuilder valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getLineChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> valuesAxisBuilder = getLineChart().getValuesAxisBuilder();
 
         // Rebuild line for series values
-        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
-        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
+        final List<? extends AxisValue<?>> valuesAxisValues = valuesAxisBuilder.getValues(series.getValuesAxisProperty());
+        final List<? extends AxisValue<?>> categoryAxisValues = categoriesAxisBuilder.getValues(getLineChart().getData().getCategoryAxisProperty());
         final List<Line> lines = seriesValues.get(series.getName());
         final List<Circle> circles = seriesCircles.get(series.getName());
         Double lastX = null;
@@ -169,9 +169,9 @@ public abstract class AbstractLineChartAnimation extends XYChartAnimation
         {
             for (int i = 0; i < categoryAxisValues.size(); i++)
             {
-                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
+                final AxisValue<?> categoryAxisValue = categoryAxisValues.get(i);
                 final double yAxisValuePosition = categoryAxisValue.getPosition();
-                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final AxisValue<?> valueAxisValue = valuesAxisValues.get(i);
                 final double xAxisValuePosition = valueAxisValue.getPosition();
 
                 // Calculate positions.

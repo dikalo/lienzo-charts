@@ -48,7 +48,7 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
 
     protected void calculateValues(final double w, final double h)
     {
-        final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
         final XYChartSeries[] series = getBarChart().getData().getSeries();
         final ChartLegend legend = getBarChart().getChartLegend();
 
@@ -86,21 +86,21 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
     protected AbstractBarChartAnimation calculateValuesForVertical(final XYChartSeries serie, final int numSerie, final Double width, final Double height, boolean isSeriesNew)
     {
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
-        final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
-        final AxisBuilder valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
         final XYChartSeries[] series = getBarChart().getData().getSeries();
 
         // Rebuild bars for series values
-        final List<AxisValue> valuesAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        final List<AxisValue> categoryAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
+        final List<? extends  AxisValue<?>> valuesAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
+        final List<? extends AxisValue<?>> categoryAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
         final List<Rectangle> bars = seriesValues.get(serie.getName());
 
         if (categoryAxisValues != null && categoryAxisValues.size() > 0)
         {
             for (int i = 0; i < categoryAxisValues.size(); i++)
             {
-                final AxisValue categoryAxisValue = categoryAxisValues.get(i);
-                final AxisValue valueAxisValue = valuesAxisValues.get(i);
+                final AxisValue<?> categoryAxisValue = categoryAxisValues.get(i);
+                final AxisValue<?> valueAxisValue = valuesAxisValues.get(i);
                 final double yAxisValuePosition = valueAxisValue.getPosition();
 
                 // Obtain width and height values for the bar.
@@ -155,22 +155,22 @@ public abstract class AbstractBarChartAnimation extends XYChartAnimation
     protected AbstractBarChartAnimation calculateValuesForHorizontal(final XYChartSeries serie, final int numSerie, Double width, final Double height, boolean isSeriesNew)
     {
         final Map<String, List<Rectangle>> seriesValues = getBarChart().getSeriesValues();
-        final AxisBuilder categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
-        final AxisBuilder valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
+        final AxisBuilder<?> categoriesAxisBuilder = getBarChart().getCategoriesAxisBuilder();
+        final AxisBuilder<?> valuesAxisBuilder = getBarChart().getValuesAxisBuilder();
         final XYChartSeries[] series = getBarChart().getData().getSeries();
 
         // Rebuild bars for series values
-        final List<AxisValue> yAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
-        final List<AxisValue> xAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
-        final List<AxisLabel> xAxisLabels = valuesAxisBuilder.getLabels();
+        final List<? extends AxisValue<?>> yAxisValues = categoriesAxisBuilder.getValues(getBarChart().getData().getCategoryAxisProperty());
+        final List<? extends AxisValue<?>> xAxisValues = valuesAxisBuilder.getValues(serie.getValuesAxisProperty());
+        final List<AxisLabel> xAxisLabels = valuesAxisBuilder.getValuesAxisLabels();
         final List<Rectangle> bars = seriesValues.get(serie.getName());
 
         if (yAxisValues != null && yAxisValues.size() > 0)
         {
             for (int i = 0; i < yAxisValues.size(); i++)
             {
-                final AxisValue xAxisValue = xAxisValues.get(i);
-                final AxisValue yAxisValue = yAxisValues.get(i);
+                final AxisValue<?> xAxisValue = xAxisValues.get(i);
+                final AxisValue<?> yAxisValue = yAxisValues.get(i);
                 final double xAxisValuePosition = xAxisValue.getPosition();
 
                 // Obtain width and height values for the bar.

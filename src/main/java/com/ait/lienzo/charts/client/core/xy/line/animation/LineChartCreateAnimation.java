@@ -29,6 +29,7 @@ import com.ait.lienzo.client.core.animation.IAnimationCallback;
 import com.ait.lienzo.client.core.shape.Circle;
 import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.types.Point2D;
+import com.ait.lienzo.client.core.types.Point2DArray;
 import com.ait.lienzo.shared.core.types.IColor;
 
 /**
@@ -56,16 +57,15 @@ public class LineChartCreateAnimation extends AbstractLineChartAnimation
     @Override
     protected void doAnimateValues(Line line, Point2D p1, Point2D p2, Double w, Double h, IColor color, boolean isSeriesNew) {
         // Initial line positions.
-        /* 
-        TODO
+        final double initialX1 = isVertical() ? p1.getX() : 0d;
+        final double initialX2 = isVertical() ? p2.getX() : 0d;
+        final double initialY1 = isVertical() ? m_height : p1.getY();
+        final double initialY2 = isVertical() ? m_height : p2.getY();
+        final Point2D iP1 = new Point2D(initialX1, initialY1);
+        final Point2D iP2 = new Point2D(initialX2, initialY2);
+        line.setPoint2DArray(new Point2DArray(iP1, iP2));
          
-        final double initialX = isVertical() ? x : 0d;
-        final double initialY = isVertical() ? m_height : y;
-        line.setX(initialX);
-        line.setY(initialY);
-        */
-
-
+        // Animate line to its final position.
         final AnimationProperties animationProperties = new AnimationProperties();
         animationProperties.push(AnimationProperty.Properties.STROKE_COLOR(color));
         animationProperties.push(new PointsAnimationProperty(p1, p2, Attribute.POINTS));
@@ -74,6 +74,12 @@ public class LineChartCreateAnimation extends AbstractLineChartAnimation
 
     @Override
     protected void doAnimateValues(Circle circle, Double x, Double y, Double w, Double h, IColor color, boolean isSeriesNew) {
+        // Initial circle positions.
+        final double initialX = isVertical() ? x : 0d;
+        final double initialY = isVertical() ? m_height : y;
+        circle.setX(initialX).setY(initialY);
+
+        // Animate line to its final position.
         final AnimationProperties animationProperties = buildAnimationProperties(x, y);
         animationProperties.push(AnimationProperty.Properties.FILL_COLOR(color));
         add(circle, animationProperties);

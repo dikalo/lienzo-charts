@@ -18,11 +18,17 @@
 
 package com.ait.lienzo.charts.client.core.xy.axis;
 
+import java.util.Date;
+
 public final class AxisValue<V>
 {
     private V      m_value;
 
     private double m_position;
+
+    public static final AxisValue<String> EMPTY_STRING_VALUE = new AxisValue<String>("", 0);
+    public static final AxisValue<Double> EMPTY_NUMBER_VALUE = new AxisValue<Double>(null, 0);
+    public static final AxisValue<Date> EMPTY_DATE_VALUE = new AxisValue<Date>(null, 0);
 
     public AxisValue(final V value, final double position)
     {

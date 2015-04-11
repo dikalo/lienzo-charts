@@ -22,7 +22,6 @@ import com.ait.lienzo.charts.client.core.AbstractChart;
 import com.ait.lienzo.charts.client.core.ChartAttribute;
 import com.ait.lienzo.charts.client.core.ChartNodeType;
 import com.ait.lienzo.charts.client.core.axis.Axis;
-import com.ait.lienzo.charts.client.core.axis.CategoryAxis;
 import com.ait.lienzo.charts.client.core.legend.ChartLegend;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisBuilder;
 import com.ait.lienzo.charts.client.core.xy.axis.AxisLabel;
@@ -67,9 +66,9 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
     protected final List<XYChartLabel>          seriesLabels            = new LinkedList<XYChartLabel>();             // The labels for each interval (rectangle) in the X axis.
 
     // Axis builders.
-    protected AxisBuilder                        categoriesAxisBuilder;
+    protected AxisBuilder<?>                        categoriesAxisBuilder;
 
-    protected AxisBuilder                        valuesAxisBuilder;
+    protected AxisBuilder<?>                        valuesAxisBuilder;
 
     protected XYChartTooltip tooltip                 = null;                                        // The tooltip.
 
@@ -83,7 +82,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         super(nodeType);
     }
 
-    public final XYChart setCategoriesAxis(CategoryAxis xAxis)
+    public final XYChart setCategoriesAxis(Axis xAxis)
     {
         if (null != xAxis)
         {
@@ -326,7 +325,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         // Categories axis intervals.
         if (isShowCategoriesLabels())
         {
-            List<AxisLabel> xAxisLabels = categoriesAxisBuilder.getLabels();
+            List<AxisLabel> xAxisLabels = categoriesAxisBuilder.getCategoriesAxisLabels();
             if (xAxisLabels != null)
             {
                 for (int i = 0; i < xAxisLabels.size(); i++)
@@ -350,7 +349,7 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         }
         // Values axis intervals.
         // Build the shapes axis instances (line for intervals and text for labels).
-        List<AxisLabel> yAxisLabels = valuesAxisBuilder.getLabels();
+        List<AxisLabel> yAxisLabels = valuesAxisBuilder.getValuesAxisLabels();
         for (AxisLabel yAxisLabel : yAxisLabels)
         {
             final double p00 = isVertical() ? 0 : 0;
@@ -388,8 +387,8 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
 
     }
 
-    protected abstract AxisBuilder buildCategoryAxisBuilder(final boolean isVertical);
-    protected abstract AxisBuilder buildValuesAxisBuilder(final boolean isVertical);
+    protected abstract AxisBuilder<?> buildCategoryAxisBuilder(final boolean isVertical);
+    protected abstract AxisBuilder<?> buildValuesAxisBuilder(final boolean isVertical);
     public abstract  XYChart buildSeriesValues(final XYChartSeries series, final int numSeries);
 
     @Override
@@ -493,12 +492,12 @@ public abstract class XYChart<T extends XYChart<T>> extends AbstractChart<T>
         return seriesLabels;
     }
 
-    public AxisBuilder getCategoriesAxisBuilder()
+    public AxisBuilder<?> getCategoriesAxisBuilder()
     {
         return categoriesAxisBuilder;
     }
 
-    public AxisBuilder getValuesAxisBuilder()
+    public AxisBuilder<?> getValuesAxisBuilder()
     {
         return valuesAxisBuilder;
     }
