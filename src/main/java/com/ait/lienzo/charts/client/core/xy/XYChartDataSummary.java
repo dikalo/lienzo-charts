@@ -126,6 +126,10 @@ public class XYChartDataSummary
                     if (_columnLimits[1].after(maxDateValue[1])) maxDateValue[1] = _columnLimits[1];
                     if (_columnLimits[0].before(minDateValue[1])) minDateValue[1] = _columnLimits[0];
                     break;
+                case STRING:
+                    break;
+                default:
+                    break;
             }
         }
         
@@ -169,6 +173,10 @@ public class XYChartDataSummary
                 final Date[] _columnLimits = (Date[]) getLimitValues(valuesColumn, maxDateValue[0], minDateValue[0]);
                 if (_columnLimits[1].after(maxDateValue[0])) maxDateValue[0] = _columnLimits[1];
                 if (_columnLimits[0].before(minDateValue[0])) minDateValue[0] = _columnLimits[0];
+                break;
+            case STRING:
+                break;
+            default:
                 break;
         }
         
@@ -241,6 +249,10 @@ public class XYChartDataSummary
                     result[1] = maxDateValue;
                     return result;
                 }
+                break;
+            case STRING:
+                break;
+            default:
                 break;
         }
         

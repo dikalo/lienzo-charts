@@ -35,16 +35,16 @@ import java.util.List;
 
 public abstract class XYChartClearAnimation extends AbstractChartAnimation
 {
-    public XYChartClearAnimation(final XYChart chart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
+    public XYChartClearAnimation(final XYChart<?> chart, final AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
         super(chart, chart.getChartWidth(), chart.getChartHeight(), tweener, duration, callback);
-        
+
         init(chart.getChartWidth(), chart.getChartHeight());
     }
 
-    protected XYChart getXYChart()
+    protected XYChart<?> getXYChart()
     {
-        return (XYChart) getNode();
+        return (XYChart<?>) getNode();
     }
 
     protected boolean isVertical()
@@ -53,7 +53,7 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
     }
 
     protected abstract void clearValues(final double chartWidth, final double chartHeight);
-    
+
     protected void init(final double chartWidth, final double chartHeight)
     {
         // Title & Legend & tooltip.
@@ -131,7 +131,7 @@ public abstract class XYChartClearAnimation extends AbstractChartAnimation
 
         // Apply animation to values.
         clearValues(chartWidth, chartHeight);
-        
+
         // Create axis titles' animations.
         if (!getXYChart().getCategoriesAxisTitle().isEmpty()) add((Node<?>) getXYChart().getCategoriesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));
         if (!getXYChart().getValuesAxisTitle().isEmpty()) add((Node<?>) getXYChart().getValuesAxisTitle().get(0), buildAnimationProperties(null, null, 0d, 0d));

@@ -39,14 +39,14 @@ import java.util.List;
 
 public abstract class XYChartAnimation extends AbstractChartAnimation
 {
-    public XYChartAnimation(final XYChart chart, final double chartWidth, final double chartHeight, AnimationTweener tweener, final double duration, final IAnimationCallback callback)
+    public XYChartAnimation(final XYChart<?> chart, final double chartWidth, final double chartHeight, AnimationTweener tweener, final double duration, final IAnimationCallback callback)
     {
         super(chart, chartWidth, chartHeight, tweener, duration, callback);
     }
 
-    protected XYChart getXYChart()
+    protected XYChart<?> getXYChart()
     {
-        return (XYChart) getNode();
+        return (XYChart<?>) getNode();
     }
 
     protected boolean isVertical()
@@ -115,7 +115,7 @@ public abstract class XYChartAnimation extends AbstractChartAnimation
             final double mt = getXYChart().getMarginTop();
             final double mb = getXYChart().getMarginBottom();
             final List<XYChartLabel> seriesLabels = getXYChart().getSeriesLabels();
-            final AxisBuilder categoriesAxisBuilder = getXYChart().getCategoriesAxisBuilder();
+            final AxisBuilder<?> categoriesAxisBuilder = getXYChart().getCategoriesAxisBuilder();
             final List<AxisLabel> labels = categoriesAxisBuilder.getCategoriesAxisLabels();
             final int lsize = labels.size();
             final LabelsPosition clp = getXYChart().getCategoriesAxisLabelsPosition();
