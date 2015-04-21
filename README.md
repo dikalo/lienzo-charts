@@ -3,7 +3,26 @@ Lienzo Charts
 
 Lienzo Charts is a chart package built on top of the Lienzo Structured Graphics GWT Toolkit
 
-https://github.com/ahome-it/lienzo-core
+https://github.com/ahome-it/lienzo-charts
+
+Downloading artifacts
+
+SNAPSHOT:
+
+```xml
+<repositories>
+  <repository>
+  <id>sonatype</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+  </repository>
+</repositories>
+
+<dependency>
+  <groupId>com.ahome-it</groupId>
+  <artifactId>lienzo-charts</artifactId>
+  <version>1.0.112-SNAPSHOT</version>
+</dependency>
+```
 
 License
 
