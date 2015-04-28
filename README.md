@@ -20,7 +20,7 @@ SNAPSHOT:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>lienzo-charts</artifactId>
-  <version>1.0.117-SNAPSHOT</version>
+  <version>1.0.118-SNAPSHOT</version>
 </dependency>
 ```
 

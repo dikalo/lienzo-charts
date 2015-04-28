@@ -18,6 +18,7 @@
 
 package com.ait.lienzo.charts.client.core;
 
+import static com.ait.lienzo.client.core.AttributeOp.any;
 import static com.ait.lienzo.client.core.animation.AnimationProperties.toPropertyList;
 import static com.ait.lienzo.client.core.animation.AnimationProperty.Properties.ALPHA;
 import static com.ait.lienzo.client.core.animation.AnimationTweener.LINEAR;
@@ -34,7 +35,6 @@ import com.ait.lienzo.charts.shared.core.types.ChartOrientation;
 import com.ait.lienzo.charts.shared.core.types.LegendAlign;
 import com.ait.lienzo.charts.shared.core.types.LegendPosition;
 import com.ait.lienzo.client.core.Attribute;
-import com.ait.lienzo.client.core.AttributeOp.BooleanOp;
 import com.ait.lienzo.client.core.animation.AnimationTweener;
 import com.ait.lienzo.client.core.event.AnimationFrameAttributesChangedBatcher;
 import com.ait.lienzo.client.core.event.AttributesChangedEvent;
@@ -53,10 +53,10 @@ import com.ait.lienzo.client.core.shape.storage.PrimitiveFastArrayStorageEngine;
 import com.ait.lienzo.shared.core.types.ColorName;
 import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
+import com.ait.tooling.common.api.flow.Flows.BooleanOp;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
-import static com.ait.lienzo.client.core.AttributeOp.*;
 
 /**
  *  <p>Base chart implementation class.</p>
