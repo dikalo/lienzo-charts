@@ -19,8 +19,20 @@ SNAPSHOT:
 
 <dependency>
   <groupId>com.ahome-it</groupId>
-  <artifactId>lienzo-charts</artifactId>
-  <version>1.0.122-SNAPSHOT</version>
+  <artifactId>lienzo-core</artifactId>
+  <version>2.0.125-SNAPSHOT</version>
+</dependency>
+```
+
+RELEASE:
+
+The RC and RELEASE versions will be found in Maven Central
+
+```xml
+<dependency>
+  <groupId>com.ahome-it</groupId>
+  <artifactId>lienzo-core</artifactId>
+  <version>2.0.125-RC1</version>
 </dependency>
 ```
 

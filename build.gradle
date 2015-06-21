@@ -15,12 +15,30 @@
 */
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.122-SNAPSHOT'
+version = '1.0.125-RC1'
 
 group = 'com.ahome-it'
+
+task doJavaDocs(type: Javadoc) {
+    source = sourceSets.main.allJava
+    failOnError = false
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: doJavaDocs) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+compileJava.dependsOn(clean)
 
 jar {
     manifest {
@@ -35,23 +53,58 @@ repositories {
 }
 
 sourceSets {
-  main {
-    resources {
-      source java
+    main {
+        resources {
+            source java
+        }
     }
-  }
 }
 
 dependencies {
     compile(group: 'com.google.gwt', name: 'gwt-user', version: '2.6.1')
-    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.116-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.121-RC1')
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives jar
+}
+
+signing {
+    sign configurations.archives
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             repository(url: "${sonatype_snapshotURL}") {
                 authentication(userName: "${sonatype_user}", password: "${sonatype_password}")
+            }
+            pom.project {
+                name 'Lienzo-Charts'
+                packaging 'jar'
+                description 'Lienzo-Charts is GWT library for displaying charts built on the Lienzo Structure Graphics Toolkit'
+                url 'https://github.com/ahome-it/lienzo-charts'
+                scm {
+                    url 'scm:git@github.com:ahome-it/lienzo-charts.git'
+                    connection 'scm:git@github.com:ahome-it/lienzo-charts.git'
+                    developerConnection 'scm:git@github.com:ahome-it/lienzo-charts.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'SprocketNYC'
+                        name 'Dean Jones'
+                    }
+                }
             }
         }
     }
