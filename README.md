@@ -7,23 +7,6 @@ https://github.com/ahome-it/lienzo-charts
 
 Downloading artifacts
 
-SNAPSHOT:
-
-```xml
-<repositories>
-  <repository>
-  <id>sonatype</id>
-  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-  </repository>
-</repositories>
-
-<dependency>
-  <groupId>com.ahome-it</groupId>
-  <artifactId>lienzo-core</artifactId>
-  <version>2.0.125-SNAPSHOT</version>
-</dependency>
-```
-
 RELEASE:
 
 The RC and RELEASE versions will be found in Maven Central
@@ -32,7 +15,7 @@ The RC and RELEASE versions will be found in Maven Central
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>lienzo-core</artifactId>
-  <version>2.0.125-RC1</version>
+  <version>1.0.126-RC1</version>
 </dependency>
 ```
 
