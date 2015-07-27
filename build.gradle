@@ -16,7 +16,7 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.127-RC1'
+version = '1.0.128-RC1'
 
 group = 'com.ahome-it'
 
@@ -59,7 +59,7 @@ sourceSets {
 
 dependencies {
     compile(group: 'com.google.gwt', name: 'gwt-user', version: '2.6.1')
-    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.123-RC1')
+    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.125-RC1')
 }
 
 artifacts {
