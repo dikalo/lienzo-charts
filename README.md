@@ -14,13 +14,13 @@ Maven:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>lienzo-charts</artifactId>
-  <version>1.0.166-RC1</version>
+  <version>1.0.175-RC1</version>
 </dependency>
 ```
 Gradle:
 ```
 dependencies {
-    compile(group:'com.ahome-it',name:'lienzo-charts',version:'1.0.166-RC1')
+    compile(group:'com.ahome-it',name:'lienzo-charts',version:'1.0.175-RC1')
 }
 ```
 Javadoc URL:
