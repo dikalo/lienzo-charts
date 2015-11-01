@@ -30,7 +30,7 @@ sourceCompatibility = 1.7
 
 targetCompatibility = 1.7
 
-version = '1.0.180-RC1'
+version = '1.0.185-RC1'
 
 group = 'com.ahome-it'
 
@@ -60,6 +60,11 @@ jar {
 
 repositories {
     mavenCentral()
+    /*
+    maven {
+        url "file:/opt/mvn"
+    }
+    */
 }
 
 sourceSets {
@@ -72,7 +77,7 @@ sourceSets {
 
 dependencies {
     compile(group: 'com.google.gwt', name: 'gwt-user', version: '2.7.0')
-    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.180-RC1')
+    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.185-RC1')
 }
 
 artifacts {
