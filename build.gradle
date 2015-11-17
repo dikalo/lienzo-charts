@@ -30,7 +30,7 @@ sourceCompatibility = 1.7
 
 targetCompatibility = 1.7
 
-version = '1.0.191-RC1'
+version = '1.0.192-RC1'
 
 group = 'com.ahome-it'
 
@@ -60,24 +60,19 @@ jar {
 
 repositories {
     mavenCentral()
-    /*
-    maven {
-        url "file:/opt/mvn"
-    }
-    */
 }
 
 sourceSets {
     main {
         resources {
-            source java
+             srcDir 'src/main/java'
         }
     }
 }
 
 dependencies {
     compile(group: 'com.google.gwt', name: 'gwt-user', version: '2.7.0')
-    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.191-RC1')
+    compile(group: 'com.ahome-it', name: 'lienzo-core', version: '2.0.192-RC1')
 }
 
 artifacts {
@@ -94,7 +89,6 @@ uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            //repository(url: "file:/opt/mvn") {
             repository(url: "${sonatype_stageingURL}") {
                 authentication(userName: "${sonatype_user}", password: "${sonatype_password}")
             }
@@ -117,8 +111,10 @@ uploadArchives {
                 }
                 developers {
                     developer {
-                        id 'SprocketNYC'
-                        name 'Dean Jones'
+                        id 'sprocketnyc'
+                        name 'Dean S. Jones'
+                        email 'deansjones@gmail.com'
+                        url 'https://www.lienzo-core.com'
                     }
                 }
             }
