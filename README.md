@@ -14,22 +14,22 @@ Maven:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>lienzo-charts</artifactId>
-  <version>1.0.190-RC1</version>
+  <version>1.0.191-RC1</version>
 </dependency>
 ```
 Gradle:
 ```
 dependencies {
-    compile(group:'com.ahome-it',name:'lienzo-charts',version:'1.0.190-RC1')
+    compile(group:'com.ahome-it',name:'lienzo-charts',version:'1.0.191-RC1')
 }
 ```
 Javadoc URL:
 
-http://lienzo-core.com/documents/javadoc/lienzo-charts
+https://lienzo-core.com/documents/javadoc/lienzo-charts
 
 License:
 
-Copyright (c) 2014,2015 Ahome Innovation Technologies. All rights reserved.
+Copyright (c) 2014,2015,2016 Ahome Innovation Technologies. All rights reserved.
 
 Lienzo Charts is released under version 2.0 of the Apache License.
 
