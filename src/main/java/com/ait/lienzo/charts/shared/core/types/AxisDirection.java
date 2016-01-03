@@ -19,7 +19,6 @@ package com.ait.lienzo.charts.shared.core.types;
 import java.util.List;
 
 import com.ait.lienzo.shared.core.types.EnumWithValue;
-import com.ait.tooling.nativetools.client.collection.NFastStringMap;
 
 public enum AxisDirection implements EnumWithValue
 {
@@ -27,7 +26,7 @@ public enum AxisDirection implements EnumWithValue
 
     private final String                               m_value;
 
-    private static final NFastStringMap<AxisDirection> LOOKUP_MAP = Statics.build(AxisDirection.values());
+    private static final EnumStringMap<AxisDirection> LOOKUP_MAP = Statics.build(AxisDirection.values());
 
     private AxisDirection(String value)
     {

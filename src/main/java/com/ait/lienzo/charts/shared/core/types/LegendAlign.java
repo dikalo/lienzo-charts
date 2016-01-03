@@ -19,7 +19,6 @@ package com.ait.lienzo.charts.shared.core.types;
 import java.util.List;
 
 import com.ait.lienzo.shared.core.types.EnumWithValue;
-import com.ait.tooling.nativetools.client.collection.NFastStringMap;
 
 public enum LegendAlign implements EnumWithValue
 {
@@ -38,7 +37,7 @@ public enum LegendAlign implements EnumWithValue
 
     private final String                             m_value;
 
-    private static final NFastStringMap<LegendAlign> LOOKUP_MAP = Statics.build(LegendAlign.values());
+    private static final EnumStringMap<LegendAlign> LOOKUP_MAP = Statics.build(LegendAlign.values());
 
     private LegendAlign(String value)
     {

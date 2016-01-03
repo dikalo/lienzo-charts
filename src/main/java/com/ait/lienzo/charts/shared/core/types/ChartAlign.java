@@ -19,7 +19,6 @@ package com.ait.lienzo.charts.shared.core.types;
 import java.util.List;
 
 import com.ait.lienzo.shared.core.types.EnumWithValue;
-import com.ait.tooling.nativetools.client.collection.NFastStringMap;
 
 public enum ChartAlign implements EnumWithValue
 {
@@ -27,7 +26,7 @@ public enum ChartAlign implements EnumWithValue
 
     private final String                            m_value;
 
-    private static final NFastStringMap<ChartAlign> LOOKUP_MAP = Statics.build(ChartAlign.values());
+    private static final EnumStringMap<ChartAlign> LOOKUP_MAP = Statics.build(ChartAlign.values());
 
     private ChartAlign(String value)
     {
