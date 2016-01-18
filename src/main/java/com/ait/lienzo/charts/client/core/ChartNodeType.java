@@ -22,13 +22,11 @@ import com.ait.lienzo.shared.core.types.GroupType;
 
 public class ChartNodeType extends GroupType
 {
-    private static final long         serialVersionUID = -255118212772360607L;
+    public static final ChartNodeType PIE_CHART  = new ChartNodeType("Lienzo.PieChart");
 
-    public static final ChartNodeType PIE_CHART        = new ChartNodeType("Lienzo.PieChart");
+    public static final ChartNodeType BAR_CHART  = new ChartNodeType("Lienzo.BarChart");
 
-    public static final ChartNodeType BAR_CHART        = new ChartNodeType("Lienzo.BarChart");
-
-    public static final ChartNodeType LINE_CHART       = new ChartNodeType("Lienzo.LineChart");
+    public static final ChartNodeType LINE_CHART = new ChartNodeType("Lienzo.LineChart");
 
     public ChartNodeType(String value)
     {
