@@ -92,4 +92,10 @@ public class PointsAnimationProperty implements AnimationProperty
     {
         return true;
     }
+
+    @Override
+    public boolean isRefreshing()
+    {
+        return false;
+    }
 }
